@@ -3,12 +3,41 @@
 export type Option = { id: string; label: string; description?: string }
 export type RoleOption = Option & { description: string; skills: string[] }
 
+export type RoundId = 'technical' | 'project' | 'behavioural' | 'hr'
+
 export type Catalog = {
   roles: RoleOption[]
   experienceLevels: Option[]
   companyTypes: Option[]
   placementTimelines: Option[]
+  rounds: (Option & { id: RoundId; description: string })[]
+  completeSequences: Record<string, RoundId[]>
 }
+
+export type InterviewTurn = {
+  seq: number
+  round: RoundId
+  question: string
+  is_follow_up: boolean
+  answer: string | null
+  skipped: boolean
+}
+
+export type InterviewStatus = 'in_progress' | 'completed' | 'ended_early'
+
+export type Interview = {
+  id: string
+  mode: 'single' | 'complete'
+  rounds: RoundId[]
+  current_round_index: number
+  status: InterviewStatus
+  questionsPerRound: number
+  created_at: string
+  completed_at: string | null
+  turns: InterviewTurn[]
+}
+
+export type InterviewSummary = Pick<Interview, 'id' | 'mode' | 'rounds' | 'status' | 'created_at' | 'completed_at'>
 
 export type UserSkill = {
   skill: string

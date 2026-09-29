@@ -1,3 +1,5 @@
+import { COMPLETE_SEQUENCES, ROUNDS } from './interview/rounds.js'
+
 // The fixed lists students choose from during onboarding.
 // Kept on the server as the single source of truth: the frontend fetches it,
 // and the backend uses it to reject values that aren't on the list.
@@ -56,6 +58,8 @@ export const catalog = {
   experienceLevels: EXPERIENCE_LEVELS,
   companyTypes: COMPANY_TYPES,
   placementTimelines: PLACEMENT_TIMELINES,
+  rounds: ROUNDS.map(({ id, label, description }) => ({ id, label, description })),
+  completeSequences: COMPLETE_SEQUENCES,
 }
 
 const ids = <T extends readonly { id: string }[]>(list: T) =>

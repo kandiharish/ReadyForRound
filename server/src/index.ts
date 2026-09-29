@@ -5,6 +5,7 @@ import { chat, isLlmReachable } from './llm/client.js'
 import { isDbConnected } from './db/supabase.js'
 import { requireAuth } from './auth/requireAuth.js'
 import { profileRouter } from './routes/profile.js'
+import { interviewsRouter } from './routes/interviews.js'
 
 const app = express()
 
@@ -23,6 +24,8 @@ app.get('/api/health', async (_req, res) => {
 
 // Profile routes: /api/catalog, /api/me, /api/onboarding
 app.use('/api', profileRouter)
+// Interview routes: /api/interviews/...
+app.use('/api/interviews', interviewsRouter)
 
 // Temporary test route: send a message, get the AI's reply.
 // Logged-in users only, so strangers can't use up our AI quota.

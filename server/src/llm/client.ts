@@ -12,6 +12,7 @@ export type ChatMessage = {
 export type ChatOptions = {
   temperature?: number // 0 = predictable, 1 = creative
   maxTokens?: number // upper limit on the length of the reply
+  json?: boolean // ask the model to reply with a JSON object only
 }
 
 type Provider = 'ollama' | 'groq' | 'openrouter'
@@ -45,6 +46,7 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
       messages,
       temperature: options.temperature ?? 0.7,
       max_tokens: options.maxTokens ?? 500,
+      ...(options.json ? { response_format: { type: 'json_object' } } : {}),
     }),
   })
 

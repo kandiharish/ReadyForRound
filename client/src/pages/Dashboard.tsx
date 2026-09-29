@@ -2,18 +2,26 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { apiFetch } from '../lib/api'
-import type { Catalog, Option, Profile } from '../types'
+import type { Catalog, InterviewStatus, InterviewSummary, Option, Profile } from '../types'
 
 const labelOf = (list: Option[], id: string | null) => list.find((o) => o.id === id)?.label ?? '—'
+
+const STATUS_LABEL: Record<InterviewStatus, string> = { in_progress: 'In progress', completed: 'Completed', ended_early: 'Ended early' }
+const STATUS_STYLE: Record<InterviewStatus, string> = {
+  in_progress: 'bg-amber-100 text-amber-800',
+  completed: 'bg-green-100 text-green-800',
+  ended_early: 'bg-slate-100 text-slate-600',
+}
 
 export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [catalog, setCatalog] = useState<Catalog | null>(null)
+  const [interviews, setInterviews] = useState<InterviewSummary[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    Promise.all([apiFetch<Profile>('/me'), apiFetch<Catalog>('/catalog')])
-      .then(([me, cat]) => { setProfile(me); setCatalog(cat) })
+    Promise.all([apiFetch<Profile>('/me'), apiFetch<Catalog>('/catalog'), apiFetch<InterviewSummary[]>('/interviews')])
+      .then(([me, cat, list]) => { setProfile(me); setCatalog(cat); setInterviews(list) })
       .catch((err) => setError(err.message))
   }, [])
 
@@ -85,12 +93,36 @@ export default function Dashboard() {
               </table>
             </div>
 
-            <div className="bg-indigo-600 text-white rounded-xl p-6 mt-4">
-              <p className="font-bold">Mock interviews are coming next</p>
-              <p className="text-indigo-100 text-sm mt-1">
-                Technical, HR, Behavioural and Project rounds, shaped by your role, company type and skills.
-              </p>
+            <div className="bg-indigo-600 text-white rounded-xl p-6 mt-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="font-bold">Ready for a mock interview?</p>
+                <p className="text-indigo-100 text-sm mt-1">Technical, Project, Behavioural and HR rounds, or all of them.</p>
+              </div>
+              <Link to="/interview/new" className="bg-white text-indigo-700 rounded-lg px-4 py-2 font-medium shrink-0">
+                Start
+              </Link>
             </div>
+
+            {interviews.length > 0 && (
+              <div className="bg-white rounded-xl shadow p-6 sm:p-8 mt-4">
+                <h2 className="font-bold text-slate-900">Your interviews</h2>
+                <ul className="mt-3 divide-y divide-slate-100">
+                  {interviews.map((iv) => (
+                    <li key={iv.id}>
+                      <Link to={`/interview/${iv.id}`} className="flex items-center justify-between py-3 hover:text-indigo-700">
+                        <span>
+                          <span className="font-medium">
+                            {iv.mode === 'complete' ? 'Complete interview' : `${catalog.rounds.find((r) => r.id === iv.rounds[0])?.label} round`}
+                          </span>
+                          <span className="block text-xs text-slate-500">{new Date(iv.created_at).toLocaleString()}</span>
+                        </span>
+                        <span className={`text-xs rounded-full px-2 py-0.5 ${STATUS_STYLE[iv.status]}`}>{STATUS_LABEL[iv.status]}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </>
         )}
       </div>

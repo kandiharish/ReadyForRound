@@ -6,6 +6,8 @@ import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import Status from './pages/Status'
 import Onboarding from './pages/Onboarding'
+import InterviewSetup from './pages/InterviewSetup'
+import InterviewRoom from './pages/InterviewRoom'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -22,6 +24,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/interview/new"
+            element={
+              <ProtectedRoute>
+                <InterviewSetup />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/interview/:id"
+            element={
+              <ProtectedRoute>
+                <InterviewRoom />
               </ProtectedRoute>
             }
           />
