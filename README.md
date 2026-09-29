@@ -6,7 +6,15 @@ AI interview practice platform. See [plan.md](plan.md) for the full product plan
 
 - `client/` - frontend (React + Vite + Tailwind). What students see in the browser.
 - `server/` - backend (Node.js + Express + TypeScript). Talks to the AI and the database.
-- `supabase/migrations/` - SQL files that create our database tables. Run them in order in Supabase -> SQL Editor.
+- `supabase/migrations/` - SQL files that create our database tables.
+
+## Database changes
+
+From the project root (one-time setup: `npx supabase login` then `npx supabase link --project-ref <your-project-ref>`):
+
+- `npm run db:new <name>` - create a new migration file
+- `npm run db:push` - apply new migrations to Supabase
+- `npm run db:status` - see which migrations have been applied
 
 ## Run locally
 
