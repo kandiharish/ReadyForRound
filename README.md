@@ -5,7 +5,8 @@ AI interview practice platform. See [plan.md](plan.md) for the full product plan
 ## Folders
 
 - `client/` - frontend (React + Vite + Tailwind). What students see in the browser.
-- `server/` - backend (Node.js + Express + TypeScript). Talks to the AI and (later) the database.
+- `server/` - backend (Node.js + Express + TypeScript). Talks to the AI and the database.
+- `supabase/migrations/` - SQL files that create our database tables. Run them in order in Supabase -> SQL Editor.
 
 ## Run locally
 
@@ -15,18 +16,18 @@ You need Node.js and Ollama installed.
    ```
    ollama pull llama3.2:3b
    ```
-2. Start the backend (terminal 1):
+2. Fill in Supabase keys in `server/.env` and `client/.env` (copy from the `.env.example` files).
+3. Start the backend (terminal 1):
    ```
    cd server
-   copy .env.example .env   # first time only
    npm run dev
    ```
-3. Start the frontend (terminal 2):
+4. Start the frontend (terminal 2):
    ```
    cd client
    npm run dev
    ```
-4. Open http://localhost:5180
+5. Open http://localhost:5180
 
 ## Switching AI provider
 

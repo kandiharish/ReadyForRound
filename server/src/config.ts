@@ -7,6 +7,10 @@ const schema = z.object({
   PORT: z.coerce.number().default(5000),
   CLIENT_URL: z.string().default('http://localhost:5180'),
 
+  // Supabase project address and its SECRET key (full access - server only).
+  SUPABASE_URL: z.string().optional(),
+  SUPABASE_SECRET_KEY: z.string().optional(),
+
   // Which AI provider to use: "ollama" (your laptop) or "groq" (online).
   LLM_PROVIDER: z.enum(['ollama', 'groq', 'openrouter']).default('ollama'),
   // Optional backup provider used if the main one fails (e.g. rate limit).

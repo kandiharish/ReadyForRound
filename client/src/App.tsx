@@ -4,6 +4,7 @@ type Health = {
   status: string
   llmProvider: string
   llmReachable: boolean
+  dbConnected: boolean
 }
 
 function App() {
@@ -35,6 +36,12 @@ function App() {
                 AI reachable:{' '}
                 <b className={health.llmReachable ? 'text-green-600' : 'text-red-600'}>
                   {health.llmReachable ? 'yes' : 'no'}
+                </b>
+              </p>
+              <p>
+                Database:{' '}
+                <b className={health.dbConnected ? 'text-green-600' : 'text-red-600'}>
+                  {health.dbConnected ? 'connected' : 'not connected'}
                 </b>
               </p>
             </>

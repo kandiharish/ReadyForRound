@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { config } from './config.js'
 import { chat, isLlmReachable } from './llm/client.js'
+import { isDbConnected } from './db/supabase.js'
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.get('/api/health', async (_req, res) => {
     status: 'ok',
     llmProvider: config.LLM_PROVIDER,
     llmReachable: await isLlmReachable(),
+    dbConnected: await isDbConnected(),
   })
 })
 
