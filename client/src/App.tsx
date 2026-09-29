@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import Status from './pages/Status'
+import Onboarding from './pages/Onboarding'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -16,6 +17,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/status" element={<Status />} />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={

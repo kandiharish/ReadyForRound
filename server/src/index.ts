@@ -2,8 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import { config } from './config.js'
 import { chat, isLlmReachable } from './llm/client.js'
-import { isDbConnected, supabase } from './db/supabase.js'
+import { isDbConnected } from './db/supabase.js'
 import { requireAuth } from './auth/requireAuth.js'
+import { profileRouter } from './routes/profile.js'
 
 const app = express()
 
@@ -20,17 +21,8 @@ app.get('/api/health', async (_req, res) => {
   })
 })
 
-// "Who am I?" - returns the logged-in user's profile.
-app.get('/api/me', requireAuth, async (req, res) => {
-  const { data, error } = await supabase!
-    .from('profiles')
-    .select('id, full_name, role, target_role, experience_level')
-    .eq('id', req.user!.id)
-    .single()
-
-  if (error) return res.status(404).json({ error: 'Profile not found' })
-  res.json(data)
-})
+// Profile routes: /api/catalog, /api/me, /api/onboarding
+app.use('/api', profileRouter)
 
 // Temporary test route: send a message, get the AI's reply.
 // Logged-in users only, so strangers can't use up our AI quota.

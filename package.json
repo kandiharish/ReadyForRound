@@ -1,0 +1,12 @@
+{
+  "name": "readyforround",
+  "private": true,
+  "scripts": {
+    "db:push": "supabase db push",
+    "db:status": "supabase migration list",
+    "db:new": "supabase migration new"
+  },
+  "devDependencies": {
+    "supabase": "^2.118.0"
+  }
+}
