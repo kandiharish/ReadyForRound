@@ -2,7 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import { config } from './config.js'
 import { chat, isLlmReachable } from './llm/client.js'
-import { isDbConnected } from './db/supabase.js'
+import { isDbConnected, supabase } from './db/supabase.js'
+import { requireAuth } from './auth/requireAuth.js'
 
 const app = express()
 
@@ -19,9 +20,21 @@ app.get('/api/health', async (_req, res) => {
   })
 })
 
+// "Who am I?" - returns the logged-in user's profile.
+app.get('/api/me', requireAuth, async (req, res) => {
+  const { data, error } = await supabase!
+    .from('profiles')
+    .select('id, full_name, role, target_role, experience_level')
+    .eq('id', req.user!.id)
+    .single()
+
+  if (error) return res.status(404).json({ error: 'Profile not found' })
+  res.json(data)
+})
+
 // Temporary test route: send a message, get the AI's reply.
-// We'll replace this with the real interview routes later.
-app.post('/api/llm/test', async (req, res) => {
+// Logged-in users only, so strangers can't use up our AI quota.
+app.post('/api/llm/test', requireAuth, async (req, res) => {
   const message = typeof req.body?.message === 'string' ? req.body.message : 'Say hello in one sentence.'
   try {
     const reply = await chat([

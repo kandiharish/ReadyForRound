@@ -1,0 +1,68 @@
+import { useState, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { supabase } from '../lib/supabase'
+import { AuthCard, Divider, GoogleButton, inputClass, primaryButtonClass } from '../components/AuthCard'
+
+export default function Signup() {
+  const navigate = useNavigate()
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [checkEmail, setCheckEmail] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault() // stop the browser from reloading the page
+    setError(null)
+    setBusy(true)
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName }, // our database trigger copies this into profiles
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
+    })
+
+    setBusy(false)
+    if (error) return setError(error.message)
+
+    // If email confirmation is on, there is no session yet: the student must click the email link first.
+    if (data.session) navigate('/dashboard')
+    else setCheckEmail(true)
+  }
+
+  if (checkEmail) {
+    return (
+      <AuthCard title="Check your email">
+        <p className="text-slate-600">
+          We sent a confirmation link to <b>{email}</b>. Click it to activate your account.
+        </p>
+      </AuthCard>
+    )
+  }
+
+  return (
+    <AuthCard title="Create your account">
+      <GoogleButton />
+      <Divider />
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input className={inputClass} placeholder="Full name" value={fullName}
+          onChange={(e) => setFullName(e.target.value)} required />
+        <input className={inputClass} type="email" placeholder="Email" value={email}
+          onChange={(e) => setEmail(e.target.value)} required />
+        <input className={inputClass} type="password" placeholder="Password (min 8 characters)" value={password}
+          onChange={(e) => setPassword(e.target.value)} minLength={8} required />
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <button className={primaryButtonClass} disabled={busy}>
+          {busy ? 'Creating account…' : 'Sign up'}
+        </button>
+      </form>
+      <p className="text-sm text-slate-500 mt-4 text-center">
+        Already have an account? <Link to="/login" className="text-indigo-600 font-medium">Log in</Link>
+      </p>
+    </AuthCard>
+  )
+}
