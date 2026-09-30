@@ -1,5 +1,14 @@
 import { supabase } from './supabase'
 
+// An error from our backend, with its HTTP status (e.g. 503 = service unavailable).
+export class ApiError extends Error {
+  status: number
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
 // Calls our backend and attaches the logged-in user's token,
 // so the backend knows who is asking.
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -17,6 +26,6 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   })
 
   const body = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`)
+  if (!res.ok) throw new ApiError(res.status, body.error ?? `Request failed (${res.status})`)
   return body as T
 }

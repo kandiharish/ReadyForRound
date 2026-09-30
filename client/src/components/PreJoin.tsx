@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Avatar, INTERVIEWERS, type InterviewerId } from './Avatar'
 import { isRecordingSupported } from '../lib/recorder'
 import { loadVoices, pickVoice, speak, stopSpeaking } from '../lib/speech'
+import { apiFetch } from '../lib/api'
 
 export type RoomSettings = {
   interviewer: InterviewerId
@@ -11,7 +12,7 @@ export type RoomSettings = {
   autoSendSeconds: 0 | 3 | 5 // 0 = only when I click Done
 }
 
-const SETTINGS_KEY = 'rfr-room-settings'
+const SETTINGS_KEY = 'rfr-room-settings-v2' // v2: new default of moving on after a 5-second pause
 
 // Remembered per browser for convenience; safe to lose.
 export function loadSettings(): RoomSettings {
@@ -20,7 +21,7 @@ export function loadSettings(): RoomSettings {
     voiceURI: null,
     answerMode: isRecordingSupported() ? 'voice' : 'text',
     startMode: 'button',
-    autoSendSeconds: 0,
+    autoSendSeconds: 5,
   }
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}')
@@ -46,6 +47,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [mediaError, setMediaError] = useState<string | null>(null)
   const [level, setLevel] = useState(0)
+  const [voiceServiceReady, setVoiceServiceReady] = useState(true) // can the server turn speech into text?
   const videoRef = useRef<HTMLVideoElement>(null)
   const joinedRef = useRef(false)
 
@@ -98,14 +100,21 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
 
   useEffect(() => { loadVoices().then(setVoices) }, [])
 
+  // Ask the server whether spoken answers can be processed right now.
+  useEffect(() => {
+    apiFetch<{ voiceAnswersReady: boolean }>('/health')
+      .then((h) => setVoiceServiceReady(h.voiceAnswersReady))
+      .catch(() => setVoiceServiceReady(false))
+  }, [])
+
   const gender = INTERVIEWERS[settings.interviewer].gender
   const voice = voices.find((v) => v.voiceURI === settings.voiceURI) ?? pickVoice(voices, gender)
   const update = (patch: Partial<RoomSettings>) => setSettings((s) => ({ ...s, ...patch }))
 
   const hasMic = !!stream?.getAudioTracks().length
   const hasCam = !!stream?.getVideoTracks().length
-  // Speaking needs both a microphone and browser support; otherwise typing is the only option.
-  const canSpeak = hasMic && isRecordingSupported()
+  // Speaking needs a microphone, browser support and the server's speech-to-text; otherwise typing is the only option.
+  const canSpeak = hasMic && isRecordingSupported() && voiceServiceReady
   const answerMode = canSpeak ? settings.answerMode : 'text'
 
   function join() {
@@ -192,6 +201,9 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               {isRecordingSupported() && !hasMic && (
                 <p className="text-xs text-amber-300 mt-1">No microphone found, so you'll type your answers.</p>
               )}
+              {hasMic && !voiceServiceReady && (
+                <p className="text-xs text-amber-300 mt-1">Spoken answers are unavailable right now, so please type your answers.</p>
+              )}
             </div>
 
             {answerMode === 'voice' && (
@@ -210,7 +222,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
                 <div>
                   <p className="text-sm font-medium text-slate-300 mb-2">Send my answer</p>
                   <div className="grid grid-cols-3 gap-2">
-                    {([0, 3, 5] as const).map((s) => (
+                    {([5, 3, 0] as const).map((s) => (
                       <button key={s} onClick={() => update({ autoSendSeconds: s })}
                         className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
                         {s === 0 ? 'When I press "Done"' : `After a ${s}s pause`}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { apiFetch } from '../lib/api'
+import { ApiError, apiFetch } from '../lib/api'
 import { Avatar, INTERVIEWERS, type AvatarState } from '../components/Avatar'
 import { PreJoin, type RoomSettings } from '../components/PreJoin'
 import { speak, stopSpeaking } from '../lib/speech'
@@ -149,8 +149,14 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       }
       setInterview(next)
     } catch (err) {
-      if ('audio' in answer) setFailedAudio(answer.audio) // nothing is lost: they can send the same recording again
-      setError((err as Error).message)
+      if ('audio' in answer && err instanceof ApiError && err.status === 503 && /voice/i.test(err.message)) {
+        // The server can't turn speech into text at all right now: switch to typing so the student isn't stuck.
+        setAnswerMode('text')
+        setError("Your spoken answer couldn't be processed because voice answers are unavailable right now. Please type your answer below.")
+      } else {
+        if ('audio' in answer) setFailedAudio(answer.audio) // nothing is lost: they can send the same recording again
+        setError(`Your answer wasn't sent: ${(err as Error).message}`)
+      }
       setAvatarState('idle')
     } finally {
       busy.current = false
