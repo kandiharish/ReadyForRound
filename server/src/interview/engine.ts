@@ -5,6 +5,7 @@ import { buildMessages, parseAiReply, type AiReply, type InterviewContext, type 
 import { COMPLETE_SEQUENCES, MAX_FOLLOW_UPS_PER_QUESTION, QUESTIONS_PER_ROUND, type RoundId } from './rounds.js'
 import { isGenerating, startReport } from '../report/generate.js'
 import { getActiveGoal } from '../goals.js'
+import { limitReached } from '../usage.js'
 
 export class InterviewError extends Error {
   constructor(public status: number, message: string) {
@@ -69,9 +70,16 @@ async function loadContext(userId: string): Promise<{ ctx: InterviewContext; com
   return { ctx, companyType: goal.company_type, goalId: goal.id }
 }
 
-export async function startInterview(userId: string, mode: 'single' | 'complete', round?: RoundId) {
+export type Mode = 'single' | 'complete' | 'drill'
+
+export async function startInterview(userId: string, mode: Mode, round?: RoundId, topic?: string) {
+  // Daily limits protect the free AI quota for everyone.
+  const limitMessage = await limitReached(userId, mode === 'drill' ? 'drill' : 'interview')
+  if (limitMessage) throw new InterviewError(429, limitMessage)
+
   const { ctx, companyType, goalId } = await loadContext(userId)
-  const rounds: RoundId[] = mode === 'complete' ? COMPLETE_SEQUENCES[companyType] : [round!]
+  if (mode === 'drill') ctx.focusTopic = topic
+  const rounds: RoundId[] = mode === 'complete' ? COMPLETE_SEQUENCES[companyType] : mode === 'drill' ? ['technical'] : [round!]
 
   // Get the first question BEFORE saving anything, so an AI failure leaves no half-created interview.
   const first = await askAi(ctx, rounds[0], [], { kind: 'start_round', isFirstRound: true })
@@ -81,7 +89,7 @@ export async function startInterview(userId: string, mode: 'single' | 'complete'
 
   const { data: session, error } = await db()
     .from('interview_sessions')
-    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx })
+    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx, focus_topic: mode === 'drill' ? topic : null })
     .select('id')
     .single()
   if (error) throw new InterviewError(500, error.message)
@@ -93,7 +101,7 @@ export async function startInterview(userId: string, mode: 'single' | 'complete'
 export async function getInterview(userId: string, sessionId: string) {
   const { data, error } = await db()
     .from('interview_sessions')
-    .select('id, mode, rounds, current_round_index, status, context, created_at, completed_at, ' +
+    .select('id, mode, rounds, current_round_index, status, context, focus_topic, created_at, completed_at, ' +
       'interview_turns (seq, round, question, is_follow_up, answer, skipped)')
     .eq('id', sessionId)
     .eq('user_id', userId) // a student can only open their own interviews
@@ -104,15 +112,16 @@ export async function getInterview(userId: string, sessionId: string) {
   const { interview_turns, ...session } = data as unknown as SessionRow & { interview_turns: (Turn & { seq: number })[] }
   return {
     ...session,
-    questionsPerRound: session.mode === 'single' ? QUESTIONS_PER_ROUND.single : QUESTIONS_PER_ROUND.complete,
+    questionsPerRound: QUESTIONS_PER_ROUND[session.mode],
     turns: interview_turns,
   }
 }
 
 type SessionRow = {
   id: string
-  mode: 'single' | 'complete'
+  mode: Mode
   rounds: RoundId[]
+  focus_topic: string | null
   current_round_index: number
   status: 'in_progress' | 'completed' | 'ended_early'
   context: InterviewContext
@@ -151,7 +160,7 @@ export async function answerQuestion(userId: string, sessionId: string, answer: 
   const lastMainIdx = roundTurns.map((t) => t.is_follow_up).lastIndexOf(false)
   const followUpsSinceMain = roundTurns.length - 1 - lastMainIdx
   const mainLeft = session.questionsPerRound - mainAsked
-  const followUpAllowed = !skipped && followUpsSinceMain < MAX_FOLLOW_UPS_PER_QUESTION
+  const followUpAllowed = session.mode !== 'drill' && !skipped && followUpsSinceMain < MAX_FOLLOW_UPS_PER_QUESTION
 
   // Decide what the AI may do next, then ask it.
   let next: { round: RoundId; reply: AiReply } | null = null

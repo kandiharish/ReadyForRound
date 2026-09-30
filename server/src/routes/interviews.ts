@@ -11,6 +11,7 @@ interviewsRouter.use(requireAuth) // every interview route needs a logged-in stu
 const startSchema = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('complete') }),
   z.object({ mode: z.literal('single'), round: z.enum(roundIds) }),
+  z.object({ mode: z.literal('drill'), topic: z.string().trim().min(2).max(80) }),
 ])
 
 const answerSchema = z.object({
@@ -37,7 +38,7 @@ interviewsRouter.post('/', async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message })
   try {
     const body = parsed.data
-    res.status(201).json(await startInterview(req.user!.id, body.mode, body.mode === 'single' ? body.round : undefined))
+    res.status(201).json(await startInterview(req.user!.id, body.mode, body.mode === 'single' ? body.round : undefined, body.mode === 'drill' ? body.topic : undefined))
   } catch (err) {
     handleError(res, err)
   }

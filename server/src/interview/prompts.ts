@@ -9,6 +9,7 @@ export type InterviewContext = {
   companyTypeLabel: string
   skills: { skill: string; self_rating: number }[]
   speakingPace: 'slow' | 'normal'
+  focusTopic?: string // set for drills: every question is about this one topic
 }
 
 export type Turn = {
@@ -69,7 +70,9 @@ function systemPrompt(ctx: InterviewContext, round: RoundId, earlierQuestions: s
     `You are a professional, friendly interviewer running the ${r.label} round of a mock job interview.`,
     `Position: ${ctx.roleLabel} at a ${ctx.companyTypeLabel.toLowerCase()}.`,
     `Candidate: ${ctx.firstName}, ${ctx.experienceLabel.toLowerCase()}. Self-rated skills: ${skills}.`,
-    `Goal of this round: ${r.goal}`,
+    ctx.focusTopic
+      ? `This is a quick 5-minute drill. Every question must be about: ${ctx.focusTopic}. Keep questions short and focused.`
+      : `Goal of this round: ${r.goal}`,
     '',
     'Rules:',
     '- Ask exactly ONE clear question at a time, in under 40 words.',

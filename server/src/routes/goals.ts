@@ -5,6 +5,8 @@ import { requireAuth } from '../auth/requireAuth.js'
 import { companyTypeIds, experienceIds, roleIds } from '../catalog.js'
 import { createGoal } from '../goals.js'
 import { goalsWithStats, homeStats, listSessions } from '../stats.js'
+import { getUsage } from '../usage.js'
+import { generateRoadmap, getRoadmap, setTaskDone } from '../roadmap.js'
 
 export const goalsRouter = Router()
 goalsRouter.use(requireAuth)
@@ -12,6 +14,34 @@ goalsRouter.use(requireAuth)
 // Everything the Home page needs in one request.
 goalsRouter.get('/home', async (req, res) => {
   res.json(await homeStats(req.user!.id))
+})
+
+// Today's usage and limits (shown in the sidebar and on the Practice page).
+goalsRouter.get('/usage', async (req, res) => {
+  res.json(await getUsage(req.user!.id))
+})
+
+// The roadmap for the current goal.
+goalsRouter.get('/roadmap', async (req, res) => {
+  res.json(await getRoadmap(req.user!.id))
+})
+
+// Build (or rebuild) the roadmap from the latest feedback. Finished tasks are kept.
+goalsRouter.post('/roadmap/generate', async (req, res) => {
+  try {
+    res.json(await generateRoadmap(req.user!.id))
+  } catch (err) {
+    res.status(503).json({ error: (err as Error).message })
+  }
+})
+
+// Tick a task off (or un-tick it).
+goalsRouter.patch('/roadmap/tasks/:id', async (req, res) => {
+  const parsed = z.object({ done: z.boolean() }).safeParse(req.body)
+  const id = Number(req.params.id)
+  if (!parsed.success || !Number.isInteger(id)) return res.status(400).json({ error: 'Invalid request' })
+  if (!(await setTaskDone(req.user!.id, id, parsed.data.done))) return res.status(404).json({ error: 'Task not found' })
+  res.json({ ok: true })
 })
 
 // All finished interviews, for the Reports page.
@@ -29,6 +59,7 @@ const goalSchema = z.object({
   company_type: z.enum(companyTypeIds),
   experience_level: z.enum(experienceIds),
   target_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  weekly_hours: z.number().int().min(1).max(40).default(5),
 })
 
 // Start a new goal. It becomes the active one; the previous active goal is paused.

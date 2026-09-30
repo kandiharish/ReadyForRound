@@ -1,13 +1,16 @@
 import { supabase } from './db/supabase.js'
 import { getActiveGoal, listGoals, type Goal } from './goals.js'
 import { COMPLETE_SEQUENCES, type RoundId } from './interview/rounds.js'
+import { getUsage } from './usage.js'
+import { suggestDrillTopic } from './roadmap.js'
 
 type QuestionScore = { round: RoundId; score: number | null; skipped: boolean }
 
 export type SessionSummary = {
   id: string
   goal_id: string | null
-  mode: 'single' | 'complete'
+  mode: 'single' | 'complete' | 'drill'
+  focus_topic: string | null
   rounds: RoundId[]
   status: 'in_progress' | 'completed' | 'ended_early'
   created_at: string
@@ -21,7 +24,7 @@ export type SessionSummary = {
 export async function listSessions(userId: string): Promise<SessionSummary[]> {
   const { data } = await supabase!
     .from('interview_sessions')
-    .select('id, goal_id, mode, rounds, status, created_at, completed_at, interview_reports (status, score:report->overallScore, questions:report->questions)')
+    .select('id, goal_id, mode, rounds, focus_topic, status, created_at, completed_at, interview_reports (status, score:report->overallScore, questions:report->questions)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(200)
@@ -93,22 +96,26 @@ export async function homeStats(userId: string) {
   const all = await listSessions(userId)
   const forGoal = goal ? all.filter((s) => s.goal_id === goal.id) : []
   const finished = forGoal.filter((s) => s.status !== 'in_progress')
+  // Drills are short practice on weak topics, so they don't count towards readiness or round scores.
+  const interviews = finished.filter((s) => s.mode !== 'drill')
   const sequence = COMPLETE_SEQUENCES[goal?.company_type ?? 'any']
-  const perRound = roundScores(finished, sequence)
+  const perRound = roundScores(interviews, sequence)
 
   const { data: skills } = await supabase!.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', userId)
   const weekAgo = Date.now() - 7 * 86_400_000
 
   return {
     goal,
-    readiness: readiness(finished),
+    readiness: readiness(interviews),
     roundScores: perRound,
-    recommendation: recommend(perRound, finished.length > 0),
+    recommendation: recommend(perRound, interviews.length > 0),
     streak: streak(all),
     daysLeft: goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86_400_000) : null,
     inProgress: forGoal.find((s) => s.status === 'in_progress') ?? null,
+    usage: await getUsage(userId),
+    drillTopic: goal ? await suggestDrillTopic(userId, goal) : null,
     recent: finished.slice(0, 5).map(({ questions, ...s }) => s),
-    counts: { total: finished.length, thisWeek: finished.filter((s) => new Date(s.created_at).getTime() > weekAgo).length },
+    counts: { total: interviews.length, drills: finished.length - interviews.length, thisWeek: finished.filter((s) => new Date(s.created_at).getTime() > weekAgo).length },
     skills: skills ?? [],
   }
 }
@@ -117,7 +124,7 @@ export async function homeStats(userId: string) {
 export async function goalsWithStats(userId: string) {
   const [goals, sessions] = await Promise.all([listGoals(userId), listSessions(userId)])
   return goals.map((g: Goal) => {
-    const mine = sessions.filter((s) => s.goal_id === g.id && s.status !== 'in_progress')
+    const mine = sessions.filter((s) => s.goal_id === g.id && s.status !== 'in_progress' && s.mode !== 'drill')
     const graded = mine.filter((s) => s.score !== null)
     return {
       ...g,

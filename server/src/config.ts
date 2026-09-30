@@ -7,6 +7,14 @@ const schema = z.object({
   PORT: z.coerce.number().default(5000),
   CLIENT_URL: z.string().default('http://localhost:5180'),
 
+  // Daily limits per student (protect the free AI quota). A "pro" plan gets the PRO_ numbers.
+  DAILY_INTERVIEWS_FREE: z.coerce.number().default(5),
+  DAILY_INTERVIEWS_PRO: z.coerce.number().default(30),
+  DAILY_DRILLS_FREE: z.coerce.number().default(10),
+  DAILY_DRILLS_PRO: z.coerce.number().default(50),
+  // "Today" starts at midnight in this time zone (minutes from UTC). 330 = India (UTC+5:30).
+  TIMEZONE_OFFSET_MINUTES: z.coerce.number().default(330),
+
   // Supabase project address and its SECRET key (full access - server only).
   SUPABASE_URL: z.string().optional(),
   SUPABASE_SECRET_KEY: z.string().optional(),

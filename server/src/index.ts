@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit'
 import { config } from './config.js'
 import { chat, isLlmReachable } from './llm/client.js'
 import { isDbConnected } from './db/supabase.js'
@@ -12,6 +13,14 @@ const app = express()
 
 app.use(cors({ origin: config.CLIENT_URL })) // only our frontend may call this server
 app.use(express.json()) // lets us read JSON sent by the frontend
+
+// Rate limits: stop scripts or bots from hammering the server. Counted per logged-in user
+// (their login token), or per network address for requests without one.
+const perUser = (req: express.Request) => req.headers.authorization?.slice(-32) ?? ipKeyGenerator(req.ip ?? '')
+const tooMany = { error: 'Too many requests. Please slow down and try again in a minute.' }
+app.use('/api', rateLimit({ windowMs: 60_000, limit: 120, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
+// Answers call the AI, so they get a tighter limit.
+app.use(/^\/api\/interviews\/[^/]+\/answer/, rateLimit({ windowMs: 60_000, limit: 20, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
 
 // "Are you alive?" check used by the frontend.
 app.get('/api/health', async (_req, res) => {

@@ -49,7 +49,8 @@ export const COMPLETE_SEQUENCES: Record<string, RoundId[]> = {
 
 // Main questions per round (follow-ups are extra, at most one per main question).
 // Kept small so one interview fits comfortably in free AI limits.
-export const QUESTIONS_PER_ROUND = { single: 5, complete: 3 } as const
+// A drill is a quick 5-minute practice: 3 questions on one topic, no follow-ups.
+export const QUESTIONS_PER_ROUND = { single: 5, complete: 3, drill: 3 } as const
 export const MAX_FOLLOW_UPS_PER_QUESTION = 1
 
 export function roundById(id: RoundId) {
