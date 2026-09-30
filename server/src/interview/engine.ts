@@ -1,5 +1,5 @@
 import { supabase } from '../db/supabase.js'
-import { chat } from '../llm/client.js'
+import { chat, LlmUnavailableError } from '../llm/client.js'
 import { catalog } from '../catalog.js'
 import { buildMessages, parseAiReply, type AiReply, type InterviewContext, type NextStep, type Turn } from './prompts.js'
 import { COMPLETE_SEQUENCES, MAX_FOLLOW_UPS_PER_QUESTION, QUESTIONS_PER_ROUND, type RoundId } from './rounds.js'
@@ -33,6 +33,10 @@ async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step:
       return parsed
     } catch (err) {
       console.warn(`AI reply attempt ${attempt} failed: ${(err as Error).message}`)
+      // No point retrying if the AI service isn't there at all.
+      if (err instanceof LlmUnavailableError) {
+        throw new InterviewError(503, 'The AI interviewer is offline right now. Please try again in a minute.')
+      }
     }
   }
   throw new InterviewError(502, 'The AI interviewer did not respond properly. Please try again.')

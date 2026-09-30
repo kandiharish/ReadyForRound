@@ -17,6 +17,9 @@ export type ChatOptions = {
 
 type Provider = 'ollama' | 'groq' | 'openrouter'
 
+// Thrown when we can't reach the AI service at all (e.g. Ollama isn't running, or no internet).
+export class LlmUnavailableError extends Error {}
+
 function providerSettings(provider: Provider) {
   switch (provider) {
     case 'ollama':
@@ -48,6 +51,8 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
       max_tokens: options.maxTokens ?? 500,
       ...(options.json ? { response_format: { type: 'json_object' } } : {}),
     }),
+  }).catch((err) => {
+    throw new LlmUnavailableError(`Cannot reach ${provider} at ${baseUrl}: ${(err as Error).message}`)
   })
 
   if (!res.ok) {
