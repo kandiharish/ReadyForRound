@@ -1,0 +1,207 @@
+import { useEffect, useRef, useState } from 'react'
+import { Avatar, INTERVIEWERS, type InterviewerId } from './Avatar'
+import { isRecognitionSupported } from '../lib/recognition'
+import { loadVoices, pickVoice, speak, stopSpeaking } from '../lib/speech'
+
+export type RoomSettings = {
+  interviewer: InterviewerId
+  voiceURI: string | null
+  answerMode: 'voice' | 'text'
+  autoSendSeconds: 0 | 3 | 5 // 0 = only when I click Done
+}
+
+const SETTINGS_KEY = 'rfr-room-settings'
+
+// Remembered per browser for convenience; safe to lose.
+export function loadSettings(): RoomSettings {
+  const defaults: RoomSettings = { interviewer: 'priya', voiceURI: null, answerMode: isRecognitionSupported() ? 'voice' : 'text', autoSendSeconds: 3 }
+  try {
+    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}')
+    const merged = { ...defaults, ...saved }
+    if (!isRecognitionSupported()) merged.answerMode = 'text'
+    return merged
+  } catch {
+    return defaults
+  }
+}
+
+function saveSettings(s: RoomSettings) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) } catch { /* private mode etc. */ }
+}
+
+export function PreJoin({ roundLabel, rate, onJoin }: {
+  roundLabel: string
+  rate: number
+  onJoin: (settings: RoomSettings, stream: MediaStream | null, voice: SpeechSynthesisVoice | null) => void
+}) {
+  const [settings, setSettings] = useState<RoomSettings>(loadSettings)
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
+  const [stream, setStream] = useState<MediaStream | null>(null)
+  const [mediaError, setMediaError] = useState<string | null>(null)
+  const [level, setLevel] = useState(0)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const joinedRef = useRef(false)
+
+  // Ask for camera + microphone. If the camera is refused, try microphone only.
+  useEffect(() => {
+    let s: MediaStream | null = null
+    ;(async () => {
+      try {
+        s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      } catch {
+        try {
+          s = await navigator.mediaDevices.getUserMedia({ audio: true })
+          setMediaError('Camera not available. You can still do the interview with your microphone.')
+        } catch {
+          setMediaError('Camera and microphone are blocked. Allow them in the address bar, or type your answers.')
+        }
+      }
+      setStream(s)
+    })()
+    return () => { if (!joinedRef.current) s?.getTracks().forEach((t) => t.stop()) }
+  }, [])
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.srcObject = stream
+  }, [stream])
+
+  // Mic level meter: measures how loud the microphone input is, many times per second.
+  useEffect(() => {
+    if (!stream?.getAudioTracks().length) return
+    const ctx = new AudioContext()
+    const analyser = ctx.createAnalyser()
+    ctx.createMediaStreamSource(stream).connect(analyser)
+    const data = new Uint8Array(analyser.fftSize)
+    let frame = 0
+    const tick = () => {
+      analyser.getByteTimeDomainData(data)
+      let peak = 0
+      for (const v of data) peak = Math.max(peak, Math.abs(v - 128))
+      setLevel(Math.min(1, peak / 64))
+      frame = requestAnimationFrame(tick)
+    }
+    tick()
+    return () => { cancelAnimationFrame(frame); ctx.close() }
+  }, [stream])
+
+  useEffect(() => { loadVoices().then(setVoices) }, [])
+
+  const gender = INTERVIEWERS[settings.interviewer].gender
+  const voice = voices.find((v) => v.voiceURI === settings.voiceURI) ?? pickVoice(voices, gender)
+  const update = (patch: Partial<RoomSettings>) => setSettings((s) => ({ ...s, ...patch }))
+
+  const hasMic = !!stream?.getAudioTracks().length
+  const hasCam = !!stream?.getVideoTracks().length
+  // Speaking needs both a microphone and browser support; otherwise typing is the only option.
+  const canSpeak = hasMic && isRecognitionSupported()
+  const answerMode = canSpeak ? settings.answerMode : 'text'
+
+  function join() {
+    stopSpeaking()
+    saveSettings(settings) // save the student's preference, even if this device can't use voice today
+    joinedRef.current = true
+    onJoin({ ...settings, answerMode }, stream, voice)
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-900 text-white p-4">
+      <div className="max-w-4xl mx-auto py-6">
+        <h1 className="text-2xl font-bold">Get ready: {roundLabel}</h1>
+        <p className="text-slate-400 mt-1">Check your camera, microphone and speakers before you join.</p>
+
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          {/* Camera preview + mic level */}
+          <div>
+            <div className="aspect-video bg-slate-800 rounded-xl overflow-hidden flex items-center justify-center">
+              {hasCam
+                ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
+                : <p className="text-slate-400 text-sm p-4 text-center">Camera off</p>}
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="text-sm text-slate-300 w-24">Microphone</span>
+              <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-full bg-green-500 transition-[width] duration-75" style={{ width: `${level * 100}%` }} />
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              {hasMic ? 'Say something: the green bar should move.' : 'No microphone detected.'}
+            </p>
+            {mediaError && <p className="text-sm text-amber-300 mt-3">{mediaError}</p>}
+            <p className="text-xs text-slate-500 mt-3">
+              🔒 Your video is never recorded or uploaded, and it is not used for scoring. Only your spoken words are sent, as text.
+            </p>
+          </div>
+
+          {/* Settings */}
+          <div className="space-y-5">
+            <div>
+              <p className="text-sm font-medium text-slate-300 mb-2">Your interviewer</p>
+              <div className="grid grid-cols-2 gap-3">
+                {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
+                  <button key={id} onClick={() => update({ interviewer: id, voiceURI: null })}
+                    className={`rounded-xl p-3 border ${settings.interviewer === id ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700 hover:border-slate-500'}`}>
+                    <div className="w-20 h-20 mx-auto"><Avatar who={id} state="idle" /></div>
+                    <p className="mt-1 font-medium">{INTERVIEWERS[id].name}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium text-slate-300 mb-2">Voice</p>
+              <div className="flex gap-2">
+                <select value={voice?.voiceURI ?? ''} onChange={(e) => update({ voiceURI: e.target.value })}
+                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+                  {voices.length === 0 && <option value="">Default voice</option>}
+                  {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{v.name} ({v.lang})</option>)}
+                </select>
+                <button onClick={() => speak(`Hello, I'm ${INTERVIEWERS[settings.interviewer].name}. Can you hear me clearly?`, voice, rate)}
+                  className="border border-slate-600 rounded-lg px-3 text-sm hover:bg-slate-800">
+                  🔊 Test
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium text-slate-300 mb-2">How will you answer?</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button disabled={!canSpeak} onClick={() => update({ answerMode: 'voice' })}
+                  className={`rounded-lg px-3 py-2 border text-sm disabled:opacity-40 ${answerMode === 'voice' ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                  🎤 Speak
+                </button>
+                <button onClick={() => update({ answerMode: 'text' })}
+                  className={`rounded-lg px-3 py-2 border text-sm ${answerMode === 'text' ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                  ⌨️ Type
+                </button>
+              </div>
+              {!isRecognitionSupported() && (
+                <p className="text-xs text-amber-300 mt-1">Speaking needs Chrome or Edge. You can type your answers here.</p>
+              )}
+              {isRecognitionSupported() && !hasMic && (
+                <p className="text-xs text-amber-300 mt-1">No microphone found, so you'll type your answers.</p>
+              )}
+            </div>
+
+            {answerMode === 'voice' && (
+              <div>
+                <p className="text-sm font-medium text-slate-300 mb-2">Send my answer when I pause for</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {([3, 5, 0] as const).map((s) => (
+                    <button key={s} onClick={() => update({ autoSendSeconds: s })}
+                      className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                      {s === 0 ? 'Only on "Done"' : `${s} seconds`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button onClick={join} className="w-full bg-indigo-500 hover:bg-indigo-400 rounded-lg py-3 font-semibold">
+              Join interview
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}

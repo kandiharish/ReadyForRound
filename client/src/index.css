@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+/* Interviewer avatar animations */
+@keyframes avatar-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+.avatar-blink {
+  transform-origin: 100px 90px;
+  animation: avatar-blink 4s infinite;
+}
+
+@keyframes avatar-nod {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.5deg) translateY(1px); }
+}
+.avatar-nod {
+  transform-origin: 100px 150px;
+  animation: avatar-nod 2.5s ease-in-out infinite;
+}
+
+/* Your camera preview is mirrored, like looking in a mirror (same as Google Meet/Zoom). */
+.mirror {
+  transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-blink, .avatar-nod { animation: none; }
+}
