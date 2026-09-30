@@ -27,7 +27,8 @@ export type InterviewStatus = 'in_progress' | 'completed' | 'ended_early'
 
 export type Interview = {
   id: string
-  mode: 'single' | 'complete'
+  mode: 'single' | 'complete' | 'drill'
+  focus_topic: string | null
   rounds: RoundId[]
   current_round_index: number
   status: InterviewStatus
@@ -79,6 +80,7 @@ export type Goal = {
   company_type: string
   experience_level: string
   target_date: string | null
+  weekly_hours: number
   status: 'active' | 'achieved' | 'archived'
   created_at: string
   finished_at: string | null
@@ -89,7 +91,8 @@ export type GoalWithStats = Goal & { interviews: number; readiness: number | nul
 export type SessionSummary = {
   id: string
   goal_id: string | null
-  mode: 'single' | 'complete'
+  mode: 'single' | 'complete' | 'drill'
+  focus_topic: string | null
   rounds: RoundId[]
   status: InterviewStatus
   created_at: string
@@ -106,9 +109,32 @@ export type HomeStats = {
   streak: { days: number; week: { date: string; done: boolean; isToday: boolean }[] }
   daysLeft: number | null
   inProgress: SessionSummary | null
+  usage: Usage
+  drillTopic: string | null
   recent: SessionSummary[]
-  counts: { total: number; thisWeek: number }
+  counts: { total: number; drills: number; thisWeek: number }
   skills: UserSkill[]
+}
+
+export type Usage = {
+  plan: 'free' | 'pro'
+  interviews: { used: number; limit: number }
+  drills: { used: number; limit: number }
+  resetsAt: string
+}
+
+export type RoadmapTask = {
+  id: number
+  week: number
+  position: number
+  kind: 'learn' | 'practice' | 'build' | 'mock'
+  title: string
+  detail: string
+  topic: string | null
+  minutes: number
+  why: string
+  done: boolean
+  done_at: string | null
 }
 
 export type Profile = {

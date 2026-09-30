@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
+import { startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { Button, ButtonLink, EmptyState, Icon, PageHeader, Spinner } from '../components/ui'
 import type { Interview, RoundId } from '../types'
@@ -10,10 +11,11 @@ type Choice = { mode: 'complete' } | { mode: 'single'; round: RoundId }
 // Choose an interview: a complete one (rounds depend on the goal's company type) or a single round.
 export default function Practice() {
   const navigate = useNavigate()
-  const { me, catalog, label } = useMe()
+  const { me, catalog, label, usage, refreshUsage } = useMe()
   const [choice, setChoice] = useState<Choice>({ mode: 'complete' })
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [topic, setTopic] = useState('')
 
   if (!me || !catalog) return <Spinner />
   const goal = me.active_goal
@@ -33,12 +35,31 @@ export default function Practice() {
     setError(null)
     try {
       const iv = await apiFetch<Interview>('/interviews', { method: 'POST', body: JSON.stringify(choice) })
+      refreshUsage()
       navigate(`/interview/${iv.id}`)
     } catch (err) {
       setError((err as Error).message)
       setStarting(false)
     }
   }
+
+  async function drill() {
+    const t = topic.trim()
+    if (t.length < 2) return setError('Type a topic for your drill, e.g. "SQL joins"')
+    setStarting(true)
+    setError(null)
+    try {
+      const iv = await startDrill(t)
+      refreshUsage()
+      navigate(`/interview/${iv.id}`)
+    } catch (err) {
+      setError((err as Error).message)
+      setStarting(false)
+    }
+  }
+
+  const interviewsLeft = usage ? usage.interviews.limit - usage.interviews.used : 1
+  const drillsLeft = usage ? usage.drills.limit - usage.drills.used : 1
 
   return (
     <div className="space-y-6">
@@ -73,14 +94,32 @@ export default function Practice() {
         </div>
       </div>
 
-      {error && <p className="text-sm text-rose">{error}</p>}
+      {error && <p className="text-sm text-rose" role="alert">{error}</p>}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-        <p className="text-sm text-muted">Preparing for something else? <Link to="/goals" className="text-lime">Change your goal</Link></p>
-        <Button onClick={start} disabled={starting} className="px-6">
-          <Icon name="play" size={16} /> {starting ? 'Preparing your interviewer…' : 'Start interview'}
+        <p className="text-sm text-muted">
+          {usage && <><b className="text-fg font-mono">{Math.max(0, interviewsLeft)}</b> of {usage.interviews.limit} interviews left today · </>}
+          Preparing for something else? <Link to="/goals" className="text-lime">Change your goal</Link>
+        </p>
+        <Button onClick={start} disabled={starting || interviewsLeft <= 0} className="px-6">
+          <Icon name="play" size={16} /> {starting ? 'Preparing your interviewer…' : interviewsLeft <= 0 ? 'Daily limit reached' : 'Start interview'}
         </Button>
       </div>
+
+      <section className="rounded-2xl border border-line bg-ink-800 p-5 sm:p-6 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-semibold flex items-center gap-2"><Icon name="bolt" size={16} className="text-lime" /> 5-minute drill</h2>
+          {usage && <span className="text-xs text-muted">{Math.max(0, drillsLeft)} of {usage.drills.limit} drills left today</span>}
+        </div>
+        <p className="text-sm text-muted">Three quick questions on one topic. Great for a daily habit, or right before an interview.</p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <label htmlFor="drill-topic" className="sr-only">Drill topic</label>
+          <input id="drill-topic" value={topic} onChange={(e) => setTopic(e.target.value)} maxLength={80} placeholder="Topic, e.g. SQL joins or React hooks"
+            onKeyDown={(e) => { if (e.key === 'Enter') drill() }}
+            className="flex-1 min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-sm" />
+          <Button variant="secondary" onClick={drill} disabled={starting || drillsLeft <= 0}>Start drill</Button>
+        </div>
+      </section>
     </div>
   )
 }

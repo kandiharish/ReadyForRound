@@ -24,6 +24,8 @@ const ICONS = {
   swap: 'M7 9l5-5 5 5M7 15l5 5 5-5',
   calendar: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
   trophy: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3',
+  map: 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14',
+  bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',
 } as const
 
 export type IconName = keyof typeof ICONS

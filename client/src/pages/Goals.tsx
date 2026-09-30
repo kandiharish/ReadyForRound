@@ -95,6 +95,7 @@ export default function Goals() {
                   ['Level', label('experienceLevels', active.experience_level)],
                   ['Target date', active.target_date ? new Date(active.target_date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) : 'Not set'],
                   ['Interviews', String(active.interviews)],
+                  ['Study time', `${active.weekly_hours} hours a week`],
                   ['Rounds in a full interview', catalog.completeSequences[active.company_type].map((r) => catalog.rounds.find((x) => x.id === r)?.label).join(' → ')],
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-xl bg-ink-750 px-4 py-3">
@@ -134,6 +135,7 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
   const [company, setCompany] = useState<string | null>(null)
   const [level, setLevel] = useState(defaultLevel ?? 'final_year')
   const [date, setDate] = useState('')
+  const [hours, setHours] = useState(5)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -142,7 +144,7 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
     if (!role || !company) return setError('Choose a role and a company type')
     setBusy(true)
     try {
-      await apiFetch('/goals', { method: 'POST', body: JSON.stringify({ target_role: role, company_type: company, experience_level: level, target_date: date || null }) })
+      await apiFetch('/goals', { method: 'POST', body: JSON.stringify({ target_role: role, company_type: company, experience_level: level, target_date: date || null, weekly_hours: hours }) })
       onCreated()
     } catch (err) {
       setError((err as Error).message)
@@ -165,7 +167,7 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
           <legend className="text-sm font-medium text-soft mb-3">What kind of company?</legend>
           <ChoiceCards columns={2} options={catalog!.companyTypes} value={company} onChange={setCompany} />
         </fieldset>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <label className="flex flex-col gap-2 text-sm font-medium text-soft">
             Your experience now
             <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal">
@@ -175,6 +177,11 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
           <label className="flex flex-col gap-2 text-sm font-medium text-soft">
             Target date (optional)
             <input type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)}
+              className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal" />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium text-soft">
+            Hours per week you can give
+            <input type="number" min={1} max={40} value={hours} onChange={(e) => setHours(Math.max(1, Math.min(40, Number(e.target.value) || 1)))}
               className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal" />
           </label>
         </div>

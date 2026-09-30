@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import { useMe } from '../auth/MeProvider'
 import { Button, ButtonLink, Card, PageHeader } from '../components/ui'
 import { apiFetch } from '../lib/api'
+import { sessionTitle } from '../lib/sessions'
 import type { Interview, QuestionFeedback, Report, ReportResponse, RoundId } from '../types'
 
 // The feedback report for one interview. Shows feedback and scores only, never the student's answer text.
@@ -34,7 +35,7 @@ export default function ReportPage() {
   }
 
   const roundLabel = (r: RoundId) => catalog?.rounds.find((x) => x.id === r)?.label ?? r
-  const title = !interview ? 'Interview' : interview.mode === 'complete' ? 'Complete interview' : `${roundLabel(interview.rounds[0])} round`
+  const title = !interview ? 'Interview' : sessionTitle(interview, roundLabel)
   const when = interview
     ? `${new Date(interview.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}${interview.status === 'ended_early' ? ' · ended early' : ''}`
     : ''

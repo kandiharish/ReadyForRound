@@ -1,4 +1,5 @@
-import { Link, Navigate, NavLink, Outlet } from 'react-router'
+import { useEffect } from 'react'
+import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { MeProvider, useMe } from '../auth/MeProvider'
 import { Icon, Spinner, type IconName } from '../components/ui'
@@ -6,6 +7,7 @@ import { Icon, Spinner, type IconName } from '../components/ui'
 const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
   { to: '/home', label: 'Home', icon: 'home' },
   { to: '/practice', label: 'Practice', icon: 'practice' },
+  { to: '/roadmap', label: 'Roadmap', icon: 'map' },
   { to: '/reports', label: 'Reports', icon: 'reports' },
 ]
 const CAREER: { to: string; label: string; icon: IconName }[] = [
@@ -24,7 +26,11 @@ export default function AppLayout() {
 }
 
 function Shell() {
-  const { me, error } = useMe()
+  const { me, error, refreshUsage } = useMe()
+  const { pathname } = useLocation()
+
+  // Refresh today's usage whenever the student moves between pages (e.g. back from an interview).
+  useEffect(() => { refreshUsage() }, [pathname, refreshUsage])
 
   if (error) return <main className="min-h-screen p-8 text-rose">{error}</main>
   if (!me) return <main className="min-h-screen p-8"><Spinner /></main>
@@ -33,7 +39,8 @@ function Shell() {
   return (
     <div className="min-h-screen flex">
       <Sidebar />
-      <main className="flex-1 min-w-0 px-4 sm:px-8 lg:px-10 pt-6 lg:pt-8 pb-28 lg:pb-10">
+      <main className="flex-1 min-w-0 px-4 sm:px-8 lg:px-10 pt-4 lg:pt-8 pb-28 lg:pb-10">
+        <MobileTopBar />
         <div className="max-w-6xl mx-auto">
           <Outlet />
         </div>
@@ -70,6 +77,8 @@ function Sidebar() {
 
       <div className="flex-1" />
 
+      <UsageCard />
+
       <div className="flex items-center gap-2.5 px-1.5">
         <span className="w-9 h-9 rounded-full bg-ink-700 text-lime text-sm font-semibold flex items-center justify-center">{initials}</span>
         <span className="flex-1 min-w-0">
@@ -102,8 +111,43 @@ function NavGroup({ title, items }: { title: string; items: typeof WORKSPACE }) 
   )
 }
 
+// Today's interviews and drills against the daily limit.
+function UsageCard() {
+  const { usage } = useMe()
+  if (!usage) return null
+  const pct = Math.min(100, (usage.interviews.used / usage.interviews.limit) * 100)
+  return (
+    <div className="rounded-xl bg-ink-750 border border-line-strong p-3.5 space-y-2.5">
+      <div className="flex justify-between text-xs">
+        <span className="text-muted">Today's interviews</span>
+        <span className="font-mono">{usage.interviews.used} / {usage.interviews.limit}</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-[#232838] overflow-hidden"><div className={`h-full rounded-full ${pct >= 100 ? 'bg-amber' : 'bg-lime'}`} style={{ width: `${pct}%` }} /></div>
+      <p className="text-[11px] text-muted">Drills {usage.drills.used} / {usage.drills.limit} · resets at midnight</p>
+    </div>
+  )
+}
+
+// Phones: logo plus quick links to Profile and Settings (the bottom bar has room for five tabs only).
+function MobileTopBar() {
+  const { me } = useMe()
+  const initials = (me?.full_name ?? '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+  return (
+    <div className="lg:hidden flex items-center justify-between mb-4">
+      <Link to="/home" className="flex items-center gap-2 font-semibold">
+        <span className="w-7 h-7 rounded-lg bg-lime text-ink-900 flex items-center justify-center"><Icon name="logo" size={16} strokeWidth={2.4} /></span>
+        ReadyForRound
+      </Link>
+      <div className="flex items-center gap-1">
+        <Link to="/settings" aria-label="Settings" className="w-11 h-11 rounded-xl text-muted hover:text-fg flex items-center justify-center"><Icon name="settings" /></Link>
+        <Link to="/profile" aria-label="Profile" className="w-9 h-9 rounded-full bg-ink-700 text-lime text-xs font-semibold flex items-center justify-center">{initials}</Link>
+      </div>
+    </div>
+  )
+}
+
 function MobileNav() {
-  const tabs = [...WORKSPACE, CAREER[0], CAREER[1]]
+  const tabs = [...WORKSPACE, CAREER[0]]
   return (
     <nav aria-label="Main" className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-ink-850/95 backdrop-blur border-t border-line grid grid-cols-5 px-1 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {tabs.map((t) => (

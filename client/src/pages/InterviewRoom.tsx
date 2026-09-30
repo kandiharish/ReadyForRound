@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router'
 import { ApiError, apiFetch } from '../lib/api'
+import { sessionTitle } from '../lib/sessions'
 import { Avatar, INTERVIEWERS, type AvatarState } from '../components/Avatar'
 import { PreJoin, type RoomSettings } from '../components/PreJoin'
 import { speak, stopSpeaking } from '../lib/speech'
@@ -43,7 +44,7 @@ export default function InterviewRoom() {
   }
 
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
-  const title = interview.mode === 'complete' ? 'Complete interview' : `${roundLabel(interview.rounds[0])} round`
+  const title = sessionTitle(interview, roundLabel)
 
   // A finished interview goes straight to its feedback report.
   if (interview.status !== 'in_progress') return <Navigate to={`/interview/${interview.id}/report`} replace />
@@ -243,9 +244,9 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     <main className="min-h-screen bg-ink-950 text-white flex flex-col">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 text-sm">
-        <span className="font-semibold text-sky">ReadyForRound</span>
+        <span className="font-semibold text-lime">ReadyForRound</span>
         <span className="text-soft">
-          {roundLabel(currentRound)} round · Q{mainInRound} of {interview.questionsPerRound}
+          {interview.mode === 'drill' ? `Drill · ${interview.focus_topic}` : `${roundLabel(currentRound)} round`} · Q{mainInRound} of {interview.questionsPerRound}
           {interview.rounds.length > 1 && ` · Round ${interview.current_round_index + 1}/${interview.rounds.length}`}
         </span>
         <span className="text-muted tabular-nums">{clock}</span>

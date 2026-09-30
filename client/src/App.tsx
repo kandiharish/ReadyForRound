@@ -11,6 +11,7 @@ import Practice from './pages/Practice'
 import Reports from './pages/Reports'
 import ReportPage from './pages/ReportPage'
 import Goals from './pages/Goals'
+import Roadmap from './pages/Roadmap'
 import ProfilePage from './pages/ProfilePage'
 import Settings from './pages/Settings'
 import InterviewRoom from './pages/InterviewRoom'
@@ -35,6 +36,7 @@ function App() {
             <Route path="/practice" element={<Practice />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/interview/:id/report" element={<ReportPage />} />
+            <Route path="/roadmap" element={<Roadmap />} />
             <Route path="/goals" element={<Goals />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />

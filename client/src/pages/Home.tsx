@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
+import { sessionTitle, startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, ScoreChip, ScoreRing, Spinner } from '../components/ui'
 import type { HomeStats, Interview, RoundId } from '../types'
@@ -9,10 +10,11 @@ const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 export default function Home() {
   const navigate = useNavigate()
-  const { me, catalog, label } = useMe()
+  const { me, catalog, label, refreshUsage } = useMe()
   const [stats, setStats] = useState<HomeStats | null>(null)
   const [starting, setStarting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null) // the page couldn't load
+  const [actionError, setActionError] = useState<string | null>(null) // e.g. daily limit reached
 
   useEffect(() => {
     apiFetch<HomeStats>('/home').then(setStats).catch((e) => setError(e.message))
@@ -41,16 +43,33 @@ export default function Home() {
   }
 
   const rec = stats.recommendation
+  const interviewsLeft = stats.usage.interviews.limit - stats.usage.interviews.used
+  const drillsLeft = stats.usage.drills.limit - stats.usage.drills.used
   const recTitle = rec.mode === 'complete' ? 'Complete interview' : `${roundLabel(rec.round!)} round`
 
   async function startRecommended() {
     setStarting(true)
+    setActionError(null)
     try {
       const body = rec.mode === 'complete' ? { mode: 'complete' } : { mode: 'single', round: rec.round }
       const iv = await apiFetch<Interview>('/interviews', { method: 'POST', body: JSON.stringify(body) })
+      refreshUsage()
       navigate(`/interview/${iv.id}`)
     } catch (err) {
-      setError((err as Error).message)
+      setActionError((err as Error).message)
+      setStarting(false)
+    }
+  }
+
+  async function drill() {
+    setStarting(true)
+    setActionError(null)
+    try {
+      const iv = await startDrill(stats!.drillTopic ?? 'Core concepts for your role')
+      refreshUsage()
+      navigate(`/interview/${iv.id}`)
+    } catch (err) {
+      setActionError((err as Error).message)
       setStarting(false)
     }
   }
@@ -64,6 +83,8 @@ export default function Home() {
             <b className="font-semibold">{stats.streak.days}-day</b><span className="text-muted">streak</span>
           </span>
         } />
+
+      {actionError && <p className="rounded-xl border border-amber/40 bg-amber-deep px-4 py-3 text-sm text-amber" role="alert">{actionError}</p>}
 
       {stats.inProgress && (
         <Link to={`/interview/${stats.inProgress.id}`} className="flex items-center justify-between gap-4 rounded-2xl border border-sky/40 bg-sky/10 px-5 py-4 hover:bg-sky/15">
@@ -110,9 +131,10 @@ export default function Home() {
           <span className="self-start text-xs font-semibold bg-ink-900 text-lime rounded-full px-2.5 py-1">Up next for you</span>
           <h2 className="font-display text-4xl leading-none mt-4">{recTitle}</h2>
           <p className="text-sm mt-3 text-[#28301a] leading-relaxed">{rec.reason}</p>
+          {interviewsLeft <= 0 && <p className="text-sm mt-2 font-semibold">You've used today's {stats.usage.interviews.limit} interviews. Try a drill, or come back tomorrow.</p>}
           <div className="flex-1 min-h-4" />
           <div className="flex flex-wrap gap-2">
-            <Button variant="dark" onClick={startRecommended} disabled={starting}>
+            <Button variant="dark" onClick={startRecommended} disabled={starting || interviewsLeft <= 0}>
               <Icon name="play" size={16} /> {starting ? 'Preparing…' : 'Start interview'}
             </Button>
             <Link to="/practice" className="inline-flex items-center min-h-11 px-4 rounded-xl border-[1.5px] border-ink-900 text-sm font-medium hover:bg-ink-900/10">Choose another</Link>
@@ -130,7 +152,14 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p className="text-sm text-soft">{stats.counts.thisWeek} interview{stats.counts.thisWeek === 1 ? '' : 's'} in the last 7 days · {stats.counts.total} for this goal</p>
+          <p className="text-sm text-soft">{stats.counts.thisWeek} session{stats.counts.thisWeek === 1 ? '' : 's'} in the last 7 days</p>
+          <div className="rounded-xl bg-ink-750 border border-line-strong p-3.5 space-y-2.5">
+            <p className="text-xs text-muted flex items-center gap-1.5"><Icon name="bolt" size={13} className="text-lime" /> 5-minute drill</p>
+            <p className="text-sm font-medium leading-snug">{stats.drillTopic}</p>
+            <Button variant="secondary" className="w-full min-h-10" onClick={drill} disabled={starting || drillsLeft <= 0}>
+              {drillsLeft <= 0 ? 'No drills left today' : 'Start drill'}
+            </Button>
+          </div>
           <div className="flex-1" />
           <div className="border-t border-line pt-3 flex items-baseline gap-2">
             {stats.daysLeft !== null && stats.daysLeft >= 0 ? (
@@ -186,7 +215,7 @@ export default function Home() {
                 <li key={s.id} className="border-t border-line first:border-t-0">
                   <Link to={`/interview/${s.id}/report`} className="flex items-center gap-3 min-h-12 hover:text-lime">
                     <span className="flex-1 min-w-0">
-                      <span className="block text-sm font-medium truncate">{s.mode === 'complete' ? 'Complete interview' : `${roundLabel(s.rounds[0])} round`}</span>
+                      <span className="block text-sm font-medium truncate">{sessionTitle(s, roundLabel)}</span>
                       <span className="block text-xs text-muted">{new Date(s.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}{s.status === 'ended_early' ? ' · ended early' : ''}</span>
                     </span>
                     {s.score !== null && !hideScores ? <ScoreChip score={s.score} /> : <span className="text-xs text-muted">{s.reportStatus === 'generating' ? 'Preparing…' : 'View'}</span>}
