@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import { ApiError, apiFetch } from '../lib/api'
 import { Avatar, INTERVIEWERS, type AvatarState } from '../components/Avatar'
 import { PreJoin, type RoomSettings } from '../components/PreJoin'
@@ -45,7 +45,8 @@ export default function InterviewRoom() {
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
   const title = interview.mode === 'complete' ? 'Complete interview' : `${roundLabel(interview.rounds[0])} round`
 
-  if (interview.status !== 'in_progress') return <Finished interview={interview} />
+  // A finished interview goes straight to its feedback report.
+  if (interview.status !== 'in_progress') return <Navigate to={`/interview/${interview.id}/report`} replace />
   if (!joined) {
     return <PreJoin roundLabel={title} rate={rate} onJoin={(settings, stream, voice) => setJoined({ settings, stream, voice })} />
   }
@@ -389,21 +390,4 @@ function EndButton({ interviewId, onEnded }: { interviewId: string; onEnded: (i:
     onEnded(await apiFetch<Interview>(`/interviews/${interviewId}/end`, { method: 'POST' }))
   }
   return <button onClick={end} className="bg-red-600 hover:bg-red-500 rounded-full px-4 py-2 text-sm font-semibold">📞 End</button>
-}
-
-function Finished({ interview }: { interview: Interview }) {
-  return (
-    <main className="min-h-screen bg-slate-900 text-white p-4">
-      <div className="max-w-2xl mx-auto py-8">
-        <div className="bg-green-900/40 border border-green-700 rounded-xl p-6 text-center">
-          <p className="text-xl font-bold">{interview.status === 'completed' ? 'Interview complete 🎉' : 'Interview ended'}</p>
-          <p className="text-green-200 text-sm mt-1">Your detailed feedback report is the next feature we're building.</p>
-          <div className="flex justify-center gap-3 mt-4">
-            <Link to="/interview/new" className="bg-indigo-500 rounded-lg px-4 py-2 font-medium">New interview</Link>
-            <Link to="/dashboard" className="border border-slate-600 rounded-lg px-4 py-2">Dashboard</Link>
-          </div>
-        </div>
-      </div>
-    </main>
-  )
 }

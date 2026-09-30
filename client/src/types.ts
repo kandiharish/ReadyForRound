@@ -37,6 +37,34 @@ export type Interview = {
   turns: InterviewTurn[]
 }
 
+export type QuestionFeedback = {
+  seq: number
+  round: RoundId
+  question: string
+  skipped: boolean
+  score: number | null
+  skill: string | null
+  wentWell: string
+  missing: string[]
+  betterAnswer: string
+  confidence: 'high' | 'medium' | 'low'
+}
+
+export type Report = {
+  overallScore: number | null
+  summary: string
+  strengths: string[]
+  improvements: string[]
+  studyNext: { topic: string; why: string }[]
+  questions: QuestionFeedback[]
+  answeredCount: number
+  skippedCount: number
+}
+
+export type ReportResponse =
+  | { status: 'generating' | 'failed' | 'empty' }
+  | { status: 'ready'; report: Report }
+
 export type InterviewSummary = Pick<Interview, 'id' | 'mode' | 'rounds' | 'status' | 'created_at' | 'completed_at'>
 
 export type UserSkill = {

@@ -3,7 +3,7 @@ import { SttUnavailableError, transcribe } from '../stt/transcribe.js'
 import { z } from 'zod'
 import { requireAuth } from '../auth/requireAuth.js'
 import { roundIds } from '../interview/rounds.js'
-import { InterviewError, answerQuestion, endInterview, getInterview, listInterviews, startInterview } from '../interview/engine.js'
+import { InterviewError, answerQuestion, endInterview, getInterview, getReport, listInterviews, retryReport, startInterview } from '../interview/engine.js'
 
 export const interviewsRouter = Router()
 interviewsRouter.use(requireAuth) // every interview route needs a logged-in student
@@ -98,6 +98,26 @@ interviewsRouter.post(
     }
   },
 )
+
+// The feedback report: { status: "generating" | "ready" | "failed" | "empty", report? }
+interviewsRouter.get('/:id/report', async (req, res) => {
+  if (!idSchema.safeParse(req.params.id).success) return res.status(404).json({ error: 'Interview not found' })
+  try {
+    res.json(await getReport(req.user!.id, req.params.id))
+  } catch (err) {
+    handleError(res, err)
+  }
+})
+
+// Try making the report again (e.g. after the AI was offline).
+interviewsRouter.post('/:id/report/retry', async (req, res) => {
+  if (!idSchema.safeParse(req.params.id).success) return res.status(404).json({ error: 'Interview not found' })
+  try {
+    res.json(await retryReport(req.user!.id, req.params.id))
+  } catch (err) {
+    handleError(res, err)
+  }
+})
 
 // Stop the interview early.
 interviewsRouter.post('/:id/end', async (req, res) => {

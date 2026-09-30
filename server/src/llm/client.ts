@@ -13,6 +13,7 @@ export type ChatOptions = {
   temperature?: number // 0 = predictable, 1 = creative
   maxTokens?: number // upper limit on the length of the reply
   json?: boolean // ask the model to reply with a JSON object only
+  task?: 'interview' | 'report' // which job this is for; the report can use a stronger AI (see REPORT_LLM_PROVIDER)
 }
 
 type Provider = 'ollama' | 'groq' | 'openrouter'
@@ -20,13 +21,17 @@ type Provider = 'ollama' | 'groq' | 'openrouter'
 // Thrown when we can't reach the AI service at all (e.g. Ollama isn't running, or no internet).
 export class LlmUnavailableError extends Error {}
 
-function providerSettings(provider: Provider) {
+function providerSettings(provider: Provider, task: ChatOptions['task'] = 'interview') {
   switch (provider) {
     case 'ollama':
       return { baseUrl: config.OLLAMA_BASE_URL, apiKey: 'ollama', model: config.OLLAMA_MODEL }
     case 'groq':
       if (!config.GROQ_API_KEY) throw new Error('GROQ_API_KEY is missing in .env')
-      return { baseUrl: 'https://api.groq.com/openai/v1', apiKey: config.GROQ_API_KEY, model: config.GROQ_MODEL }
+      return {
+        baseUrl: 'https://api.groq.com/openai/v1',
+        apiKey: config.GROQ_API_KEY,
+        model: task === 'report' ? config.GROQ_REPORT_MODEL : config.GROQ_MODEL,
+      }
     case 'openrouter':
       if (!config.OPENROUTER_API_KEY || !config.OPENROUTER_MODEL) {
         throw new Error('OPENROUTER_API_KEY or OPENROUTER_MODEL is missing in .env')
@@ -36,7 +41,10 @@ function providerSettings(provider: Provider) {
 }
 
 async function callProvider(provider: Provider, messages: ChatMessage[], options: ChatOptions) {
-  const { baseUrl, apiKey, model } = providerSettings(provider)
+  const { baseUrl, apiKey, model } = providerSettings(provider, options.task)
+  // "Reasoning" models (like gpt-oss) think before answering, and that thinking uses tokens too.
+  const reasoning = /gpt-oss/.test(model)
+  const maxTokens = options.maxTokens ?? 500
 
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
@@ -48,7 +56,8 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
       model,
       messages,
       temperature: options.temperature ?? 0.7,
-      max_tokens: options.maxTokens ?? 500,
+      max_tokens: reasoning ? maxTokens + 1500 : maxTokens,
+      ...(reasoning ? { reasoning_effort: 'low' } : {}),
       ...(options.json ? { response_format: { type: 'json_object' } } : {}),
     }),
   }).catch((err) => {
@@ -70,10 +79,11 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
 
 // Ask the main provider; if it fails and a fallback is set, ask the fallback.
 export async function chat(messages: ChatMessage[], options: ChatOptions = {}) {
+  const main = options.task === 'report' ? config.REPORT_LLM_PROVIDER ?? config.LLM_PROVIDER : config.LLM_PROVIDER
   try {
-    return await callProvider(config.LLM_PROVIDER, messages, options)
+    return await callProvider(main, messages, options)
   } catch (err) {
-    if (config.LLM_FALLBACK_PROVIDER === 'none') throw err
+    if (config.LLM_FALLBACK_PROVIDER === 'none' || config.LLM_FALLBACK_PROVIDER === main) throw err
     console.warn(`Main AI provider failed, using fallback: ${(err as Error).message}`)
     return await callProvider(config.LLM_FALLBACK_PROVIDER, messages, options)
   }

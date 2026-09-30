@@ -15,12 +15,15 @@ const schema = z.object({
   LLM_PROVIDER: z.enum(['ollama', 'groq', 'openrouter']).default('ollama'),
   // Optional backup provider used if the main one fails (e.g. rate limit).
   LLM_FALLBACK_PROVIDER: z.enum(['ollama', 'groq', 'openrouter', 'none']).default('none'),
+  // Which AI grades answers and writes reports. Accuracy matters more here, so it can differ from LLM_PROVIDER.
+  REPORT_LLM_PROVIDER: z.enum(['ollama', 'groq', 'openrouter']).optional(),
 
   OLLAMA_BASE_URL: z.string().default('http://localhost:11434/v1'),
   OLLAMA_MODEL: z.string().default('llama3.2:3b'),
 
   GROQ_API_KEY: z.string().optional(),
-  GROQ_MODEL: z.string().default('llama-3.1-8b-instant'),
+  GROQ_MODEL: z.string().default('openai/gpt-oss-20b'), // asks the interview questions (when LLM_PROVIDER=groq)
+  GROQ_REPORT_MODEL: z.string().default('openai/gpt-oss-120b'), // grades answers and writes the report
   // Speech-to-text model on Groq (Whisper). Used for spoken answers even when the chat AI is Ollama.
   GROQ_STT_MODEL: z.string().default('whisper-large-v3-turbo'),
 

@@ -3,6 +3,7 @@ import { chat, LlmUnavailableError } from '../llm/client.js'
 import { catalog } from '../catalog.js'
 import { buildMessages, parseAiReply, type AiReply, type InterviewContext, type NextStep, type Turn } from './prompts.js'
 import { COMPLETE_SEQUENCES, MAX_FOLLOW_UPS_PER_QUESTION, QUESTIONS_PER_ROUND, type RoundId } from './rounds.js'
+import { isGenerating, startReport } from '../report/generate.js'
 
 export class InterviewError extends Error {
   constructor(public status: number, message: string) {
@@ -95,13 +96,23 @@ export async function getInterview(userId: string, sessionId: string) {
     .single()
   if (error || !data) throw new InterviewError(404, 'Interview not found')
 
-  const { interview_turns, ...session } = data as any
+  const { interview_turns, ...session } = data as unknown as SessionRow & { interview_turns: (Turn & { seq: number })[] }
   return {
     ...session,
-    context: session.context as InterviewContext,
     questionsPerRound: session.mode === 'single' ? QUESTIONS_PER_ROUND.single : QUESTIONS_PER_ROUND.complete,
-    turns: interview_turns as (Turn & { seq: number })[],
+    turns: interview_turns,
   }
+}
+
+type SessionRow = {
+  id: string
+  mode: 'single' | 'complete'
+  rounds: RoundId[]
+  current_round_index: number
+  status: 'in_progress' | 'completed' | 'ended_early'
+  context: InterviewContext
+  created_at: string
+  completed_at: string | null
 }
 
 export async function listInterviews(userId: string) {
@@ -178,6 +189,7 @@ export async function answerQuestion(userId: string, sessionId: string, answer: 
     await db().from('interview_sessions')
       .update({ status: 'completed', completed_at: new Date().toISOString() })
       .eq('id', sessionId)
+    startReport(sessionId) // grade the answers in the background
   }
 
   return getInterview(userId, sessionId)
@@ -192,5 +204,29 @@ export async function endInterview(userId: string, sessionId: string) {
     .eq('status', 'in_progress')
     .select('id')
   if (!data?.length) throw new InterviewError(404, 'No interview in progress with that id')
-  return getInterview(userId, sessionId)
+  const interview = await getInterview(userId, sessionId)
+  // Even an interview ended early gets a report, as long as at least one question was answered.
+  if (interview.turns.some((t) => t.answer !== null)) startReport(sessionId)
+  return interview
+}
+
+// The report for a finished interview. Starts (or restarts) making it if needed.
+export async function getReport(userId: string, sessionId: string) {
+  const interview = await getInterview(userId, sessionId) // also checks the interview belongs to this student
+  if (interview.status === 'in_progress') throw new InterviewError(409, 'The interview is still in progress')
+  if (!interview.turns.some((t) => t.answer !== null)) return { status: 'empty' as const }
+
+  const { data: row } = await db().from('interview_reports').select('status, report').eq('session_id', sessionId).maybeSingle()
+  // No report yet, or one that was being made when the server restarted: (re)start it.
+  if (!row || (row.status === 'generating' && !isGenerating(sessionId))) {
+    startReport(sessionId)
+    return { status: 'generating' as const }
+  }
+  return { status: row.status, report: row.report }
+}
+
+export async function retryReport(userId: string, sessionId: string) {
+  await getInterview(userId, sessionId)
+  startReport(sessionId)
+  return { status: 'generating' as const }
 }

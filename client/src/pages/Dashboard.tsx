@@ -86,7 +86,13 @@ export default function Dashboard() {
                     <tr key={s.skill} className="border-t border-slate-100">
                       <td className="py-2 font-medium">{s.skill}</td>
                       <td className="py-2">{'●'.repeat(s.self_rating)}<span className="text-slate-300">{'●'.repeat(5 - s.self_rating)}</span></td>
-                      <td className="py-2 text-slate-400">{s.proven_score ?? 'Not tested yet'}</td>
+                      <td className="py-2">
+                        {s.proven_score === null
+                          ? <span className="text-slate-400">Not tested yet</span>
+                          : profile.practice_without_score
+                            ? <span className="text-slate-600">Tested</span>
+                            : <span className="font-medium">{s.proven_score}/100</span>}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -109,7 +115,7 @@ export default function Dashboard() {
                 <ul className="mt-3 divide-y divide-slate-100">
                   {interviews.map((iv) => (
                     <li key={iv.id}>
-                      <Link to={`/interview/${iv.id}`} className="flex items-center justify-between py-3 hover:text-indigo-700">
+                      <Link to={iv.status === 'in_progress' ? `/interview/${iv.id}` : `/interview/${iv.id}/report`} className="flex items-center justify-between py-3 hover:text-indigo-700">
                         <span>
                           <span className="font-medium">
                             {iv.mode === 'complete' ? 'Complete interview' : `${catalog.rounds.find((r) => r.id === iv.rounds[0])?.label} round`}

@@ -26,6 +26,8 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   })
 
   const body = await res.json().catch(() => ({}))
+  // The login is no longer valid (expired, or the account was removed): log out, which sends the student to /login.
+  if (res.status === 401 && token) await supabase.auth.signOut({ scope: 'local' })
   if (!res.ok) throw new ApiError(res.status, body.error ?? `Request failed (${res.status})`)
   return body as T
 }
