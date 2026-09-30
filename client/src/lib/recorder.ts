@@ -20,16 +20,19 @@ export type Recording = {
   cancel(): void // throw the recording away
 }
 
-export function startRecording(
-  stream: MediaStream,
-  opts: {
-    onLevel: (level: number) => void // 0..1, many times per second
-    onSpeech: () => void // called once, the first time we hear speech
-    silenceSeconds: number // 0 = never auto-stop on silence
-    onSilence: () => void // called once after speech followed by this much silence
-  },
-): Recording {
-  const audioOnly = new MediaStream(stream.getAudioTracks())
+// Opens the microphone ONLY for this answer and closes it again afterwards. While a page is using the mic,
+// Windows treats it like a call and turns other sounds down ("ducking"), which made the interviewer's voice
+// almost silent after the first answer. Closing the mic between answers avoids that (and is better for privacy).
+export async function startRecording(opts: {
+  onLevel: (level: number) => void // 0..1, many times per second
+  onSpeech: () => void // called once, the first time we hear speech
+  silenceSeconds: number // 0 = never auto-stop on silence
+  onSilence: () => void // called once after speech followed by this much silence
+}): Promise<Recording> {
+  const audioOnly = await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+  })
+  const releaseMic = () => audioOnly.getTracks().forEach((t) => t.stop())
   const mimeType = pickMimeType()
   const recorder = new MediaRecorder(audioOnly, mimeType ? { mimeType } : undefined)
   const chunks: Blob[] = []
@@ -75,15 +78,20 @@ export function startRecording(
     stop() {
       cleanup()
       return new Promise((resolve) => {
-        recorder.onstop = () => resolve(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }))
+        const finish = () => {
+          releaseMic() // close the mic only after the last bit of audio has been saved
+          resolve(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }))
+        }
+        recorder.onstop = finish
         if (recorder.state !== 'inactive') recorder.stop()
-        else resolve(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }))
+        else finish()
       })
     },
     cancel() {
       cleanup()
       recorder.onstop = null
       if (recorder.state !== 'inactive') recorder.stop()
+      releaseMic()
     },
   }
 }

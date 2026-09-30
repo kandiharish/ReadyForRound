@@ -74,6 +74,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const recordingRef = useRef<Recording | null>(null)
+  const recordAttempt = useRef(0)
   const levelRef = useRef(0)
   const recStartedAt = useRef(0)
   const spokenSeq = useRef(0) // which question we've already read aloud
@@ -115,9 +116,16 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   }, [avatarState])
 
   const cancelRecording = useCallback(() => {
+    recordAttempt.current++
     recordingRef.current?.cancel()
     recordingRef.current = null
   }, [])
+
+  // The microphone from the Get ready screen isn't needed any more: we open it only while the
+  // student is answering (see startRecording), so it's never on while the interviewer speaks.
+  useEffect(() => {
+    stream?.getAudioTracks().forEach((t) => t.stop())
+  }, [stream])
 
   // Leaving the room: stop talking and recording. Also forget which question was spoken, so if React
   // re-mounts this screen (it does this on purpose in development) the question is read aloud again.
@@ -174,9 +182,10 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   finishRef.current = finishAnswer
 
   // "Start answering": begin recording from scratch.
-  const startAnswer = useCallback(() => {
-    if (!stream || !canSpeak) return
+  const startAnswer = useCallback(async () => {
+    if (!canSpeak) return
     cancelRecording()
+    const attempt = recordAttempt.current // if this changes while the mic is opening, the student cancelled
     setError(null)
     setFailedAudio(null)
     setHeardVoice(false)
@@ -185,13 +194,22 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     levelRef.current = 0
     recStartedAt.current = performance.now()
     setAvatarState('listening')
-    recordingRef.current = startRecording(stream, {
-      onLevel: (l) => { levelRef.current = l },
-      onSpeech: () => setHeardVoice(true),
-      silenceSeconds: settings.autoSendSeconds,
-      onSilence: () => finishRef.current(),
-    })
-  }, [canSpeak, cancelRecording, settings.autoSendSeconds, stream])
+    try {
+      const rec = await startRecording({
+        onLevel: (l) => { levelRef.current = l },
+        onSpeech: () => setHeardVoice(true),
+        silenceSeconds: settings.autoSendSeconds,
+        onSilence: () => finishRef.current(),
+      })
+      if (attempt !== recordAttempt.current) return rec.cancel()
+      recordingRef.current = rec
+    } catch {
+      if (attempt !== recordAttempt.current) return
+      setAnswerMode('text')
+      setAvatarState('idle')
+      setError('We could not turn on your microphone. Allow it in the address bar, or type your answer below.')
+    }
+  }, [canSpeak, cancelRecording, settings.autoSendSeconds])
 
   const askCurrentQuestion = useCallback(async () => {
     const turn = ++speakTurn.current
