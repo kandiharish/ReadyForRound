@@ -45,20 +45,25 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
   // Ask for camera + microphone. If the camera is refused, try microphone only.
   useEffect(() => {
     let s: MediaStream | null = null
+    let cancelled = false // true if this screen closed before the camera finished starting
     ;(async () => {
       try {
         s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       } catch {
         try {
           s = await navigator.mediaDevices.getUserMedia({ audio: true })
-          setMediaError('Camera not available. You can still do the interview with your microphone.')
+          if (!cancelled) setMediaError('Camera not available. You can still do the interview with your microphone.')
         } catch {
-          setMediaError('Camera and microphone are blocked. Allow them in the address bar, or type your answers.')
+          if (!cancelled) setMediaError('Camera and microphone are blocked. Allow them in the address bar, or type your answers.')
         }
       }
-      setStream(s)
+      if (cancelled) s?.getTracks().forEach((t) => t.stop())
+      else setStream(s)
     })()
-    return () => { if (!joinedRef.current) s?.getTracks().forEach((t) => t.stop()) }
+    return () => {
+      cancelled = true
+      if (!joinedRef.current) s?.getTracks().forEach((t) => t.stop())
+    }
   }, [])
 
   useEffect(() => {

@@ -17,6 +17,17 @@ export default function InterviewRoom() {
   // Set when the student clicks "Join interview".
   const [joined, setJoined] = useState<{ settings: RoomSettings; stream: MediaStream | null; voice: SpeechSynthesisVoice | null } | null>(null)
 
+  // Turn the camera and mic off when the interview ends or the student leaves this page.
+  // (Done here, not inside LiveRoom, so React's development re-mounting can't switch them off mid-interview.)
+  const stream = joined?.stream
+  const active = interview?.status === 'in_progress'
+  useEffect(() => {
+    if (!stream) return
+    const stopTracks = () => stream.getTracks().forEach((t) => t.stop())
+    if (!active) return stopTracks()
+    return stopTracks
+  }, [stream, active])
+
   useEffect(() => {
     Promise.all([apiFetch<Interview>(`/interviews/${id}`), apiFetch<Catalog>('/catalog'), apiFetch<Profile>('/me')])
       .then(([i, c, me]) => {
@@ -65,6 +76,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const heardRef = useRef(heard)
   const spokenSeq = useRef(0) // which question we've already read aloud
+  const speakTurn = useRef(0) // increases every time we start speaking; lets an older, cancelled speech know it's stale
   const busy = useRef(false)
 
   const current = interview.turns[interview.turns.length - 1]
@@ -93,12 +105,14 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     if (silenceTimer.current) clearTimeout(silenceTimer.current)
   }, [])
 
-  // Leaving the page: stop talking, listening, and turn the camera/mic off.
+  // Leaving the room: stop talking and listening. Also forget which question was spoken, so if React
+  // re-mounts this screen (it does this on purpose in development) the question is read aloud again.
   useEffect(() => () => {
+    speakTurn.current++
     stopSpeaking()
     stopMic()
-    stream?.getTracks().forEach((t) => t.stop())
-  }, [stream, stopMic])
+    spokenSeq.current = 0
+  }, [stopMic])
 
   const submit = useCallback(async (body: { answer: string } | { skip: true }) => {
     if (busy.current) return
@@ -113,6 +127,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       heardRef.current = { final: '', interim: '' }
       setTyped('')
       if (next.status !== 'in_progress') {
+        speakTurn.current++
         setAvatarState('speaking')
         await speak('Thank you, that brings us to the end of the interview. Well done for completing it.', voice, rate)
       }
@@ -156,9 +171,11 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   }, [sendSpokenAnswer, settings.autoSendSeconds, stopMic])
 
   const askCurrentQuestion = useCallback(async () => {
+    const turn = ++speakTurn.current
     stopMic()
     setAvatarState('speaking')
     await speak(current.question, voice, rate)
+    if (turn !== speakTurn.current) return // a newer speech (repeat, next question, leaving) replaced this one
     if (answerMode === 'voice' && micOn) listen()
     else setAvatarState('idle')
   }, [answerMode, current.question, listen, micOn, rate, stopMic, voice])

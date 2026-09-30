@@ -43,7 +43,11 @@ export function pickVoice(voices: SpeechSynthesisVoice[], gender: Gender) {
 // Long text is split into sentences because Chrome stops long utterances after ~15 seconds.
 export function speak(text: string, voice: SpeechSynthesisVoice | null, rate = 1): Promise<void> {
   if (!isSpeechSupported()) return Promise.resolve()
+  // Chrome sometimes silently drops speech started immediately after cancel(), or stays "paused".
+  // So: cancel, resume, and wait a moment before speaking.
+  const wasBusy = speechSynthesis.speaking || speechSynthesis.pending
   speechSynthesis.cancel()
+  speechSynthesis.resume()
   const sentences = text.match(/[^.!?]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) ?? [text]
 
   return new Promise((resolve) => {
@@ -66,7 +70,8 @@ export function speak(text: string, voice: SpeechSynthesisVoice | null, rate = 1
       timer = setTimeout(advance, (sentence.split(/\s+/).length * 600) / rate + 4000)
       speechSynthesis.speak(u)
     }
-    next()
+    if (wasBusy) setTimeout(next, 150)
+    else next()
   })
 }
 
