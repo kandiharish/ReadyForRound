@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Avatar, INTERVIEWERS, type InterviewerId } from './Avatar'
-import { isRecognitionSupported } from '../lib/recognition'
+import { isRecordingSupported } from '../lib/recorder'
 import { loadVoices, pickVoice, speak, stopSpeaking } from '../lib/speech'
 
 export type RoomSettings = {
@@ -18,14 +18,14 @@ export function loadSettings(): RoomSettings {
   const defaults: RoomSettings = {
     interviewer: 'priya',
     voiceURI: null,
-    answerMode: isRecognitionSupported() ? 'voice' : 'text',
+    answerMode: isRecordingSupported() ? 'voice' : 'text',
     startMode: 'button',
     autoSendSeconds: 0,
   }
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}')
     const merged = { ...defaults, ...saved }
-    if (!isRecognitionSupported()) merged.answerMode = 'text'
+    if (!isRecordingSupported()) merged.answerMode = 'text'
     return merged
   } catch {
     return defaults
@@ -105,7 +105,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
   const hasMic = !!stream?.getAudioTracks().length
   const hasCam = !!stream?.getVideoTracks().length
   // Speaking needs both a microphone and browser support; otherwise typing is the only option.
-  const canSpeak = hasMic && isRecognitionSupported()
+  const canSpeak = hasMic && isRecordingSupported()
   const answerMode = canSpeak ? settings.answerMode : 'text'
 
   function join() {
@@ -140,7 +140,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
             </p>
             {mediaError && <p className="text-sm text-amber-300 mt-3">{mediaError}</p>}
             <p className="text-xs text-slate-500 mt-3">
-              🔒 Your video is never recorded or uploaded, and it is not used for scoring. Only your spoken words are sent, as text.
+              🔒 Your video is never recorded or uploaded, and it is not used for scoring. Only your voice answers are sent, to turn them into text.
             </p>
           </div>
 
@@ -186,10 +186,10 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
                   ⌨️ Type
                 </button>
               </div>
-              {!isRecognitionSupported() && (
-                <p className="text-xs text-amber-300 mt-1">Speaking needs Chrome or Edge. You can type your answers here.</p>
+              {!isRecordingSupported() && (
+                <p className="text-xs text-amber-300 mt-1">Your browser can't record audio. Please update it, or type your answers here.</p>
               )}
-              {isRecognitionSupported() && !hasMic && (
+              {isRecordingSupported() && !hasMic && (
                 <p className="text-xs text-amber-300 mt-1">No microphone found, so you'll type your answers.</p>
               )}
             </div>

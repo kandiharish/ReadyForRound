@@ -9,7 +9,8 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   const res = await fetch(`/api${path}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      // Audio uploads set their own type; everything else is JSON.
+      ...(options.body instanceof Blob ? { 'Content-Type': options.body.type || 'audio/webm' } : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },

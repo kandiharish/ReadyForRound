@@ -4,7 +4,7 @@ import { apiFetch } from '../lib/api'
 import { Avatar, INTERVIEWERS, type AvatarState } from '../components/Avatar'
 import { PreJoin, type RoomSettings } from '../components/PreJoin'
 import { speak, stopSpeaking } from '../lib/speech'
-import { isRecognitionSupported, startListening, type Listener } from '../lib/recognition'
+import { isRecordingSupported, startRecording, type Recording } from '../lib/recorder'
 import type { Catalog, Interview, Profile, RoundId } from '../types'
 
 export default function InterviewRoom() {
@@ -45,7 +45,7 @@ export default function InterviewRoom() {
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
   const title = interview.mode === 'complete' ? 'Complete interview' : `${roundLabel(interview.rounds[0])} round`
 
-  if (interview.status !== 'in_progress') return <Finished interview={interview} roundLabel={roundLabel} />
+  if (interview.status !== 'in_progress') return <Finished interview={interview} />
   if (!joined) {
     return <PreJoin roundLabel={title} rate={rate} onJoin={(settings, stream, voice) => setJoined({ settings, stream, voice })} />
   }
@@ -64,24 +64,28 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   const [avatarState, setAvatarState] = useState<AvatarState>('idle')
   const [answerMode, setAnswerMode] = useState(settings.answerMode)
   const [camOn, setCamOn] = useState(true)
-  const [heard, setHeard] = useState({ final: '', interim: '' }) // live transcript of what the student is saying
   const [typed, setTyped] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [showTranscript, setShowTranscript] = useState(false)
   const [seconds, setSeconds] = useState(0)
+  const [level, setLevel] = useState(0) // how loud the student is right now (0..1)
+  const [heardVoice, setHeardVoice] = useState(false) // have we heard speech in this answer yet?
+  const [recSeconds, setRecSeconds] = useState(0) // length of the current recording
+  const [failedAudio, setFailedAudio] = useState<Blob | null>(null) // kept so the student can resend after an error
 
   const videoRef = useRef<HTMLVideoElement>(null)
-  const listenerRef = useRef<Listener | null>(null)
-  const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const heardRef = useRef(heard)
+  const recordingRef = useRef<Recording | null>(null)
+  const levelRef = useRef(0)
+  const recStartedAt = useRef(0)
   const spokenSeq = useRef(0) // which question we've already read aloud
   const speakTurn = useRef(0) // increases every time we start speaking; lets an older, cancelled speech know it's stale
   const busy = useRef(false)
+  const finishRef = useRef<() => void>(() => {})
 
   const current = interview.turns[interview.turns.length - 1]
   const currentRound = interview.rounds[interview.current_round_index]
   const mainInRound = interview.turns.filter((t) => t.round === currentRound && !t.is_follow_up).length
   const interviewerName = INTERVIEWERS[settings.interviewer].name
+  const canSpeak = !!stream?.getAudioTracks().length && isRecordingSupported()
 
   // Show the student's camera in the small tile.
   useEffect(() => {
@@ -98,93 +102,103 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     return () => clearInterval(t)
   }, [])
 
-  const stopMic = useCallback(() => {
-    listenerRef.current?.stop()
-    listenerRef.current = null
-    if (silenceTimer.current) clearTimeout(silenceTimer.current)
+  // While recording: refresh the sound bars and recording timer ~10 times a second, and stop at 3 minutes.
+  useEffect(() => {
+    if (avatarState !== 'listening') return
+    const t = setInterval(() => {
+      setLevel(levelRef.current)
+      const secs = Math.floor((performance.now() - recStartedAt.current) / 1000)
+      setRecSeconds(secs)
+      if (secs >= MAX_ANSWER_SECONDS) finishRef.current()
+    }, 100)
+    return () => clearInterval(t)
+  }, [avatarState])
+
+  const cancelRecording = useCallback(() => {
+    recordingRef.current?.cancel()
+    recordingRef.current = null
   }, [])
 
-  // Leaving the room: stop talking and listening. Also forget which question was spoken, so if React
+  // Leaving the room: stop talking and recording. Also forget which question was spoken, so if React
   // re-mounts this screen (it does this on purpose in development) the question is read aloud again.
   useEffect(() => () => {
     speakTurn.current++
     stopSpeaking()
-    stopMic()
+    cancelRecording()
     spokenSeq.current = 0
-  }, [stopMic])
+  }, [cancelRecording])
 
-  const submit = useCallback(async (body: { answer: string } | { skip: true }) => {
+  const sendAnswer = useCallback(async (answer: { audio: Blob } | { text: string } | { skip: true }) => {
     if (busy.current) return
     busy.current = true
-    stopMic()
+    speakTurn.current++
     stopSpeaking()
+    cancelRecording()
     setAvatarState('thinking')
     setError(null)
+    setFailedAudio(null)
     try {
-      const next = await apiFetch<Interview>(`/interviews/${interview.id}/answer`, { method: 'POST', body: JSON.stringify(body) })
-      setHeard({ final: '', interim: '' })
-      heardRef.current = { final: '', interim: '' }
+      const path = `/interviews/${interview.id}`
+      const next = 'audio' in answer
+        ? await apiFetch<Interview>(`${path}/answer-audio`, { method: 'POST', body: answer.audio })
+        : await apiFetch<Interview>(`${path}/answer`, { method: 'POST', body: JSON.stringify('text' in answer ? { answer: answer.text } : { skip: true }) })
       setTyped('')
       if (next.status !== 'in_progress') {
-        speakTurn.current++
         setAvatarState('speaking')
         await speak('Thank you, that brings us to the end of the interview. Well done for completing it.', voice, rate)
       }
       setInterview(next)
     } catch (err) {
-      // Keep what they said so nothing is lost; let them edit and resend as text.
-      if ('answer' in body) setTyped(body.answer)
-      setAnswerMode('text')
-      setError(`${(err as Error).message} Your answer is in the box below. Press Submit to try again.`)
+      if ('audio' in answer) setFailedAudio(answer.audio) // nothing is lost: they can send the same recording again
+      setError((err as Error).message)
       setAvatarState('idle')
     } finally {
       busy.current = false
     }
-  }, [interview.id, rate, setInterview, stopMic, voice])
+  }, [cancelRecording, interview.id, rate, setInterview, voice])
 
-  const sendSpokenAnswer = useCallback(() => {
-    const text = `${heardRef.current.final} ${heardRef.current.interim}`.trim()
-    if (text) submit({ answer: text })
-  }, [submit])
+  // "Done answering": stop recording and send the audio.
+  const finishAnswer = useCallback(async () => {
+    const rec = recordingRef.current
+    if (!rec) return
+    recordingRef.current = null
+    const audio = await rec.stop()
+    sendAnswer({ audio })
+  }, [sendAnswer])
+  finishRef.current = finishAnswer
 
-  // Start listening to the student's spoken answer (from scratch).
-  const listen = useCallback(() => {
-    stopMic()
-    heardRef.current = { final: '', interim: '' }
-    setHeard({ final: '', interim: '' })
+  // "Start answering": begin recording from scratch.
+  const startAnswer = useCallback(() => {
+    if (!stream || !canSpeak) return
+    cancelRecording()
     setError(null)
+    setFailedAudio(null)
+    setHeardVoice(false)
+    setLevel(0)
+    setRecSeconds(0)
+    levelRef.current = 0
+    recStartedAt.current = performance.now()
     setAvatarState('listening')
-    listenerRef.current = startListening({
-      onText: (final, interim) => {
-        heardRef.current = { final, interim }
-        setHeard({ final, interim })
-        // Restart the pause timer every time new words arrive.
-        if (silenceTimer.current) clearTimeout(silenceTimer.current)
-        if (settings.autoSendSeconds > 0 && `${final}${interim}`.trim()) {
-          silenceTimer.current = setTimeout(sendSpokenAnswer, settings.autoSendSeconds * 1000)
-        }
-      },
-      onError: (msg) => {
-        setError(msg)
-        setAnswerMode('text')
-        stopMic()
-        setAvatarState('idle')
-      },
+    recordingRef.current = startRecording(stream, {
+      onLevel: (l) => { levelRef.current = l },
+      onSpeech: () => setHeardVoice(true),
+      silenceSeconds: settings.autoSendSeconds,
+      onSilence: () => finishRef.current(),
     })
-  }, [sendSpokenAnswer, settings.autoSendSeconds, stopMic])
+  }, [canSpeak, cancelRecording, settings.autoSendSeconds, stream])
 
   const askCurrentQuestion = useCallback(async () => {
     const turn = ++speakTurn.current
-    stopMic()
+    cancelRecording()
     setAvatarState('speaking')
     await speak(current.question, voice, rate)
     if (turn !== speakTurn.current) return // a newer speech (repeat, next question, leaving) replaced this one
     // By default we wait for the student to press "Start answering", so they have time to think.
-    if (answerMode === 'voice' && settings.startMode === 'auto') listen()
+    if (answerMode === 'voice' && settings.startMode === 'auto') startAnswer()
     else setAvatarState('idle')
-  }, [answerMode, current.question, listen, rate, settings.startMode, stopMic, voice])
+  }, [answerMode, cancelRecording, current.question, rate, settings.startMode, startAnswer, voice])
 
-  // Each new question: read it aloud, then start listening.
+  // Each new question: read it aloud.
   useEffect(() => {
     if (current.answer === null && spokenSeq.current !== current.seq) {
       spokenSeq.current = current.seq
@@ -194,22 +208,11 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
 
   function switchMode(mode: 'voice' | 'text') {
     setAnswerMode(mode)
-    if (mode === 'text') {
-      stopMic()
-      setTyped((t) => t || `${heard.final} ${heard.interim}`.trim())
-      if (avatarState === 'listening') setAvatarState('idle')
-    }
+    cancelRecording()
+    if (avatarState === 'listening') setAvatarState('idle')
   }
 
-  const hasSpoken = !!`${heard.final}${heard.interim}`.trim()
-  const statusText = {
-    speaking: `${interviewerName} is asking…`,
-    listening: hasSpoken ? '🎙️ Listening… press "Done answering" when you finish' : '🎙️ Listening… start speaking',
-    thinking: `${interviewerName} is thinking…`,
-    idle: answerMode === 'text' ? 'Type your answer below' : 'Take a moment to think, then press "Start answering".',
-  }[avatarState]
-
-  const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+  const clock = formatTime(seconds)
 
   return (
     <main className="min-h-screen bg-slate-900 text-white flex flex-col">
@@ -220,14 +223,13 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
           {roundLabel(currentRound)} round · Q{mainInRound} of {interview.questionsPerRound}
           {interview.rounds.length > 1 && ` · Round ${interview.current_round_index + 1}/${interview.rounds.length}`}
         </span>
-        <span className="text-red-400 tabular-nums">● {clock}</span>
+        <span className="text-slate-400 tabular-nums">{clock}</span>
       </header>
 
       {/* Video area: interviewer big, student small */}
-      <section className="relative flex-1 mx-4 rounded-2xl bg-gradient-to-b from-slate-700 to-slate-800 overflow-hidden flex items-center justify-center min-h-[300px]">
+      <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-slate-700 to-slate-800 overflow-hidden flex items-center justify-center min-h-75">
         <div className={`w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-slate-600/40 p-2 transition-shadow ${
-          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(129,140,248,0.6)]'
-            : avatarState === 'listening' ? 'shadow-[0_0_0_6px_rgba(74,222,128,0.5)]' : ''}`}>
+          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(129,140,248,0.6)]' : ''}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>
         {avatarState === 'thinking' && (
@@ -235,27 +237,49 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         )}
         <span className="absolute bottom-3 left-3 bg-black/50 rounded px-2 py-0.5 text-sm">{interviewerName} · Interviewer</span>
 
-        {/* Student's camera tile */}
-        <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-slate-950 rounded-lg overflow-hidden border border-slate-600">
+        {/* Student's camera tile: glows green with their voice while recording */}
+        <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-slate-950 rounded-lg overflow-hidden border-2 transition-colors"
+          style={{
+            borderColor: avatarState === 'listening' ? `rgba(74,222,128,${0.35 + level * 0.65})` : 'rgb(71,85,105)',
+            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(74,222,128,${0.2 + level * 0.6})` : undefined,
+          }}>
           {stream?.getVideoTracks().length && camOn
             ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
             : <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">Camera off</div>}
-          <span className="absolute bottom-1 left-1 bg-black/50 rounded px-1 text-xs">You</span>
+          <span className="absolute bottom-1 left-1 bg-black/50 rounded px-1 text-xs">You{avatarState === 'listening' ? ' 🎤' : ''}</span>
         </div>
       </section>
 
-      {/* Captions */}
+      {/* Question caption + answer status */}
       <section className="mx-4 mt-3 space-y-2">
         <div className="bg-black/40 rounded-xl px-4 py-3">
           <p className="text-xs text-indigo-300">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
           <p className="text-lg leading-snug">{current.question}</p>
         </div>
+
         {answerMode === 'voice' ? (
-          <div className="bg-black/20 rounded-xl px-4 py-3 min-h-[3.5rem]">
-            <p className="text-xs text-green-300">{statusText}</p>
-            <p className="text-slate-100">
-              {heard.final} <span className="text-slate-400">{heard.interim}</span>
-            </p>
+          <div className="bg-black/20 rounded-xl px-4 py-3 min-h-14 flex items-center gap-4">
+            {avatarState === 'listening' ? (
+              <>
+                <span className="flex items-center gap-2 text-red-400 font-semibold tabular-nums shrink-0">
+                  <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" /> REC {formatTime(recSeconds)}
+                </span>
+                <SoundBars level={level} />
+                <p className={`text-sm ${heardVoice ? 'text-green-300' : recSeconds >= 5 ? 'text-amber-300' : 'text-slate-300'}`}>
+                  {heardVoice
+                    ? '✓ We can hear you. Press "Done answering" when you finish.'
+                    : recSeconds >= 5
+                      ? "We can't hear you yet. Check your microphone isn't muted."
+                      : 'Recording… start speaking.'}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-slate-300">
+                {avatarState === 'speaking' && `${interviewerName} is asking…`}
+                {avatarState === 'thinking' && '⏳ Processing your answer…'}
+                {avatarState === 'idle' && 'Take a moment to think, then press "Start answering".'}
+              </p>
+            )}
           </div>
         ) : (
           <div className="bg-black/20 rounded-xl p-3">
@@ -263,12 +287,20 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
               placeholder="Type your answer…" disabled={avatarState === 'thinking'}
               className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <div className="flex justify-end mt-2">
-              <button onClick={() => submit({ answer: typed })} disabled={!typed.trim() || avatarState === 'thinking'}
+              <button onClick={() => sendAnswer({ text: typed })} disabled={!typed.trim() || avatarState === 'thinking'}
                 className="bg-indigo-500 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
             </div>
           </div>
         )}
-        {error && <p className="text-sm text-amber-300">{error}</p>}
+
+        {error && (
+          <div className="flex flex-wrap items-center gap-3 text-sm text-amber-300">
+            <span>{error}</span>
+            {failedAudio && (
+              <button onClick={() => sendAnswer({ audio: failedAudio })} className="underline text-white">Send my answer again</button>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Controls */}
@@ -276,14 +308,14 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         {/* Main action: Start answering → Done answering */}
         {answerMode === 'voice' && (avatarState === 'listening' ? (
           <>
-            <button onClick={sendSpokenAnswer} disabled={!hasSpoken}
+            <button onClick={finishAnswer} disabled={!heardVoice}
               className="bg-green-600 hover:bg-green-500 rounded-full px-6 py-3 font-semibold disabled:opacity-40">
               ✅ Done answering
             </button>
-            <Control onClick={listen}>↺ Start again</Control>
+            <Control onClick={startAnswer}>↺ Start again</Control>
           </>
         ) : (
-          <button onClick={listen} disabled={avatarState !== 'idle'}
+          <button onClick={startAnswer} disabled={avatarState !== 'idle'}
             className="bg-green-600 hover:bg-green-500 rounded-full px-6 py-3 font-semibold disabled:opacity-40">
             🎤 Start answering
           </button>
@@ -291,18 +323,30 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         <Control onClick={() => setCamOn(!camOn)} active={camOn} disabled={!stream?.getVideoTracks().length}>{camOn ? '📷 Camera on' : '🚫 Camera off'}</Control>
         <Control onClick={() => askCurrentQuestion()} disabled={avatarState === 'thinking'}>🔁 Repeat question</Control>
         <Control onClick={() => switchMode(answerMode === 'voice' ? 'text' : 'voice')}
-          disabled={answerMode === 'text' && !(stream?.getAudioTracks().length && isRecognitionSupported())}>
+          disabled={avatarState === 'thinking' || (answerMode === 'text' && !canSpeak)}>
           {answerMode === 'voice' ? '⌨️ Type instead' : '🎤 Speak instead'}
         </Control>
-        <Control onClick={() => submit({ skip: true })} disabled={avatarState === 'thinking'}>⏭️ Skip</Control>
-        <EndButton interviewId={interview.id} onEnded={(i) => { stopSpeaking(); stopMic(); setInterview(i) }} />
-        <button onClick={() => setShowTranscript(!showTranscript)} className="text-xs text-slate-400 underline ml-2">
-          {showTranscript ? 'Hide' : 'Show'} transcript
-        </button>
+        <Control onClick={() => sendAnswer({ skip: true })} disabled={avatarState === 'thinking'}>⏭️ Skip</Control>
+        <EndButton interviewId={interview.id} onEnded={(i) => { speakTurn.current++; stopSpeaking(); cancelRecording(); setInterview(i) }} />
       </footer>
-
-      {showTranscript && <Transcript interview={interview} roundLabel={roundLabel} className="mx-4 mb-4" />}
     </main>
+  )
+}
+
+const MAX_ANSWER_SECONDS = 180
+
+const formatTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+
+// Little bars that jump with the student's voice, so they can see they're being heard.
+function SoundBars({ level }: { level: number }) {
+  const shape = [0.5, 0.8, 1, 0.7, 0.9, 0.6, 0.4]
+  return (
+    <div className="flex items-center gap-1 h-8 shrink-0" aria-hidden>
+      {shape.map((s, i) => (
+        <span key={i} className="w-1.5 rounded-full bg-green-400 transition-[height] duration-100"
+          style={{ height: `${Math.max(12, Math.min(100, level * s * 140))}%` }} />
+      ))}
+    </div>
   )
 }
 
@@ -323,25 +367,7 @@ function EndButton({ interviewId, onEnded }: { interviewId: string; onEnded: (i:
   return <button onClick={end} className="bg-red-600 hover:bg-red-500 rounded-full px-4 py-2 text-sm font-semibold">📞 End</button>
 }
 
-function Transcript({ interview, roundLabel, className = '' }: { interview: Interview; roundLabel: (r: RoundId) => string; className?: string }) {
-  return (
-    <div className={`bg-slate-800 rounded-xl p-4 space-y-3 max-h-96 overflow-y-auto ${className}`}>
-      {interview.turns.map((t, i) => (
-        <div key={t.seq}>
-          {(i === 0 || interview.turns[i - 1].round !== t.round) && (
-            <p className="text-xs uppercase tracking-wide text-slate-500 text-center my-2">{roundLabel(t.round)} round</p>
-          )}
-          <p className="text-sm"><span className="text-indigo-300">Interviewer{t.is_follow_up ? ' (follow-up)' : ''}:</span> {t.question}</p>
-          {t.answer !== null && (
-            <p className="text-sm mt-1 pl-4"><span className="text-green-300">You:</span> {t.skipped ? <i className="text-slate-400">skipped</i> : t.answer}</p>
-          )}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function Finished({ interview, roundLabel }: { interview: Interview; roundLabel: (r: RoundId) => string }) {
+function Finished({ interview }: { interview: Interview }) {
   return (
     <main className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-2xl mx-auto py-8">
@@ -353,8 +379,6 @@ function Finished({ interview, roundLabel }: { interview: Interview; roundLabel:
             <Link to="/dashboard" className="border border-slate-600 rounded-lg px-4 py-2">Dashboard</Link>
           </div>
         </div>
-        <h2 className="font-semibold mt-8 mb-3">Transcript</h2>
-        <Transcript interview={interview} roundLabel={roundLabel} />
       </div>
     </main>
   )

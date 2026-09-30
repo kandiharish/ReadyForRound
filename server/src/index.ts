@@ -19,6 +19,7 @@ app.get('/api/health', async (_req, res) => {
     llmProvider: config.LLM_PROVIDER,
     llmReachable: await isLlmReachable(),
     dbConnected: await isDbConnected(),
+    voiceAnswersReady: !!config.GROQ_API_KEY, // speech-to-text needs a Groq key
   })
 })
 

@@ -21,6 +21,8 @@ const schema = z.object({
 
   GROQ_API_KEY: z.string().optional(),
   GROQ_MODEL: z.string().default('llama-3.1-8b-instant'),
+  // Speech-to-text model on Groq (Whisper). Used for spoken answers even when the chat AI is Ollama.
+  GROQ_STT_MODEL: z.string().default('whisper-large-v3-turbo'),
 
   OPENROUTER_API_KEY: z.string().optional(),
   OPENROUTER_MODEL: z.string().optional(),

@@ -1,4 +1,5 @@
-import { Router, type Response } from 'express'
+import express, { Router, type Response } from 'express'
+import { SttUnavailableError, transcribe } from '../stt/transcribe.js'
 import { z } from 'zod'
 import { requireAuth } from '../auth/requireAuth.js'
 import { roundIds } from '../interview/rounds.js'
@@ -66,6 +67,37 @@ interviewsRouter.post('/:id/answer', async (req, res) => {
     handleError(res, err)
   }
 })
+
+// Answer the current question by voice: the request body is the recorded audio file.
+interviewsRouter.post(
+  '/:id/answer-audio',
+  express.raw({ type: ['audio/*', 'application/octet-stream'], limit: '15mb' }),
+  async (req, res) => {
+    if (!idSchema.safeParse(req.params.id).success) return res.status(404).json({ error: 'Interview not found' })
+    if (!Buffer.isBuffer(req.body) || req.body.length < 1000) {
+      return res.status(400).json({ error: "We couldn't hear anything. Please try answering again." })
+    }
+    try {
+      // Check the interview belongs to this student and is waiting for an answer BEFORE using the voice service.
+      const interview = await getInterview(req.user!.id, req.params.id)
+      const current = interview.turns[interview.turns.length - 1]
+      if (interview.status !== 'in_progress' || current.answer !== null) {
+        return res.status(409).json({ error: 'This question was already answered' })
+      }
+
+      const text = await transcribe(req.body, req.headers['content-type'] ?? 'audio/webm', current.question)
+      if (text.length < 2) return res.status(422).json({ error: "We couldn't hear anything. Please try answering again." })
+
+      res.json(await answerQuestion(req.user!.id, req.params.id, text))
+    } catch (err) {
+      if (err instanceof SttUnavailableError) {
+        console.warn('Speech-to-text unavailable:', err.message)
+        return res.status(503).json({ error: 'Voice answers are unavailable right now. Please type your answer instead.' })
+      }
+      handleError(res, err)
+    }
+  },
+)
 
 // Stop the interview early.
 interviewsRouter.post('/:id/end', async (req, res) => {

@@ -5,6 +5,7 @@ type Health = {
   llmProvider: string
   llmReachable: boolean
   dbConnected: boolean
+  voiceAnswersReady: boolean
 }
 
 // Developer page: shows whether the backend, AI and database are working.
@@ -36,6 +37,7 @@ export default function Status() {
               <p>AI provider: <b>{health.llmProvider}</b></p>
               <p>AI reachable: {yesNo(health.llmReachable, 'yes', 'no')}</p>
               <p>Database: {yesNo(health.dbConnected, 'connected', 'not connected')}</p>
+              <p>Voice answers: {yesNo(health.voiceAnswersReady, 'ready', 'needs GROQ_API_KEY')}</p>
             </>
           )}
         </div>
