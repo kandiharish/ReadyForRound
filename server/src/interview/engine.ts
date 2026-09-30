@@ -4,6 +4,7 @@ import { catalog } from '../catalog.js'
 import { buildMessages, parseAiReply, type AiReply, type InterviewContext, type NextStep, type Turn } from './prompts.js'
 import { COMPLETE_SEQUENCES, MAX_FOLLOW_UPS_PER_QUESTION, QUESTIONS_PER_ROUND, type RoundId } from './rounds.js'
 import { isGenerating, startReport } from '../report/generate.js'
+import { getActiveGoal } from '../goals.js'
 
 export class InterviewError extends Error {
   constructor(public status: number, message: string) {
@@ -44,28 +45,32 @@ async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step:
 }
 
 // Build the snapshot of the student used for every question in this interview.
-async function loadContext(userId: string): Promise<{ ctx: InterviewContext; companyType: string }> {
+// Build the snapshot of the student used for every question in this interview:
+// what they're preparing for comes from their active goal, who they are from their profile.
+async function loadContext(userId: string): Promise<{ ctx: InterviewContext; companyType: string; goalId: string }> {
   const { data: p } = await db()
     .from('profiles')
-    .select('full_name, target_role, experience_level, target_company_type, speaking_pace, onboarding_completed, user_skills (skill, self_rating)')
+    .select('full_name, speaking_pace, onboarding_completed, user_skills (skill, self_rating)')
     .eq('id', userId)
     .single()
   if (!p?.onboarding_completed) throw new InterviewError(400, 'Please complete your profile first')
+  const goal = await getActiveGoal(userId)
+  if (!goal) throw new InterviewError(400, 'Choose a goal first, so we know what to prepare you for')
 
   const label = (list: readonly { id: string; label: string }[], id: string | null) => list.find((o) => o.id === id)?.label ?? ''
   const ctx: InterviewContext = {
     firstName: (p.full_name ?? 'there').split(' ')[0],
-    roleLabel: label(catalog.roles, p.target_role),
-    experienceLabel: label(catalog.experienceLevels, p.experience_level),
-    companyTypeLabel: label(catalog.companyTypes, p.target_company_type),
+    roleLabel: label(catalog.roles, goal.target_role),
+    experienceLabel: label(catalog.experienceLevels, goal.experience_level),
+    companyTypeLabel: label(catalog.companyTypes, goal.company_type),
     skills: p.user_skills,
     speakingPace: p.speaking_pace,
   }
-  return { ctx, companyType: p.target_company_type ?? 'any' }
+  return { ctx, companyType: goal.company_type, goalId: goal.id }
 }
 
 export async function startInterview(userId: string, mode: 'single' | 'complete', round?: RoundId) {
-  const { ctx, companyType } = await loadContext(userId)
+  const { ctx, companyType, goalId } = await loadContext(userId)
   const rounds: RoundId[] = mode === 'complete' ? COMPLETE_SEQUENCES[companyType] : [round!]
 
   // Get the first question BEFORE saving anything, so an AI failure leaves no half-created interview.
@@ -76,7 +81,7 @@ export async function startInterview(userId: string, mode: 'single' | 'complete'
 
   const { data: session, error } = await db()
     .from('interview_sessions')
-    .insert({ user_id: userId, mode, rounds, context: ctx })
+    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx })
     .select('id')
     .single()
   if (error) throw new InterviewError(500, error.message)

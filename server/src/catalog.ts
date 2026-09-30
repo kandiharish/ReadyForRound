@@ -36,8 +36,17 @@ export const EXPERIENCE_LEVELS = [
   { id: '3rd_year', label: '3rd year student' },
   { id: 'final_year', label: 'Final year student' },
   { id: 'graduate', label: 'Graduate, looking for a job' },
-  { id: 'working', label: 'Working, switching jobs' },
+  { id: 'working_1_2', label: 'Working, 1 to 2 years' },
+  { id: 'working_3_5', label: 'Working, 3 to 5 years' },
+  { id: 'working_5_plus', label: 'Working, 5+ years' },
 ] as const
+
+// Placement timeline answers from onboarding become a target date on the student's goal.
+export function timelineToTargetDate(timeline: string): string | null {
+  const weeks = { lt_1_month: 3, '1_3_months': 8, '3_plus_months': 16 }[timeline]
+  if (!weeks) return null
+  return new Date(Date.now() + weeks * 7 * 86_400_000).toISOString().slice(0, 10)
+}
 
 export const COMPANY_TYPES = [
   { id: 'service', label: 'Service company', description: 'e.g. TCS, Infosys, Wipro. Mass hiring, fundamentals + HR.' },
