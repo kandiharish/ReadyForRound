@@ -63,7 +63,6 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
 }) {
   const [avatarState, setAvatarState] = useState<AvatarState>('idle')
   const [answerMode, setAnswerMode] = useState(settings.answerMode)
-  const [micOn, setMicOn] = useState(true)
   const [camOn, setCamOn] = useState(true)
   const [heard, setHeard] = useState({ final: '', interim: '' }) // live transcript of what the student is saying
   const [typed, setTyped] = useState('')
@@ -148,8 +147,12 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     if (text) submit({ answer: text })
   }, [submit])
 
+  // Start listening to the student's spoken answer (from scratch).
   const listen = useCallback(() => {
     stopMic()
+    heardRef.current = { final: '', interim: '' }
+    setHeard({ final: '', interim: '' })
+    setError(null)
     setAvatarState('listening')
     listenerRef.current = startListening({
       onText: (final, interim) => {
@@ -176,9 +179,10 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     setAvatarState('speaking')
     await speak(current.question, voice, rate)
     if (turn !== speakTurn.current) return // a newer speech (repeat, next question, leaving) replaced this one
-    if (answerMode === 'voice' && micOn) listen()
+    // By default we wait for the student to press "Start answering", so they have time to think.
+    if (answerMode === 'voice' && settings.startMode === 'auto') listen()
     else setAvatarState('idle')
-  }, [answerMode, current.question, listen, micOn, rate, stopMic, voice])
+  }, [answerMode, current.question, listen, rate, settings.startMode, stopMic, voice])
 
   // Each new question: read it aloud, then start listening.
   useEffect(() => {
@@ -188,32 +192,21 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     }
   }, [current.seq, current.answer, askCurrentQuestion])
 
-  function toggleMic() {
-    if (micOn) {
-      stopMic()
-      setAvatarState('idle')
-    } else if (answerMode === 'voice' && avatarState !== 'speaking' && avatarState !== 'thinking') {
-      listen()
-    }
-    setMicOn(!micOn)
-  }
-
   function switchMode(mode: 'voice' | 'text') {
     setAnswerMode(mode)
     if (mode === 'text') {
       stopMic()
       setTyped((t) => t || `${heard.final} ${heard.interim}`.trim())
       if (avatarState === 'listening') setAvatarState('idle')
-    } else if (micOn && avatarState === 'idle') {
-      listen()
     }
   }
 
+  const hasSpoken = !!`${heard.final}${heard.interim}`.trim()
   const statusText = {
     speaking: `${interviewerName} is asking…`,
-    listening: micOn ? '🎙️ Listening… take your time' : 'Mic is off',
+    listening: hasSpoken ? '🎙️ Listening… press "Done answering" when you finish' : '🎙️ Listening… start speaking',
     thinking: `${interviewerName} is thinking…`,
-    idle: answerMode === 'text' ? 'Type your answer below' : 'Mic is off. Turn it on to answer',
+    idle: answerMode === 'text' ? 'Type your answer below' : 'Take a moment to think, then press "Start answering".',
   }[avatarState]
 
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
@@ -234,7 +227,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       <section className="relative flex-1 mx-4 rounded-2xl bg-gradient-to-b from-slate-700 to-slate-800 overflow-hidden flex items-center justify-center min-h-[300px]">
         <div className={`w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-slate-600/40 p-2 transition-shadow ${
           avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(129,140,248,0.6)]'
-            : avatarState === 'listening' && micOn ? 'shadow-[0_0_0_6px_rgba(74,222,128,0.5)]' : ''}`}>
+            : avatarState === 'listening' ? 'shadow-[0_0_0_6px_rgba(74,222,128,0.5)]' : ''}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>
         {avatarState === 'thinking' && (
@@ -280,7 +273,21 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
 
       {/* Controls */}
       <footer className="flex flex-wrap items-center justify-center gap-2 p-4">
-        <Control onClick={toggleMic} active={micOn} disabled={answerMode === 'text'}>{micOn ? '🎤 Mic on' : '🔇 Mic off'}</Control>
+        {/* Main action: Start answering → Done answering */}
+        {answerMode === 'voice' && (avatarState === 'listening' ? (
+          <>
+            <button onClick={sendSpokenAnswer} disabled={!hasSpoken}
+              className="bg-green-600 hover:bg-green-500 rounded-full px-6 py-3 font-semibold disabled:opacity-40">
+              ✅ Done answering
+            </button>
+            <Control onClick={listen}>↺ Start again</Control>
+          </>
+        ) : (
+          <button onClick={listen} disabled={avatarState !== 'idle'}
+            className="bg-green-600 hover:bg-green-500 rounded-full px-6 py-3 font-semibold disabled:opacity-40">
+            🎤 Start answering
+          </button>
+        ))}
         <Control onClick={() => setCamOn(!camOn)} active={camOn} disabled={!stream?.getVideoTracks().length}>{camOn ? '📷 Camera on' : '🚫 Camera off'}</Control>
         <Control onClick={() => askCurrentQuestion()} disabled={avatarState === 'thinking'}>🔁 Repeat question</Control>
         <Control onClick={() => switchMode(answerMode === 'voice' ? 'text' : 'voice')}
@@ -288,12 +295,6 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
           {answerMode === 'voice' ? '⌨️ Type instead' : '🎤 Speak instead'}
         </Control>
         <Control onClick={() => submit({ skip: true })} disabled={avatarState === 'thinking'}>⏭️ Skip</Control>
-        {answerMode === 'voice' && (
-          <button onClick={sendSpokenAnswer} disabled={!`${heard.final}${heard.interim}`.trim() || avatarState === 'thinking'}
-            className="bg-green-600 hover:bg-green-500 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40">
-            ✅ Done answering
-          </button>
-        )}
         <EndButton interviewId={interview.id} onEnded={(i) => { stopSpeaking(); stopMic(); setInterview(i) }} />
         <button onClick={() => setShowTranscript(!showTranscript)} className="text-xs text-slate-400 underline ml-2">
           {showTranscript ? 'Hide' : 'Show'} transcript

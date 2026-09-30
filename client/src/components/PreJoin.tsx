@@ -7,6 +7,7 @@ export type RoomSettings = {
   interviewer: InterviewerId
   voiceURI: string | null
   answerMode: 'voice' | 'text'
+  startMode: 'button' | 'auto' // start listening when I press "Start answering", or right after the question
   autoSendSeconds: 0 | 3 | 5 // 0 = only when I click Done
 }
 
@@ -14,7 +15,13 @@ const SETTINGS_KEY = 'rfr-room-settings'
 
 // Remembered per browser for convenience; safe to lose.
 export function loadSettings(): RoomSettings {
-  const defaults: RoomSettings = { interviewer: 'priya', voiceURI: null, answerMode: isRecognitionSupported() ? 'voice' : 'text', autoSendSeconds: 3 }
+  const defaults: RoomSettings = {
+    interviewer: 'priya',
+    voiceURI: null,
+    answerMode: isRecognitionSupported() ? 'voice' : 'text',
+    startMode: 'button',
+    autoSendSeconds: 0,
+  }
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}')
     const merged = { ...defaults, ...saved }
@@ -188,17 +195,30 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
             </div>
 
             {answerMode === 'voice' && (
-              <div>
-                <p className="text-sm font-medium text-slate-300 mb-2">Send my answer when I pause for</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {([3, 5, 0] as const).map((s) => (
-                    <button key={s} onClick={() => update({ autoSendSeconds: s })}
-                      className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
-                      {s === 0 ? 'Only on "Done"' : `${s} seconds`}
-                    </button>
-                  ))}
+              <>
+                <div>
+                  <p className="text-sm font-medium text-slate-300 mb-2">Start listening</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([['button', 'When I press "Start answering"'], ['auto', 'Right after the question']] as const).map(([mode, label]) => (
+                      <button key={mode} onClick={() => update({ startMode: mode })}
+                        className={`rounded-lg px-2 py-2 border text-sm ${settings.startMode === mode ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-300 mb-2">Send my answer</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([0, 3, 5] as const).map((s) => (
+                      <button key={s} onClick={() => update({ autoSendSeconds: s })}
+                        className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                        {s === 0 ? 'When I press "Done"' : `After a ${s}s pause`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
 
             <button onClick={join} className="w-full bg-indigo-500 hover:bg-indigo-400 rounded-lg py-3 font-semibold">
