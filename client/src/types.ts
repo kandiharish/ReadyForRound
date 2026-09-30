@@ -73,7 +73,46 @@ export type UserSkill = {
   proven_score: number | null
 }
 
+export type Goal = {
+  id: string
+  target_role: string
+  company_type: string
+  experience_level: string
+  target_date: string | null
+  status: 'active' | 'achieved' | 'archived'
+  created_at: string
+  finished_at: string | null
+}
+
+export type GoalWithStats = Goal & { interviews: number; readiness: number | null; startedAt: number | null }
+
+export type SessionSummary = {
+  id: string
+  goal_id: string | null
+  mode: 'single' | 'complete'
+  rounds: RoundId[]
+  status: InterviewStatus
+  created_at: string
+  completed_at: string | null
+  reportStatus: 'generating' | 'ready' | 'failed' | null
+  score: number | null
+}
+
+export type HomeStats = {
+  goal: Goal | null
+  readiness: { score: number | null; delta: number | null; graded: number }
+  roundScores: { round: RoundId; score: number | null }[]
+  recommendation: { mode: 'single' | 'complete'; round?: RoundId; reason: string }
+  streak: { days: number; week: { date: string; done: boolean; isToday: boolean }[] }
+  daysLeft: number | null
+  inProgress: SessionSummary | null
+  recent: SessionSummary[]
+  counts: { total: number; thisWeek: number }
+  skills: UserSkill[]
+}
+
 export type Profile = {
+  active_goal: Goal | null
   id: string
   full_name: string | null
   role: string

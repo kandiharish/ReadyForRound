@@ -73,18 +73,18 @@ export function RoleQuiz({ roles, onPick, onCancel }: {
     const bestId = (Object.keys(scores) as RoleId[]).reduce((a, b) => (scores[b] > scores[a] ? b : a))
     const best = roles.find((r) => r.id === bestId)!
     return (
-      <div className="border border-indigo-200 bg-indigo-50 rounded-xl p-5">
-        <p className="text-sm text-indigo-700 font-medium">Our suggestion for you</p>
-        <p className="text-xl font-bold text-slate-900 mt-1">{best.label}</p>
-        <p className="text-slate-600 mt-1">{best.description}</p>
-        <p className="text-xs text-slate-500 mt-3">
+      <div className="border border-lime/40 bg-lime-deep rounded-xl p-5">
+        <p className="text-sm text-lime font-medium">Our suggestion for you</p>
+        <p className="text-xl font-bold text-fg mt-1">{best.label}</p>
+        <p className="text-soft mt-1">{best.description}</p>
+        <p className="text-xs text-muted mt-3">
           This is just a starting point. You can change your role any time.
         </p>
         <div className="flex gap-2 mt-4">
-          <button onClick={() => onPick(best.id)} className="bg-indigo-600 text-white rounded-lg px-4 py-2 font-medium">
+          <button onClick={() => onPick(best.id)} className="bg-lime text-ink-900 rounded-lg px-4 py-2 font-medium">
             Choose {best.label}
           </button>
-          <button onClick={onCancel} className="text-slate-600 px-4 py-2">Pick myself</button>
+          <button onClick={onCancel} className="text-soft px-4 py-2">Pick myself</button>
         </div>
       </div>
     )
@@ -92,18 +92,18 @@ export function RoleQuiz({ roles, onPick, onCancel }: {
 
   const q = QUESTIONS[step]
   return (
-    <div className="border border-slate-200 rounded-xl p-5">
-      <p className="text-xs text-slate-500">Question {step + 1} of {QUESTIONS.length}</p>
-      <p className="font-semibold text-slate-900 mt-1">{q.question}</p>
+    <div className="border border-line rounded-xl p-5">
+      <p className="text-xs text-muted">Question {step + 1} of {QUESTIONS.length}</p>
+      <p className="font-semibold text-fg mt-1">{q.question}</p>
       <div className="mt-3 space-y-2">
         {q.answers.map((a) => (
           <button key={a.text} onClick={() => answer(a)}
-            className="w-full text-left border border-slate-300 rounded-lg px-3 py-2 hover:border-indigo-500 hover:bg-indigo-50">
+            className="w-full text-left border border-line-strong rounded-lg px-3 py-2 hover:border-lime hover:bg-lime-deep">
             {a.text}
           </button>
         ))}
       </div>
-      <button onClick={onCancel} className="text-sm text-slate-500 mt-3">Cancel quiz</button>
+      <button onClick={onCancel} className="text-sm text-muted mt-3">Cancel quiz</button>
     </div>
   )
 }

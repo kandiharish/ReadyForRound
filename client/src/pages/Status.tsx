@@ -21,19 +21,19 @@ export default function Status() {
   }, [])
 
   const yesNo = (ok: boolean, yes: string, no: string) => (
-    <b className={ok ? 'text-green-600' : 'text-red-600'}>{ok ? yes : no}</b>
+    <b className={ok ? 'text-lime' : 'text-rose'}>{ok ? yes : no}</b>
   )
 
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow p-8 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-slate-900">System status</h1>
+    <main className="min-h-screen flex items-center justify-center p-4">
+      <div className="bg-ink-800 border border-line rounded-2xl p-8 max-w-md w-full">
+        <h1 className="text-2xl font-bold text-fg">System status</h1>
         <div className="mt-6 space-y-2 text-sm">
-          {error && <p className="text-red-600">{error}</p>}
-          {!health && !error && <p className="text-slate-500">Checking connection…</p>}
+          {error && <p className="text-rose">{error}</p>}
+          {!health && !error && <p className="text-muted">Checking connection…</p>}
           {health && (
             <>
-              <p>Backend: <b className="text-green-600">{health.status}</b></p>
+              <p>Backend: <b className="text-lime">{health.status}</b></p>
               <p>AI provider: <b>{health.llmProvider}</b></p>
               <p>AI reachable: {yesNo(health.llmReachable, 'yes', 'no')}</p>
               <p>Database: {yesNo(health.dbConnected, 'connected', 'not connected')}</p>

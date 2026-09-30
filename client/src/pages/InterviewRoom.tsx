@@ -39,7 +39,7 @@ export default function InterviewRoom() {
   }, [id])
 
   if (!interview || !catalog) {
-    return <main className="min-h-screen bg-slate-900 text-slate-300 p-8">{loadError ?? 'Loading interview…'}</main>
+    return <main className="min-h-screen bg-ink-950 text-soft p-8">{loadError ?? 'Loading interview…'}</main>
   }
 
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
@@ -240,37 +240,37 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   const clock = formatTime(seconds)
 
   return (
-    <main className="min-h-screen bg-slate-900 text-white flex flex-col">
+    <main className="min-h-screen bg-ink-950 text-white flex flex-col">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 text-sm">
-        <span className="font-semibold text-indigo-300">ReadyForRound</span>
-        <span className="text-slate-300">
+        <span className="font-semibold text-sky">ReadyForRound</span>
+        <span className="text-soft">
           {roundLabel(currentRound)} round · Q{mainInRound} of {interview.questionsPerRound}
           {interview.rounds.length > 1 && ` · Round ${interview.current_round_index + 1}/${interview.rounds.length}`}
         </span>
-        <span className="text-slate-400 tabular-nums">{clock}</span>
+        <span className="text-muted tabular-nums">{clock}</span>
       </header>
 
       {/* Video area: interviewer big, student small */}
-      <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-slate-700 to-slate-800 overflow-hidden flex items-center justify-center min-h-75">
-        <div className={`w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-slate-600/40 p-2 transition-shadow ${
-          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(129,140,248,0.6)]' : ''}`}>
+      <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-ink-800 to-ink-850 overflow-hidden flex items-center justify-center min-h-75">
+        <div className={`w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-ink-700/60 p-2 transition-shadow ${
+          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(125,211,252,0.55)]' : ''}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>
         {avatarState === 'thinking' && (
-          <div className="absolute top-[18%] right-[28%] bg-white text-slate-700 rounded-full px-3 py-1 text-lg animate-pulse">•••</div>
+          <div className="absolute top-[18%] right-[28%] bg-white text-soft rounded-full px-3 py-1 text-lg animate-pulse">•••</div>
         )}
         <span className="absolute bottom-3 left-3 bg-black/50 rounded px-2 py-0.5 text-sm">{interviewerName} · Interviewer</span>
 
         {/* Student's camera tile: glows green with their voice while recording */}
-        <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-slate-950 rounded-lg overflow-hidden border-2 transition-colors"
+        <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-ink-950 rounded-lg overflow-hidden border-2 transition-colors"
           style={{
-            borderColor: avatarState === 'listening' ? `rgba(74,222,128,${0.35 + level * 0.65})` : 'rgb(71,85,105)',
-            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(74,222,128,${0.2 + level * 0.6})` : undefined,
+            borderColor: avatarState === 'listening' ? `rgba(198,243,107,${0.35 + level * 0.65})` : '#2a3040',
+            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(198,243,107,${0.2 + level * 0.6})` : undefined,
           }}>
           {stream?.getVideoTracks().length && camOn
             ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
-            : <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">Camera off</div>}
+            : <div className="w-full h-full flex items-center justify-center text-subtle text-xs">Camera off</div>}
           <span className="absolute bottom-1 left-1 bg-black/50 rounded px-1 text-xs">You{avatarState === 'listening' ? ' 🎤' : ''}</span>
         </div>
       </section>
@@ -278,7 +278,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       {/* Question caption + answer status */}
       <section className="mx-4 mt-3 space-y-2">
         <div className="bg-black/40 rounded-xl px-4 py-3">
-          <p className="text-xs text-indigo-300">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
+          <p className="text-xs text-sky">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
           <p className="text-lg leading-snug">{current.question}</p>
         </div>
 
@@ -286,11 +286,11 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
           <div className="bg-black/20 rounded-xl px-4 py-3 min-h-14 flex items-center gap-4">
             {avatarState === 'listening' ? (
               <>
-                <span className="flex items-center gap-2 text-red-400 font-semibold tabular-nums shrink-0">
-                  <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" /> REC {formatTime(recSeconds)}
+                <span className="flex items-center gap-2 text-rose font-semibold tabular-nums shrink-0">
+                  <span className="w-3 h-3 rounded-full bg-rose animate-pulse" /> REC {formatTime(recSeconds)}
                 </span>
                 <SoundBars level={level} />
-                <p className={`text-sm ${heardVoice ? 'text-green-300' : recSeconds >= 5 ? 'text-amber-300' : 'text-slate-300'}`}>
+                <p className={`text-sm ${heardVoice ? 'text-lime' : recSeconds >= 5 ? 'text-amber' : 'text-soft'}`}>
                   {heardVoice
                     ? '✓ We can hear you. Press "Done answering" when you finish.'
                     : recSeconds >= 5
@@ -299,7 +299,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
                 </p>
               </>
             ) : (
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-soft">
                 {avatarState === 'speaking' && `${interviewerName} is asking…`}
                 {avatarState === 'thinking' && '⏳ Processing your answer…'}
                 {avatarState === 'idle' && 'Take a moment to think, then press "Start answering".'}
@@ -310,16 +310,16 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
           <div className="bg-black/20 rounded-xl p-3">
             <textarea value={typed} onChange={(e) => setTyped(e.target.value)} rows={3} maxLength={3000}
               placeholder="Type your answer…" disabled={avatarState === 'thinking'}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              className="w-full bg-ink-800 border border-line-strong rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-lime" />
             <div className="flex justify-end mt-2">
               <button onClick={() => sendAnswer({ text: typed })} disabled={!typed.trim() || avatarState === 'thinking'}
-                className="bg-indigo-500 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
+                className="bg-lime text-ink-900 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
             </div>
           </div>
         )}
 
         {error && (
-          <div className="flex flex-wrap items-center gap-3 text-sm text-amber-300">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-amber">
             <span>{error}</span>
             {failedAudio && (
               <button onClick={() => sendAnswer({ audio: failedAudio })} className="underline text-white">Send my answer again</button>
@@ -334,14 +334,14 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         {answerMode === 'voice' && (avatarState === 'listening' ? (
           <>
             <button onClick={finishAnswer} disabled={!heardVoice}
-              className="bg-green-600 hover:bg-green-500 rounded-full px-6 py-3 font-semibold disabled:opacity-40">
+              className="bg-lime text-ink-900 hover:bg-lime-hover rounded-full px-6 py-3 font-semibold disabled:opacity-40">
               ✅ Done answering
             </button>
             <Control onClick={startAnswer}>↺ Start again</Control>
           </>
         ) : (
           <button onClick={startAnswer} disabled={avatarState !== 'idle'}
-            className="bg-green-600 hover:bg-green-500 rounded-full px-6 py-3 font-semibold disabled:opacity-40">
+            className="bg-lime text-ink-900 hover:bg-lime-hover rounded-full px-6 py-3 font-semibold disabled:opacity-40">
             🎤 Start answering
           </button>
         ))}
@@ -368,7 +368,7 @@ function SoundBars({ level }: { level: number }) {
   return (
     <div className="flex items-center gap-1 h-8 shrink-0" aria-hidden>
       {shape.map((s, i) => (
-        <span key={i} className="w-1.5 rounded-full bg-green-400 transition-[height] duration-100"
+        <span key={i} className="w-1.5 rounded-full bg-lime transition-[height] duration-100"
           style={{ height: `${Math.max(12, Math.min(100, level * s * 140))}%` }} />
       ))}
     </div>
@@ -378,7 +378,7 @@ function SoundBars({ level }: { level: number }) {
 function Control({ children, onClick, active = true, disabled }: { children: React.ReactNode; onClick: () => void; active?: boolean; disabled?: boolean }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      className={`rounded-full px-4 py-2 text-sm disabled:opacity-40 ${active ? 'bg-slate-700 hover:bg-slate-600' : 'bg-red-600 hover:bg-red-500'}`}>
+      className={`rounded-full px-4 py-2 text-sm disabled:opacity-40 ${active ? 'bg-ink-750 hover:bg-ink-700' : 'bg-danger hover:bg-[#b12836] text-white'}`}>
       {children}
     </button>
   )
@@ -389,5 +389,5 @@ function EndButton({ interviewId, onEnded }: { interviewId: string; onEnded: (i:
     if (!confirm('End this interview now? Your answers so far are saved.')) return
     onEnded(await apiFetch<Interview>(`/interviews/${interviewId}/end`, { method: 'POST' }))
   }
-  return <button onClick={end} className="bg-red-600 hover:bg-red-500 rounded-full px-4 py-2 text-sm font-semibold">📞 End</button>
+  return <button onClick={end} className="bg-danger hover:bg-[#b12836] text-white rounded-full px-4 py-2 text-sm font-semibold">📞 End</button>
 }

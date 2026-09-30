@@ -22,7 +22,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setBusy(false)
     if (error) return setError(error.message)
-    navigate('/dashboard')
+    navigate('/home')
   }
 
   return (
@@ -34,13 +34,13 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)} required />
         <input className={inputClass} type="password" placeholder="Password" value={password}
           onChange={(e) => setPassword(e.target.value)} required />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-rose">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Logging in…' : 'Log in'}
         </button>
       </form>
-      <p className="text-sm text-slate-500 mt-4 text-center">
-        New here? <Link to="/signup" className="text-indigo-600 font-medium">Create an account</Link>
+      <p className="text-sm text-muted mt-4 text-center">
+        New here? <Link to="/signup" className="text-lime font-medium">Create an account</Link>
       </p>
     </AuthCard>
   )

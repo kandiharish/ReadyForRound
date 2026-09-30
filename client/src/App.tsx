@@ -1,14 +1,19 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AuthProvider } from './auth/AuthProvider'
 import { ProtectedRoute } from './auth/ProtectedRoute'
+import AppLayout from './layout/AppLayout'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
-import Dashboard from './pages/Dashboard'
 import Status from './pages/Status'
 import Onboarding from './pages/Onboarding'
-import InterviewSetup from './pages/InterviewSetup'
-import InterviewRoom from './pages/InterviewRoom'
+import Home from './pages/Home'
+import Practice from './pages/Practice'
+import Reports from './pages/Reports'
 import ReportPage from './pages/ReportPage'
+import Goals from './pages/Goals'
+import ProfilePage from './pages/ProfilePage'
+import Settings from './pages/Settings'
+import InterviewRoom from './pages/InterviewRoom'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -16,50 +21,30 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/status" element={<Status />} />
-          <Route
-            path="/onboarding"
-            element={
-              <ProtectedRoute>
-                <Onboarding />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/interview/new"
-            element={
-              <ProtectedRoute>
-                <InterviewSetup />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/interview/:id/report"
-            element={
-              <ProtectedRoute>
-                <ReportPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/interview/:id"
-            element={
-              <ProtectedRoute>
-                <InterviewRoom />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+
+          {/* Full-screen pages (no sidebar) */}
+          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+          <Route path="/interview/:id" element={<ProtectedRoute><InterviewRoom /></ProtectedRoute>} />
+
+          {/* Pages inside the app shell (sidebar + tab bar) */}
+          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/practice" element={<Practice />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/interview/:id/report" element={<ReportPage />} />
+            <Route path="/goals" element={<Goals />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+
+          {/* Old addresses still work */}
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/home" replace />} />
+          <Route path="/interview/new" element={<Navigate to="/practice" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

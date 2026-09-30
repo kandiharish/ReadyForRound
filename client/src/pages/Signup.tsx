@@ -22,7 +22,7 @@ export default function Signup() {
       password,
       options: {
         data: { full_name: fullName }, // our database trigger copies this into profiles
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/home`,
       },
     })
 
@@ -30,14 +30,14 @@ export default function Signup() {
     if (error) return setError(error.message)
 
     // If email confirmation is on, there is no session yet: the student must click the email link first.
-    if (data.session) navigate('/dashboard')
+    if (data.session) navigate('/home')
     else setCheckEmail(true)
   }
 
   if (checkEmail) {
     return (
       <AuthCard title="Check your email">
-        <p className="text-slate-600">
+        <p className="text-soft">
           We sent a confirmation link to <b>{email}</b>. Click it to activate your account.
         </p>
       </AuthCard>
@@ -55,13 +55,13 @@ export default function Signup() {
           onChange={(e) => setEmail(e.target.value)} required />
         <input className={inputClass} type="password" placeholder="Password (min 8 characters)" value={password}
           onChange={(e) => setPassword(e.target.value)} minLength={8} required />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-rose">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Creating account…' : 'Sign up'}
         </button>
       </form>
-      <p className="text-sm text-slate-500 mt-4 text-center">
-        Already have an account? <Link to="/login" className="text-indigo-600 font-medium">Log in</Link>
+      <p className="text-sm text-muted mt-4 text-center">
+        Already have an account? <Link to="/login" className="text-lime font-medium">Log in</Link>
       </p>
     </AuthCard>
   )

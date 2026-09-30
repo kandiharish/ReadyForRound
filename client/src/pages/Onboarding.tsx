@@ -64,7 +64,7 @@ export default function Onboarding() {
   }, [])
 
   if (!catalog) {
-    return <Shell>{error ? <p className="text-red-600">{error}</p> : <p className="text-slate-500">Loading…</p>}</Shell>
+    return <Shell>{error ? <p className="text-rose">{error}</p> : <p className="text-muted">Loading…</p>}</Shell>
   }
 
   const set = <K extends keyof Answers>(key: K, value: Answers[K]) => setAnswers((a) => ({ ...a, [key]: value }))
@@ -103,7 +103,7 @@ export default function Onboarding() {
           skills: Object.entries(answers.skills).map(([skill, self_rating]) => ({ skill, self_rating })),
         }),
       })
-      navigate('/dashboard')
+      navigate('/home')
     } catch (err) {
       setError((err as Error).message)
       setSaving(false)
@@ -115,11 +115,11 @@ export default function Onboarding() {
       {/* Progress bar */}
       <div className="flex gap-1 mb-6">
         {STEP_TITLES.map((_, i) => (
-          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-indigo-600' : 'bg-slate-200'}`} />
+          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-lime' : 'bg-line-strong'}`} />
         ))}
       </div>
-      <p className="text-xs text-slate-500">Step {step + 1} of {STEP_TITLES.length}</p>
-      <h1 className="text-xl font-bold text-slate-900 mt-1 mb-5">{STEP_TITLES[step]}</h1>
+      <p className="text-xs text-muted">Step {step + 1} of {STEP_TITLES.length}</p>
+      <h1 className="text-xl font-bold text-fg mt-1 mb-5">{STEP_TITLES[step]}</h1>
 
       {step === 0 && (showQuiz ? (
         <RoleQuiz
@@ -130,7 +130,7 @@ export default function Onboarding() {
       ) : (
         <>
           <Choices options={catalog.roles} value={answers.target_role} onChange={(v) => set('target_role', v)} />
-          <button onClick={() => setShowQuiz(true)} className="mt-4 text-indigo-600 font-medium text-sm">
+          <button onClick={() => setShowQuiz(true)} className="mt-4 text-lime font-medium text-sm">
             🤔 Not sure? Take a 1-minute quiz
           </button>
         </>
@@ -150,7 +150,7 @@ export default function Onboarding() {
 
       {step === 4 && (
         <>
-          <p className="text-sm text-slate-500 mb-3">
+          <p className="text-sm text-muted mb-3">
             Tap the skills you know{role ? ` for ${role.label}` : ''}, then rate yourself honestly.
             Your interviews will show how your rating compares with what you can prove.
           </p>
@@ -158,7 +158,7 @@ export default function Onboarding() {
             {[...new Set([...(role?.skills ?? []), ...Object.keys(answers.skills)])].map((skill) => (
               <button key={skill} onClick={() => toggleSkill(skill)}
                 className={`px-3 py-1.5 rounded-full border text-sm ${answers.skills[skill]
-                  ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 text-slate-700 hover:border-indigo-500'}`}>
+                  ? 'bg-lime border-lime text-white' : 'border-line-strong text-soft hover:border-lime'}`}>
                 {skill}
               </button>
             ))}
@@ -166,24 +166,24 @@ export default function Onboarding() {
           <div className="flex gap-2 mt-3">
             <input value={customSkill} onChange={(e) => setCustomSkill(e.target.value)} placeholder="Add another skill"
               onKeyDown={(e) => e.key === 'Enter' && addCustomSkill()} maxLength={40}
-              className="flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
-            <button onClick={addCustomSkill} className="text-sm border border-slate-300 rounded-lg px-3">Add</button>
+              className="flex-1 border border-line-strong rounded-lg px-3 py-1.5 text-sm" />
+            <button onClick={addCustomSkill} className="text-sm border border-line-strong rounded-lg px-3">Add</button>
           </div>
 
           {Object.keys(answers.skills).length > 0 && (
             <div className="mt-5 space-y-3">
               {Object.entries(answers.skills).map(([skill, rating]) => (
                 <div key={skill} className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-slate-800 w-28 shrink-0">{skill}</span>
+                  <span className="text-sm font-medium text-fg w-28 shrink-0">{skill}</span>
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} onClick={() => set('skills', { ...answers.skills, [skill]: n })} title={RATING_LABELS[n]}
-                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-lime text-ink-900' : 'bg-ink-750 text-muted'}`}>
                         {n}
                       </button>
                     ))}
                   </div>
-                  <span className="text-xs text-slate-500 w-24 text-right hidden sm:block">{RATING_LABELS[rating]}</span>
+                  <span className="text-xs text-muted w-24 text-right hidden sm:block">{RATING_LABELS[rating]}</span>
                 </div>
               ))}
             </div>
@@ -194,7 +194,7 @@ export default function Onboarding() {
       {step === 5 && (
         <div className="space-y-4">
           <div>
-            <p className="font-medium text-slate-800 mb-2">Interviewer speaking speed</p>
+            <p className="font-medium text-fg mb-2">Interviewer speaking speed</p>
             <Choices
               options={[
                 { id: 'normal', label: 'Normal speed' },
@@ -204,12 +204,12 @@ export default function Onboarding() {
               onChange={(v) => set('speaking_pace', v as 'slow' | 'normal')}
             />
           </div>
-          <label className="flex items-start gap-3 border border-slate-300 rounded-lg p-3 cursor-pointer">
+          <label className="flex items-start gap-3 border border-line-strong rounded-lg p-3 cursor-pointer">
             <input type="checkbox" className="mt-1" checked={answers.practice_without_score}
               onChange={(e) => set('practice_without_score', e.target.checked)} />
             <span>
-              <span className="font-medium text-slate-800">Practise without scores</span>
-              <span className="block text-sm text-slate-500">
+              <span className="font-medium text-fg">Practise without scores</span>
+              <span className="block text-sm text-muted">
                 Get feedback but no numbers, so you can relax while you build confidence. You can change this later.
               </span>
             </span>
@@ -217,21 +217,21 @@ export default function Onboarding() {
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600 mt-4">{error}</p>}
+      {error && <p className="text-sm text-rose mt-4">{error}</p>}
 
       <div className="flex justify-between mt-8">
         <button onClick={() => setStep(step - 1)} disabled={step === 0}
-          className="text-slate-600 px-4 py-2 disabled:invisible">
+          className="text-soft px-4 py-2 disabled:invisible">
           ← Back
         </button>
         {step < STEP_TITLES.length - 1 ? (
           <button onClick={() => setStep(step + 1)} disabled={!canContinue}
-            className="bg-indigo-600 text-white rounded-lg px-5 py-2 font-medium disabled:opacity-40">
+            className="bg-lime text-ink-900 rounded-lg px-5 py-2 font-medium disabled:opacity-40">
             Continue
           </button>
         ) : (
           <button onClick={finish} disabled={saving}
-            className="bg-indigo-600 text-white rounded-lg px-5 py-2 font-medium disabled:opacity-40">
+            className="bg-lime text-ink-900 rounded-lg px-5 py-2 font-medium disabled:opacity-40">
             {saving ? 'Saving…' : 'Finish'}
           </button>
         )}
@@ -242,9 +242,9 @@ export default function Onboarding() {
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <main className="min-h-screen bg-slate-50 flex items-start sm:items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow p-6 sm:p-8 max-w-lg w-full">
-        <p className="text-sm font-semibold text-indigo-600 mb-4">ReadyForRound</p>
+    <main className="min-h-screen flex items-start sm:items-center justify-center p-4">
+      <div className="bg-ink-800 border border-line rounded-2xl p-6 sm:p-8 max-w-lg w-full">
+        <p className="text-sm font-semibold text-lime mb-4">ReadyForRound</p>
         {children}
       </div>
     </main>
@@ -258,9 +258,9 @@ function Choices({ options, value, onChange }: { options: Option[]; value: strin
       {options.map((o) => (
         <button key={o.id} onClick={() => onChange(o.id)}
           className={`w-full text-left border rounded-lg px-4 py-3 ${value === o.id
-            ? 'border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600' : 'border-slate-300 hover:border-indigo-400'}`}>
-          <span className="font-medium text-slate-900">{o.label}</span>
-          {o.description && <span className="block text-sm text-slate-500">{o.description}</span>}
+            ? 'border-lime bg-lime-deep ring-1 ring-lime' : 'border-line-strong hover:border-lime'}`}>
+          <span className="font-medium text-fg">{o.label}</span>
+          {o.description && <span className="block text-sm text-muted">{o.description}</span>}
         </button>
       ))}
     </div>

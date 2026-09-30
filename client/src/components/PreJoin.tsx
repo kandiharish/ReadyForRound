@@ -33,7 +33,7 @@ export function loadSettings(): RoomSettings {
   }
 }
 
-function saveSettings(s: RoomSettings) {
+export function saveSettings(s: RoomSettings) {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) } catch { /* private mode etc. */ }
 }
 
@@ -125,30 +125,30 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
   }
 
   return (
-    <main className="min-h-screen bg-slate-900 text-white p-4">
+    <main className="min-h-screen bg-ink-950 text-white p-4">
       <div className="max-w-4xl mx-auto py-6">
         <h1 className="text-2xl font-bold">Get ready: {roundLabel}</h1>
-        <p className="text-slate-400 mt-1">Check your camera, microphone and speakers before you join.</p>
+        <p className="text-muted mt-1">Check your camera, microphone and speakers before you join.</p>
 
         <div className="grid md:grid-cols-2 gap-6 mt-6">
           {/* Camera preview + mic level */}
           <div>
-            <div className="aspect-video bg-slate-800 rounded-xl overflow-hidden flex items-center justify-center">
+            <div className="aspect-video bg-ink-800 rounded-xl overflow-hidden flex items-center justify-center">
               {hasCam
                 ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
-                : <p className="text-slate-400 text-sm p-4 text-center">Camera off</p>}
+                : <p className="text-muted text-sm p-4 text-center">Camera off</p>}
             </div>
             <div className="mt-3 flex items-center gap-3">
-              <span className="text-sm text-slate-300 w-24">Microphone</span>
-              <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 transition-[width] duration-75" style={{ width: `${level * 100}%` }} />
+              <span className="text-sm text-soft w-24">Microphone</span>
+              <div className="flex-1 h-2 bg-ink-750 rounded-full overflow-hidden">
+                <div className="h-full bg-lime transition-[width] duration-75" style={{ width: `${level * 100}%` }} />
               </div>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-muted mt-1">
               {hasMic ? 'Say something: the green bar should move.' : 'No microphone detected.'}
             </p>
-            {mediaError && <p className="text-sm text-amber-300 mt-3">{mediaError}</p>}
-            <p className="text-xs text-slate-500 mt-3">
+            {mediaError && <p className="text-sm text-amber mt-3">{mediaError}</p>}
+            <p className="text-xs text-subtle mt-3">
               🔒 Your video is never recorded or uploaded, and it is not used for scoring. Only your voice answers are sent, to turn them into text.
             </p>
           </div>
@@ -156,11 +156,11 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
           {/* Settings */}
           <div className="space-y-5">
             <div>
-              <p className="text-sm font-medium text-slate-300 mb-2">Your interviewer</p>
+              <p className="text-sm font-medium text-soft mb-2">Your interviewer</p>
               <div className="grid grid-cols-2 gap-3">
                 {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
                   <button key={id} onClick={() => update({ interviewer: id, voiceURI: null })}
-                    className={`rounded-xl p-3 border ${settings.interviewer === id ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700 hover:border-slate-500'}`}>
+                    className={`rounded-xl p-3 border ${settings.interviewer === id ? 'border-lime bg-lime-deep' : 'border-line-strong hover:border-muted'}`}>
                     <div className="w-20 h-20 mx-auto"><Avatar who={id} state="idle" /></div>
                     <p className="mt-1 font-medium">{INTERVIEWERS[id].name}</p>
                   </button>
@@ -169,62 +169,62 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-slate-300 mb-2">Voice</p>
+              <p className="text-sm font-medium text-soft mb-2">Voice</p>
               <div className="flex gap-2">
                 <select value={voice?.voiceURI ?? ''} onChange={(e) => update({ voiceURI: e.target.value })}
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+                  className="flex-1 bg-ink-800 border border-line-strong rounded-lg px-3 py-2 text-sm">
                   {voices.length === 0 && <option value="">Default voice</option>}
                   {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{v.name} ({v.lang})</option>)}
                 </select>
                 <button onClick={() => speak(`Hello, I'm ${INTERVIEWERS[settings.interviewer].name}. Can you hear me clearly?`, voice, rate)}
-                  className="border border-slate-600 rounded-lg px-3 text-sm hover:bg-slate-800">
+                  className="border border-line-strong rounded-lg px-3 text-sm hover:bg-ink-750">
                   🔊 Test
                 </button>
               </div>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-slate-300 mb-2">How will you answer?</p>
+              <p className="text-sm font-medium text-soft mb-2">How will you answer?</p>
               <div className="grid grid-cols-2 gap-2">
                 <button disabled={!canSpeak} onClick={() => update({ answerMode: 'voice' })}
-                  className={`rounded-lg px-3 py-2 border text-sm disabled:opacity-40 ${answerMode === 'voice' ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                  className={`rounded-lg px-3 py-2 border text-sm disabled:opacity-40 ${answerMode === 'voice' ? 'border-lime bg-lime-deep' : 'border-line-strong'}`}>
                   🎤 Speak
                 </button>
                 <button onClick={() => update({ answerMode: 'text' })}
-                  className={`rounded-lg px-3 py-2 border text-sm ${answerMode === 'text' ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                  className={`rounded-lg px-3 py-2 border text-sm ${answerMode === 'text' ? 'border-lime bg-lime-deep' : 'border-line-strong'}`}>
                   ⌨️ Type
                 </button>
               </div>
               {!isRecordingSupported() && (
-                <p className="text-xs text-amber-300 mt-1">Your browser can't record audio. Please update it, or type your answers here.</p>
+                <p className="text-xs text-amber mt-1">Your browser can't record audio. Please update it, or type your answers here.</p>
               )}
               {isRecordingSupported() && !hasMic && (
-                <p className="text-xs text-amber-300 mt-1">No microphone found, so you'll type your answers.</p>
+                <p className="text-xs text-amber mt-1">No microphone found, so you'll type your answers.</p>
               )}
               {hasMic && !voiceServiceReady && (
-                <p className="text-xs text-amber-300 mt-1">Spoken answers are unavailable right now, so please type your answers.</p>
+                <p className="text-xs text-amber mt-1">Spoken answers are unavailable right now, so please type your answers.</p>
               )}
             </div>
 
             {answerMode === 'voice' && (
               <>
                 <div>
-                  <p className="text-sm font-medium text-slate-300 mb-2">Start listening</p>
+                  <p className="text-sm font-medium text-soft mb-2">Start listening</p>
                   <div className="grid grid-cols-2 gap-2">
                     {([['button', 'When I press "Start answering"'], ['auto', 'Right after the question']] as const).map(([mode, label]) => (
                       <button key={mode} onClick={() => update({ startMode: mode })}
-                        className={`rounded-lg px-2 py-2 border text-sm ${settings.startMode === mode ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                        className={`rounded-lg px-2 py-2 border text-sm ${settings.startMode === mode ? 'border-lime bg-lime-deep' : 'border-line-strong'}`}>
                         {label}
                       </button>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-300 mb-2">Send my answer</p>
+                  <p className="text-sm font-medium text-soft mb-2">Send my answer</p>
                   <div className="grid grid-cols-3 gap-2">
                     {([5, 3, 0] as const).map((s) => (
                       <button key={s} onClick={() => update({ autoSendSeconds: s })}
-                        className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-indigo-400 bg-indigo-500/20' : 'border-slate-700'}`}>
+                        className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-lime bg-lime-deep' : 'border-line-strong'}`}>
                         {s === 0 ? 'When I press "Done"' : `After a ${s}s pause`}
                       </button>
                     ))}
@@ -233,7 +233,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               </>
             )}
 
-            <button onClick={join} className="w-full bg-indigo-500 hover:bg-indigo-400 rounded-lg py-3 font-semibold">
+            <button onClick={join} className="w-full bg-lime text-ink-900 hover:bg-lime-hover rounded-lg py-3 font-semibold">
               Join interview
             </button>
           </div>

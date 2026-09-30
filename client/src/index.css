@@ -1,5 +1,47 @@
 @import "tailwindcss";
 
+/* ---- "Midnight Studio" design tokens ----
+   Defined once here; every page uses these names (bg-ink-800, text-muted, text-lime, font-display...). */
+@theme {
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-display: "Instrument Serif", Georgia, serif;
+
+  --color-ink-950: #07080c; /* interview room */
+  --color-ink-900: #0b0d12; /* page background */
+  --color-ink-850: #0e1117; /* sidebar */
+  --color-ink-800: #12151c; /* cards */
+  --color-ink-750: #161a23; /* raised elements inside cards */
+  --color-ink-700: #1d2230; /* hover / selected */
+  --color-line: #1f2430; /* borders */
+  --color-line-strong: #2a3040;
+
+  --color-fg: #e8eaf0; /* main text */
+  --color-soft: #c3c8d4; /* secondary text */
+  --color-muted: #9aa1b2; /* captions */
+  --color-subtle: #7c8496; /* least important text */
+
+  --color-lime: #c6f36b; /* the one bright accent: main actions, progress */
+  --color-lime-hover: #d6f88f;
+  --color-lime-deep: #1c2614; /* lime-tinted background */
+  --color-sky: #7dd3fc; /* second data colour */
+  --color-amber: #f5b85a; /* "needs work" */
+  --color-amber-deep: #3a2e14;
+  --color-rose: #ff8a95; /* low scores, recording */
+  --color-rose-deep: #3a1a1e;
+  --color-danger: #c9303f; /* end call */
+}
+
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--color-ink-900);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 2px solid var(--color-lime); outline-offset: 2px; }
+
 /* Interviewer avatar animations */
 @keyframes avatar-blink {
   0%, 92%, 100% { transform: scaleY(1); }

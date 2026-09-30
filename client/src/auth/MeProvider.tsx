@@ -1,0 +1,43 @@
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { apiFetch } from '../lib/api'
+import type { Catalog, Option, Profile } from '../types'
+
+type MeState = {
+  me: Profile | null
+  catalog: Catalog | null
+  error: string | null
+  refresh: () => Promise<void> // reload after changing the profile or goal
+  label: (list: keyof Pick<Catalog, 'roles' | 'experienceLevels' | 'companyTypes'>, id: string | null | undefined) => string
+}
+
+const MeContext = createContext<MeState | null>(null)
+
+// Loads "who am I" (profile + active goal) and the option lists once, and shares them with every page in the app.
+export function MeProvider({ children }: { children: ReactNode }) {
+  const [me, setMe] = useState<Profile | null>(null)
+  const [catalog, setCatalog] = useState<Catalog | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const refresh = useCallback(async () => {
+    try {
+      const [m, c] = await Promise.all([apiFetch<Profile>('/me'), apiFetch<Catalog>('/catalog')])
+      setMe(m)
+      setCatalog(c)
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }, [])
+
+  useEffect(() => { refresh() }, [refresh])
+
+  const label: MeState['label'] = (list, id) =>
+    ((catalog?.[list] ?? []) as Option[]).find((o) => o.id === id)?.label ?? ''
+
+  return <MeContext.Provider value={{ me, catalog, error, refresh, label }}>{children}</MeContext.Provider>
+}
+
+export function useMe() {
+  const ctx = useContext(MeContext)
+  if (!ctx) throw new Error('useMe must be used inside <MeProvider>')
+  return ctx
+}
