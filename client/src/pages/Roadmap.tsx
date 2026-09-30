@@ -7,10 +7,10 @@ import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, Spinner } 
 import type { Goal, RoadmapTask } from '../types'
 
 const KIND = {
-  learn: { label: 'Learn', cls: 'bg-sky/15 text-sky' },
-  practice: { label: 'Practice', cls: 'bg-lime-deep text-lime' },
-  build: { label: 'Build', cls: 'bg-amber-deep text-amber' },
-  mock: { label: 'Mock interview', cls: 'bg-rose-deep text-rose' },
+  learn: { label: 'Learn', cls: 'bg-info-soft text-info' },
+  practice: { label: 'Practice', cls: 'bg-gold-soft text-gold-deep' },
+  build: { label: 'Build', cls: 'bg-warn-soft text-warn' },
+  mock: { label: 'Mock interview', cls: 'bg-bad-soft text-bad' },
 } as const
 
 // Your week-by-week study plan for the current goal, built from your own feedback.
@@ -24,7 +24,7 @@ export default function Roadmap() {
 
   useEffect(() => { apiFetch<typeof data>('/roadmap').then(setData).catch((e) => setError(e.message)) }, [])
 
-  if (!data || !me) return error ? <p className="text-rose">{error}</p> : <Spinner />
+  if (!data || !me) return error ? <p className="text-bad">{error}</p> : <Spinner />
   if (!data.goal) return <EmptyState title="First, choose a goal" body="Your roadmap is planned around a goal and its target date." action={<ButtonLink to="/goals">Create a goal</ButtonLink>} />
 
   async function build() {
@@ -70,11 +70,11 @@ export default function Roadmap() {
           </Button>
         )} />
 
-      {error && <p className="text-sm text-rose">{error}</p>}
+      {error && <p className="text-sm text-bad">{error}</p>}
 
       {tasks.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="font-display text-3xl">Let's plan your preparation</p>
+          <p className="font-display font-semibold text-3xl">Let's plan your preparation</p>
           <p className="text-sm text-muted mt-2 max-w-lg mx-auto">
             We'll turn your reports and skills into weekly tasks: what to learn, what to practise, what to build, and when to test yourself.
             It's best after at least one interview, but you can start now.
@@ -86,9 +86,9 @@ export default function Roadmap() {
           <Card className="flex flex-wrap items-center gap-6">
             <div className="flex-1 min-w-60 space-y-2">
               <div className="flex justify-between text-sm"><span className="text-soft">Overall progress</span><span className="font-mono">{done} / {tasks.length} tasks</span></div>
-              <Bar value={(done / tasks.length) * 100} tone="lime" />
+              <Bar value={(done / tasks.length) * 100} tone="gold" />
             </div>
-            <p className="text-sm text-muted">You're on <b className="text-fg">week {currentWeek}</b> of {weeks.length}</p>
+            <p className="text-sm text-muted">You're on <b className="text-ink">week {currentWeek}</b> of {weeks.length}</p>
           </Card>
 
           <div className="flex flex-wrap gap-2" role="tablist" aria-label="Weeks">
@@ -97,7 +97,7 @@ export default function Roadmap() {
               const complete = wt.every((t) => t.done)
               return (
                 <button key={w} role="tab" aria-selected={w === shownWeek} onClick={() => setOpenWeek(w)}
-                  className={`min-h-10 px-4 rounded-full text-sm border inline-flex items-center gap-2 ${w === shownWeek ? 'bg-lime text-ink-900 border-lime font-semibold' : 'bg-ink-800 border-line-strong text-soft hover:border-muted'}`}>
+                  className={`min-h-10 px-4 rounded-full text-sm border inline-flex items-center gap-2 ${w === shownWeek ? 'bg-ink text-paper border-gold font-semibold' : 'bg-card border-line-strong text-soft hover:border-muted'}`}>
                   {complete && <Icon name="check" size={14} strokeWidth={2.6} />} Week {w}
                 </button>
               )
@@ -113,7 +113,7 @@ export default function Roadmap() {
               {tasks.filter((t) => t.week === shownWeek).map((t) => (
                 <li key={t.id} className="flex gap-4 px-5 sm:px-6 py-4 border-t border-line first:border-t-0">
                   <input type="checkbox" checked={t.done} onChange={() => toggle(t)} aria-label={`Mark "${t.title}" as done`}
-                    className="mt-1 w-5 h-5 shrink-0 accent-[#c6f36b] cursor-pointer" />
+                    className="mt-1 w-5 h-5 shrink-0 accent-[var(--gold-deep)] cursor-pointer" />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`text-[11px] font-semibold uppercase tracking-wide rounded-full px-2 py-0.5 ${KIND[t.kind].cls}`}>{KIND[t.kind].label}</span>

@@ -58,11 +58,11 @@ export default function ProfilePage() {
         <label className="flex flex-col gap-2 text-sm font-medium text-soft">
           Full name
           <input value={name} onChange={(e) => setName(e.target.value)} required maxLength={80}
-            className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal" />
+            className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal" />
         </label>
         <label className="flex flex-col gap-2 text-sm font-medium text-soft">
           Experience
-          <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal">
+          <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal">
             {catalog.experienceLevels.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
           </select>
         </label>
@@ -78,7 +78,7 @@ export default function ProfilePage() {
         <div className="flex flex-wrap gap-2">
           {allSkills.map((s) => (
             <button key={s} type="button" onClick={() => toggle(s)} aria-pressed={!!skills[s]}
-              className={`px-3.5 py-1.5 rounded-full border text-sm ${skills[s] ? 'bg-lime border-lime text-ink-900 font-medium' : 'border-line-strong text-soft hover:border-muted'}`}>
+              className={`px-3.5 py-1.5 rounded-full border text-sm ${skills[s] ? 'bg-ink border-ink text-paper font-medium' : 'border-line-strong text-soft hover:border-muted'}`}>
               {s}
             </button>
           ))}
@@ -87,7 +87,7 @@ export default function ProfilePage() {
           <label className="sr-only" htmlFor="new-skill">Add another skill</label>
           <input id="new-skill" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} placeholder="Add another skill" maxLength={40}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add() } }}
-            className="flex-1 min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-sm" />
+            className="flex-1 min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-sm" />
           <Button type="button" variant="secondary" onClick={add}>Add</Button>
         </div>
 
@@ -99,12 +99,12 @@ export default function ProfilePage() {
                 <div className="flex gap-1" role="group" aria-label={`How good are you at ${skill}?`}>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button key={n} type="button" onClick={() => setSkills({ ...skills, [skill]: n })} aria-pressed={n === rating} title={RATING_LABELS[n]}
-                      className={`w-9 h-9 rounded-lg text-sm font-mono ${n <= rating ? 'bg-lime text-ink-900' : 'bg-ink-750 text-muted'}`}>{n}</button>
+                      className={`w-9 h-9 rounded-lg text-sm font-mono ${n <= rating ? 'bg-ink text-paper' : 'bg-raised text-muted'}`}>{n}</button>
                   ))}
                 </div>
                 <span className="text-xs text-muted w-24">{RATING_LABELS[rating]}</span>
                 <span className="ml-auto text-xs text-muted">
-                  {proven[skill] == null ? 'Not tested yet' : me.practice_without_score ? 'Tested' : <>Proven <b className="font-mono text-fg">{proven[skill]}</b>/100</>}
+                  {proven[skill] == null ? 'Not tested yet' : me.practice_without_score ? 'Tested' : <>Proven <b className="font-mono text-ink">{proven[skill]}</b>/100</>}
                 </span>
               </li>
             ))}
@@ -113,7 +113,7 @@ export default function ProfilePage() {
       </Card>
 
       <div className="flex items-center justify-end gap-4">
-        {status && <span className={`text-sm ${status.ok ? 'text-lime' : 'text-rose'}`} role="status">{status.text}</span>}
+        {status && <span className={`text-sm ${status.ok ? 'text-gold-deep' : 'text-bad'}`} role="status">{status.text}</span>}
         <Button type="submit" disabled={busy || Object.keys(skills).length === 0}>{busy ? 'Saving…' : 'Save profile'}</Button>
       </div>
     </form>

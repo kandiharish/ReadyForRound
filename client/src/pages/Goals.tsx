@@ -5,9 +5,9 @@ import { Bar, Button, Card, ChoiceCards, Icon, PageHeader, ScoreRing, Spinner } 
 import type { GoalWithStats } from '../types'
 
 const STATUS = {
-  active: { text: 'In progress', cls: 'bg-lime text-ink-900' },
-  achieved: { text: 'Achieved', cls: 'bg-sky/15 text-sky' },
-  archived: { text: 'Paused', cls: 'bg-ink-700 text-soft' },
+  active: { text: 'In progress', cls: 'bg-ink text-paper' },
+  achieved: { text: 'Achieved', cls: 'bg-info-soft text-info' },
+  archived: { text: 'Paused', cls: 'bg-hover text-soft' },
 } as const
 
 // Your goals over time: what you're preparing for now, and everything you've prepared for before.
@@ -20,7 +20,7 @@ export default function Goals() {
   const load = () => apiFetch<GoalWithStats[]>('/goals').then(setGoals).catch((e) => setError(e.message))
   useEffect(() => { load() }, [])
 
-  if (error) return <p className="text-rose">{error}</p>
+  if (error) return <p className="text-bad">{error}</p>
   if (!goals || !catalog || !me) return <Spinner />
 
   async function setStatus(id: string, status: 'active' | 'achieved' | 'archived') {
@@ -49,10 +49,10 @@ export default function Goals() {
             {goals.map((g, i) => (
               <li key={g.id} className="flex gap-4">
                 <div className="flex flex-col items-center w-5 pt-5">
-                  <span className={`w-4.5 h-4.5 rounded-full shrink-0 ${g.status === 'active' ? 'border-4 border-lime bg-ink-900' : g.status === 'achieved' ? 'bg-sky' : 'bg-line-strong'}`} />
-                  {i < goals.length - 1 && <span className="w-0.5 flex-1 bg-[#232838] mt-1.5" />}
+                  <span className={`w-4.5 h-4.5 rounded-full shrink-0 ${g.status === 'active' ? 'border-4 border-gold bg-card' : g.status === 'achieved' ? 'bg-info' : 'bg-line-strong'}`} />
+                  {i < goals.length - 1 && <span className="w-0.5 flex-1 bg-hover mt-1.5" />}
                 </div>
-                <div className={`flex-1 rounded-2xl border p-4 mb-4 ${g.status === 'active' ? 'bg-[#171c26] border-[#3a4a22]' : 'bg-ink-750/60 border-line'}`}>
+                <div className={`flex-1 rounded-2xl border p-4 mb-4 ${g.status === 'active' ? 'bg-gold-soft border-gold/40' : 'bg-raised/60 border-line'}`}>
                   <div className="flex items-center justify-between gap-3">
                     <span className="font-mono text-xs text-muted">
                       {new Date(g.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
@@ -66,7 +66,7 @@ export default function Goals() {
                     {!hideScores && g.startedAt !== null && g.readiness !== null && g.interviews > 3 ? ` · ${g.startedAt}% → ${g.readiness}%` : ''}
                   </p>
                   {!hideScores && g.readiness !== null && (
-                    <div className="flex items-center gap-3 mt-3"><div className="flex-1"><Bar value={g.readiness} tone={g.status === 'active' ? 'lime' : 'sky'} /></div><span className="font-mono text-xs text-soft">{g.readiness}%</span></div>
+                    <div className="flex items-center gap-3 mt-3"><div className="flex-1"><Bar value={g.readiness} tone={g.status === 'active' ? 'gold' : 'info'} /></div><span className="font-mono text-xs text-soft">{g.readiness}%</span></div>
                   )}
                   <div className="flex flex-wrap gap-2 mt-3">
                     {g.status !== 'active' && <Button variant="secondary" className="min-h-9 text-xs" onClick={() => setStatus(g.id, 'active')}>Make this my current goal</Button>}
@@ -84,11 +84,11 @@ export default function Goals() {
             <Card className="space-y-5">
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <span className="text-xs font-semibold bg-lime text-ink-900 rounded-full px-2.5 py-1">Current goal</span>
-                  <h2 className="font-display text-3xl leading-tight mt-3">{label('roles', active.target_role)}</h2>
+                  <span className="text-xs font-semibold bg-ink text-paper rounded-full px-2.5 py-1">Current goal</span>
+                  <h2 className="font-display font-semibold text-3xl leading-tight mt-3">{label('roles', active.target_role)}</h2>
                   <p className="text-sm text-muted">{label('companyTypes', active.company_type)}</p>
                 </div>
-                {!hideScores && active.readiness !== null && <ScoreRing value={active.readiness} size={84} label="" color="sky" />}
+                {!hideScores && active.readiness !== null && <ScoreRing value={active.readiness} size={84} label="" color="info" />}
               </div>
               <dl className="grid grid-cols-2 gap-3">
                 {[
@@ -98,7 +98,7 @@ export default function Goals() {
                   ['Study time', `${active.weekly_hours} hours a week`],
                   ['Rounds in a full interview', catalog.completeSequences[active.company_type].map((r) => catalog.rounds.find((x) => x.id === r)?.label).join(' → ')],
                 ].map(([k, v]) => (
-                  <div key={k} className="rounded-xl bg-ink-750 px-4 py-3">
+                  <div key={k} className="rounded-xl bg-raised px-4 py-3">
                     <dt className="text-xs text-muted">{k}</dt>
                     <dd className="text-sm font-semibold mt-0.5">{v}</dd>
                   </div>
@@ -107,7 +107,7 @@ export default function Goals() {
             </Card>
           ) : (
             <Card>
-              <p className="font-display text-2xl">No current goal</p>
+              <p className="font-display font-semibold text-2xl">No current goal</p>
               <p className="text-sm text-muted mt-1">Create a goal or pick an earlier one to keep practising.</p>
             </Card>
           )}
@@ -153,10 +153,10 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
   }
 
   return (
-    <Card className="border-lime/40">
+    <Card className="border-gold/40">
       <form onSubmit={submit} className="space-y-6">
         <div>
-          <h2 className="font-display text-3xl">A new goal</h2>
+          <h2 className="font-display font-semibold text-3xl">A new goal</h2>
           <p className="text-sm text-muted mt-1">Your current goal will be paused. You can switch back any time.</p>
         </div>
         <fieldset className="space-y-3">
@@ -170,22 +170,22 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="flex flex-col gap-2 text-sm font-medium text-soft">
             Your experience now
-            <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal">
+            <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal">
               {catalog!.experienceLevels.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
             </select>
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-soft">
             Target date (optional)
             <input type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)}
-              className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal" />
+              className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal" />
           </label>
           <label className="flex flex-col gap-2 text-sm font-medium text-soft">
             Hours per week you can give
             <input type="number" min={1} max={40} value={hours} onChange={(e) => setHours(Math.max(1, Math.min(40, Number(e.target.value) || 1)))}
-              className="min-h-11 rounded-xl bg-ink-750 border border-line-strong px-3 text-fg font-normal" />
+              className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal" />
           </label>
         </div>
-        {error && <p className="text-sm text-rose">{error}</p>}
+        {error && <p className="text-sm text-bad">{error}</p>}
         <div className="flex gap-2 justify-end">
           <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
           <Button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Start this goal'}</Button>

@@ -34,13 +34,13 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)} required />
         <input className={inputClass} type="password" placeholder="Password" value={password}
           onChange={(e) => setPassword(e.target.value)} required />
-        {error && <p className="text-sm text-rose">{error}</p>}
+        {error && <p className="text-sm text-bad">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Logging in…' : 'Log in'}
         </button>
       </form>
       <p className="text-sm text-muted mt-4 text-center">
-        New here? <Link to="/signup" className="text-lime font-medium">Create an account</Link>
+        New here? <Link to="/signup" className="text-gold-deep font-medium">Create an account</Link>
       </p>
     </AuthCard>
   )

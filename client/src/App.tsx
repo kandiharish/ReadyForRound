@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router'
+import { ThemeToggle } from './components/ThemeToggle'
 import { AuthProvider } from './auth/AuthProvider'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import AppLayout from './layout/AppLayout'
@@ -21,6 +22,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <CornerThemeToggle />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -51,6 +53,13 @@ function App() {
       </BrowserRouter>
     </AuthProvider>
   )
+}
+
+// Pages outside the app shell (login, sign-up, onboarding) show the light/dark switch in the corner.
+// Pages inside the shell place it themselves.
+function CornerThemeToggle() {
+  const { pathname } = useLocation()
+  return ['/login', '/signup', '/onboarding', '/status'].includes(pathname) ? <ThemeToggle floating /> : null
 }
 
 export default App

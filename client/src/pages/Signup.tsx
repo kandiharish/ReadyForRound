@@ -55,13 +55,13 @@ export default function Signup() {
           onChange={(e) => setEmail(e.target.value)} required />
         <input className={inputClass} type="password" placeholder="Password (min 8 characters)" value={password}
           onChange={(e) => setPassword(e.target.value)} minLength={8} required />
-        {error && <p className="text-sm text-rose">{error}</p>}
+        {error && <p className="text-sm text-bad">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Creating account…' : 'Sign up'}
         </button>
       </form>
       <p className="text-sm text-muted mt-4 text-center">
-        Already have an account? <Link to="/login" className="text-lime font-medium">Log in</Link>
+        Already have an account? <Link to="/login" className="text-gold-deep font-medium">Log in</Link>
       </p>
     </AuthCard>
   )

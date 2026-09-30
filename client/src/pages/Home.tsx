@@ -20,7 +20,7 @@ export default function Home() {
     apiFetch<HomeStats>('/home').then(setStats).catch((e) => setError(e.message))
   }, [])
 
-  if (error) return <p className="text-rose">{error}</p>
+  if (error) return <p className="text-bad">{error}</p>
   if (!stats || !catalog || !me) return <Spinner />
 
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
@@ -78,18 +78,18 @@ export default function Home() {
     <div className="space-y-5">
       <PageHeader eyebrow={today} title={`${greeting}, ${firstName}`}
         actions={
-          <span className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-ink-800 border border-line text-sm">
-            <Icon name="flame" size={16} className="text-amber" />
+          <span className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-card border border-line text-sm">
+            <Icon name="flame" size={16} className="text-warn" />
             <b className="font-semibold">{stats.streak.days}-day</b><span className="text-muted">streak</span>
           </span>
         } />
 
-      {actionError && <p className="rounded-xl border border-amber/40 bg-amber-deep px-4 py-3 text-sm text-amber" role="alert">{actionError}</p>}
+      {actionError && <p className="rounded-xl border border-warn/40 bg-warn-soft px-4 py-3 text-sm text-warn" role="alert">{actionError}</p>}
 
       {stats.inProgress && (
-        <Link to={`/interview/${stats.inProgress.id}`} className="flex items-center justify-between gap-4 rounded-2xl border border-sky/40 bg-sky/10 px-5 py-4 hover:bg-sky/15">
+        <Link to={`/interview/${stats.inProgress.id}`} className="flex items-center justify-between gap-4 rounded-2xl border border-info/40 bg-info-soft px-5 py-4 hover:bg-info-soft">
           <span className="text-sm"><b className="font-semibold">You have an unfinished interview.</b> <span className="text-soft">Pick up where you left off.</span></span>
-          <Icon name="arrow" className="text-sky" />
+          <Icon name="arrow" className="text-info" />
         </Link>
       )}
 
@@ -104,7 +104,7 @@ export default function Home() {
               <>
                 <ScoreRing value={stats.readiness.score} />
                 {stats.readiness.delta !== null ? (
-                  <span className={`inline-flex items-center gap-1.5 text-sm ${stats.readiness.delta >= 0 ? 'text-lime' : 'text-amber'}`}>
+                  <span className={`inline-flex items-center gap-1.5 text-sm ${stats.readiness.delta >= 0 ? 'text-gold-deep' : 'text-warn'}`}>
                     <Icon name={stats.readiness.delta >= 0 ? 'up' : 'down'} size={14} strokeWidth={2.4} />
                     {stats.readiness.delta >= 0 ? '+' : ''}{stats.readiness.delta} vs your earlier interviews
                   </span>
@@ -127,17 +127,19 @@ export default function Home() {
           </div>
         </Card>
 
-        <section className="rounded-2xl bg-lime text-ink-900 p-6 flex flex-col">
-          <span className="self-start text-xs font-semibold bg-ink-900 text-lime rounded-full px-2.5 py-1">Up next for you</span>
-          <h2 className="font-display text-4xl leading-none mt-4">{recTitle}</h2>
-          <p className="text-sm mt-3 text-[#28301a] leading-relaxed">{rec.reason}</p>
+        {/* The most important card: a deep "stage" colour with a thin gold frame, in both themes */}
+        <section className="relative overflow-hidden rounded-2xl bg-stage text-stage-text border border-stage-line p-6 flex flex-col">
+          <span className="pointer-events-none absolute inset-2 rounded-xl border border-gold-bright/35" aria-hidden="true" />
+          <span className="self-start text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-bright">Up next for you</span>
+          <h2 className="font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>
+          <p className="text-sm mt-3 text-stage-soft leading-relaxed">{rec.reason}</p>
           {interviewsLeft <= 0 && <p className="text-sm mt-2 font-semibold">You've used today's {stats.usage.interviews.limit} interviews. Try a drill, or come back tomorrow.</p>}
           <div className="flex-1 min-h-4" />
           <div className="flex flex-wrap gap-2">
-            <Button variant="dark" onClick={startRecommended} disabled={starting || interviewsLeft <= 0}>
+            <Button variant="gold" onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
               <Icon name="play" size={16} /> {starting ? 'Preparing…' : 'Start interview'}
             </Button>
-            <Link to="/practice" className="inline-flex items-center min-h-11 px-4 rounded-xl border-[1.5px] border-ink-900 text-sm font-medium hover:bg-ink-900/10">Choose another</Link>
+            <Link to="/practice" className="relative inline-flex items-center min-h-11 px-4 rounded-xl border border-stage-line text-sm font-medium text-stage-text hover:bg-white/10">Choose another</Link>
           </div>
         </section>
 
@@ -146,15 +148,15 @@ export default function Home() {
           <div className="flex justify-between">
             {stats.streak.week.map((d, i) => (
               <div key={d.date} className="flex flex-col items-center gap-1.5">
-                <span className={`w-6 h-6 rounded-full ${d.done ? 'bg-lime' : d.isToday ? 'border-2 border-dashed border-lime' : 'bg-[#232838]'}`}
+                <span className={`w-6 h-6 rounded-full ${d.done ? 'bg-gold' : d.isToday ? 'border-2 border-dashed border-gold' : 'bg-hover'}`}
                   aria-label={`${d.date}: ${d.done ? 'practised' : 'not practised'}`} />
                 <span className="text-[11px] text-subtle">{DAY_LETTERS[i]}</span>
               </div>
             ))}
           </div>
           <p className="text-sm text-soft">{stats.counts.thisWeek} session{stats.counts.thisWeek === 1 ? '' : 's'} in the last 7 days</p>
-          <div className="rounded-xl bg-ink-750 border border-line-strong p-3.5 space-y-2.5">
-            <p className="text-xs text-muted flex items-center gap-1.5"><Icon name="bolt" size={13} className="text-lime" /> 5-minute drill</p>
+          <div className="rounded-xl bg-raised border border-line-strong p-3.5 space-y-2.5">
+            <p className="text-xs text-muted flex items-center gap-1.5"><Icon name="bolt" size={13} className="text-gold-deep" /> 5-minute drill</p>
             <p className="text-sm font-medium leading-snug">{stats.drillTopic}</p>
             <Button variant="secondary" className="w-full min-h-10" onClick={drill} disabled={starting || drillsLeft <= 0}>
               {drillsLeft <= 0 ? 'No drills left today' : 'Start drill'}
@@ -165,7 +167,7 @@ export default function Home() {
             {stats.daysLeft !== null && stats.daysLeft >= 0 ? (
               <><span className="font-mono text-2xl font-semibold">{stats.daysLeft}</span><span className="text-sm text-muted">days to your target date</span></>
             ) : (
-              <Link to="/goals" className="text-sm text-lime">Set a target date</Link>
+              <Link to="/goals" className="text-sm text-gold-deep">Set a target date</Link>
             )}
           </div>
         </Card>
@@ -177,8 +179,8 @@ export default function Home() {
           <div className="flex flex-wrap justify-between items-center gap-3">
             <h2 className="font-semibold">Skills: what you claim vs what you prove</h2>
             <div className="flex gap-4 text-xs text-muted">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm border-[1.5px] border-sky" />You said</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-lime" />Proven</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm border-[1.5px] border-info" />You said</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-gold" />Proven</span>
             </div>
           </div>
           <div className="mt-4 space-y-3">
@@ -189,23 +191,23 @@ export default function Home() {
                 <div key={s.skill} className="flex items-center gap-4">
                   <span className="w-24 text-sm text-soft truncate">{s.skill}</span>
                   <div className="flex-1 space-y-1">
-                    <div className="h-1.5 rounded-full bg-[#1a1e28] overflow-hidden"><div className="h-full rounded-full border-[1.5px] border-sky box-border" style={{ width: `${claim}%` }} /></div>
-                    <div className="h-1.5 rounded-full bg-[#1a1e28] overflow-hidden"><div className="h-full rounded-full bg-lime" style={{ width: `${s.proven_score ?? 0}%` }} /></div>
+                    <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className="h-full rounded-full border-[1.5px] border-info box-border" style={{ width: `${claim}%` }} /></div>
+                    <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className="h-full rounded-full bg-gold" style={{ width: `${s.proven_score ?? 0}%` }} /></div>
                   </div>
-                  <span className={`w-20 text-right font-mono text-xs ${gap === null ? 'text-subtle' : gap <= -20 ? 'text-rose' : 'text-muted'}`}>
+                  <span className={`w-20 text-right font-mono text-xs ${gap === null ? 'text-subtle' : gap <= -20 ? 'text-bad' : 'text-muted'}`}>
                     {gap === null ? 'not tested' : hideScores ? 'tested' : gap > 0 ? `+${gap}` : gap}
                   </span>
                 </div>
               )
             })}
           </div>
-          <Link to="/profile" className="inline-block mt-4 text-sm text-lime">Edit skills</Link>
+          <Link to="/profile" className="inline-block mt-4 text-sm text-gold-deep">Edit skills</Link>
         </Card>
 
         <Card>
           <div className="flex justify-between items-center">
             <h2 className="font-semibold">Recent interviews</h2>
-            <Link to="/reports" className="text-sm text-lime">All reports</Link>
+            <Link to="/reports" className="text-sm text-gold-deep">All reports</Link>
           </div>
           {stats.recent.length === 0 ? (
             <p className="text-sm text-muted mt-4">No interviews for this goal yet. Your reports will appear here.</p>
@@ -213,7 +215,7 @@ export default function Home() {
             <ul className="mt-2">
               {stats.recent.map((s) => (
                 <li key={s.id} className="border-t border-line first:border-t-0">
-                  <Link to={`/interview/${s.id}/report`} className="flex items-center gap-3 min-h-12 hover:text-lime">
+                  <Link to={`/interview/${s.id}/report`} className="flex items-center gap-3 min-h-12 hover:text-gold-deep">
                     <span className="flex-1 min-w-0">
                       <span className="block text-sm font-medium truncate">{sessionTitle(s, roundLabel)}</span>
                       <span className="block text-xs text-muted">{new Date(s.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}{s.status === 'ended_early' ? ' · ended early' : ''}</span>

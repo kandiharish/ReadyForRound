@@ -64,7 +64,7 @@ export default function Onboarding() {
   }, [])
 
   if (!catalog) {
-    return <Shell>{error ? <p className="text-rose">{error}</p> : <p className="text-muted">Loading…</p>}</Shell>
+    return <Shell>{error ? <p className="text-bad">{error}</p> : <p className="text-muted">Loading…</p>}</Shell>
   }
 
   const set = <K extends keyof Answers>(key: K, value: Answers[K]) => setAnswers((a) => ({ ...a, [key]: value }))
@@ -115,11 +115,11 @@ export default function Onboarding() {
       {/* Progress bar */}
       <div className="flex gap-1 mb-6">
         {STEP_TITLES.map((_, i) => (
-          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-lime' : 'bg-line-strong'}`} />
+          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-gold' : 'bg-line-strong'}`} />
         ))}
       </div>
       <p className="text-xs text-muted">Step {step + 1} of {STEP_TITLES.length}</p>
-      <h1 className="text-xl font-bold text-fg mt-1 mb-5">{STEP_TITLES[step]}</h1>
+      <h1 className="text-xl font-bold text-ink mt-1 mb-5">{STEP_TITLES[step]}</h1>
 
       {step === 0 && (showQuiz ? (
         <RoleQuiz
@@ -130,8 +130,8 @@ export default function Onboarding() {
       ) : (
         <>
           <Choices options={catalog.roles} value={answers.target_role} onChange={(v) => set('target_role', v)} />
-          <button onClick={() => setShowQuiz(true)} className="mt-4 text-lime font-medium text-sm">
-            🤔 Not sure? Take a 1-minute quiz
+          <button onClick={() => setShowQuiz(true)} className="mt-4 text-gold-deep font-medium text-sm">
+            Not sure? Take a 1-minute quiz
           </button>
         </>
       ))}
@@ -158,7 +158,7 @@ export default function Onboarding() {
             {[...new Set([...(role?.skills ?? []), ...Object.keys(answers.skills)])].map((skill) => (
               <button key={skill} onClick={() => toggleSkill(skill)}
                 className={`px-3 py-1.5 rounded-full border text-sm ${answers.skills[skill]
-                  ? 'bg-lime border-lime text-white' : 'border-line-strong text-soft hover:border-lime'}`}>
+                  ? 'bg-gold border-gold text-ink' : 'border-line-strong text-soft hover:border-gold'}`}>
                 {skill}
               </button>
             ))}
@@ -174,11 +174,11 @@ export default function Onboarding() {
             <div className="mt-5 space-y-3">
               {Object.entries(answers.skills).map(([skill, rating]) => (
                 <div key={skill} className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-fg w-28 shrink-0">{skill}</span>
+                  <span className="text-sm font-medium text-ink w-28 shrink-0">{skill}</span>
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} onClick={() => set('skills', { ...answers.skills, [skill]: n })} title={RATING_LABELS[n]}
-                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-lime text-ink-900' : 'bg-ink-750 text-muted'}`}>
+                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-ink text-paper' : 'bg-raised text-muted'}`}>
                         {n}
                       </button>
                     ))}
@@ -194,7 +194,7 @@ export default function Onboarding() {
       {step === 5 && (
         <div className="space-y-4">
           <div>
-            <p className="font-medium text-fg mb-2">Interviewer speaking speed</p>
+            <p className="font-medium text-ink mb-2">Interviewer speaking speed</p>
             <Choices
               options={[
                 { id: 'normal', label: 'Normal speed' },
@@ -208,7 +208,7 @@ export default function Onboarding() {
             <input type="checkbox" className="mt-1" checked={answers.practice_without_score}
               onChange={(e) => set('practice_without_score', e.target.checked)} />
             <span>
-              <span className="font-medium text-fg">Practise without scores</span>
+              <span className="font-medium text-ink">Practise without scores</span>
               <span className="block text-sm text-muted">
                 Get feedback but no numbers, so you can relax while you build confidence. You can change this later.
               </span>
@@ -217,7 +217,7 @@ export default function Onboarding() {
         </div>
       )}
 
-      {error && <p className="text-sm text-rose mt-4">{error}</p>}
+      {error && <p className="text-sm text-bad mt-4">{error}</p>}
 
       <div className="flex justify-between mt-8">
         <button onClick={() => setStep(step - 1)} disabled={step === 0}
@@ -226,12 +226,12 @@ export default function Onboarding() {
         </button>
         {step < STEP_TITLES.length - 1 ? (
           <button onClick={() => setStep(step + 1)} disabled={!canContinue}
-            className="bg-lime text-ink-900 rounded-lg px-5 py-2 font-medium disabled:opacity-40">
+            className="bg-ink text-paper rounded-lg px-5 py-2 font-medium disabled:opacity-40">
             Continue
           </button>
         ) : (
           <button onClick={finish} disabled={saving}
-            className="bg-lime text-ink-900 rounded-lg px-5 py-2 font-medium disabled:opacity-40">
+            className="bg-ink text-paper rounded-lg px-5 py-2 font-medium disabled:opacity-40">
             {saving ? 'Saving…' : 'Finish'}
           </button>
         )}
@@ -243,8 +243,8 @@ export default function Onboarding() {
 function Shell({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-start sm:items-center justify-center p-4">
-      <div className="bg-ink-800 border border-line rounded-2xl p-6 sm:p-8 max-w-lg w-full">
-        <p className="text-sm font-semibold text-lime mb-4">ReadyForRound</p>
+      <div className="bg-card border border-line rounded-2xl p-6 sm:p-8 max-w-lg w-full">
+        <p className="text-sm font-semibold text-gold-deep mb-4">ReadyForRound</p>
         {children}
       </div>
     </main>
@@ -258,8 +258,8 @@ function Choices({ options, value, onChange }: { options: Option[]; value: strin
       {options.map((o) => (
         <button key={o.id} onClick={() => onChange(o.id)}
           className={`w-full text-left border rounded-lg px-4 py-3 ${value === o.id
-            ? 'border-lime bg-lime-deep ring-1 ring-lime' : 'border-line-strong hover:border-lime'}`}>
-          <span className="font-medium text-fg">{o.label}</span>
+            ? 'border-gold bg-gold-soft ring-1 ring-gold' : 'border-line-strong hover:border-gold'}`}>
+          <span className="font-medium text-ink">{o.label}</span>
           {o.description && <span className="block text-sm text-muted">{o.description}</span>}
         </button>
       ))}

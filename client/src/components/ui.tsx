@@ -26,6 +26,15 @@ const ICONS = {
   trophy: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3',
   map: 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14',
   bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',
+  mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3',
+  camera: 'M3 7h11v10H3zM14 10l7-3v10l-7-3',
+  cameraOff: 'M3 7h11v10H3zM14 10l7-3v10l-7-3M3 3l18 18',
+  repeat: 'M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3',
+  keyboard: 'M3 6h18v12H3zM7 10h1M11 10h1M15 10h1M7 14h10',
+  skip: 'M5 5l8 7-8 7zM17 5v14',
+  phoneOff: 'M5 12c4-4 10-4 14 0l-2 3-3-1v-2a8 8 0 0 0-4 0v2l-3 1z',
+  volume: 'M4 9h4l5-4v14l-5-4H4zM17 9a4 4 0 0 1 0 6M19.5 6.5a8 8 0 0 1 0 11',
+  target: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01',
 } as const
 
 export type IconName = keyof typeof ICONS
@@ -42,14 +51,15 @@ export function Icon({ name, size = 18, className = '', strokeWidth = 1.8 }: { n
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`bg-ink-800 border border-line rounded-2xl p-5 sm:p-6 ${className}`}>{children}</section>
+  return <section className={`bg-card border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(60,45,20,0.05)] ${className}`}>{children}</section>
 }
 
+// Classic style: a solid ink button for the main action (it flips to ivory in dark mode), outlined buttons for the rest.
 const BUTTON = {
-  primary: 'bg-lime text-ink-900 hover:bg-lime-hover font-semibold',
-  secondary: 'bg-ink-750 text-fg border border-line-strong hover:bg-ink-700 font-medium',
-  ghost: 'text-muted hover:text-fg hover:bg-ink-750 font-medium',
-  dark: 'bg-ink-900 text-white hover:bg-black font-semibold',
+  primary: 'bg-ink text-paper hover:bg-ink-hover font-semibold',
+  secondary: 'bg-card text-ink border border-line-strong hover:bg-raised font-medium',
+  ghost: 'text-muted hover:text-ink hover:bg-raised font-medium',
+  gold: 'bg-gold-bright text-[#1b1b1f] hover:bg-[#dcbd80] font-semibold',
 } as const
 
 type ButtonProps = { variant?: keyof typeof BUTTON; className?: string; children: ReactNode }
@@ -75,7 +85,7 @@ export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: st
     <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div className="min-w-0">
         {eyebrow && <p className="text-sm text-muted">{eyebrow}</p>}
-        <h1 className="font-display text-4xl sm:text-5xl leading-none mt-1">{title}</h1>
+        <h1 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-1 text-ink">{title}</h1>
         {subtitle && <p className="text-sm text-muted mt-2 max-w-2xl">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>}
@@ -83,35 +93,36 @@ export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: st
   )
 }
 
-// Score colour: good (lime), needs work (amber), low (rose). Also differs in lightness, not only hue.
-export const scoreTone = (score: number) => (score >= 70 ? 'lime' : score >= 40 ? 'amber' : 'rose')
-const TONE_HEX = { lime: '#c6f36b', amber: '#f5b85a', rose: '#ff8a95', sky: '#7dd3fc' }
+// Score colour: good (green), needs work (amber), low (red). They also differ in lightness, not only hue.
+// Colours are CSS variables, so they follow the light/dark theme.
+export const scoreTone = (score: number) => (score >= 70 ? 'good' : score >= 40 ? 'warn' : 'bad')
+const TONE_VAR = { good: 'var(--good)', warn: 'var(--warn)', bad: 'var(--bad)', gold: 'var(--gold)', info: 'var(--info)' }
 
-export function ScoreRing({ value, size = 140, label = 'ready', suffix = '%', color }: { value: number | null; size?: number; label?: string; suffix?: string; color?: keyof typeof TONE_HEX }) {
+export function ScoreRing({ value, size = 140, label = 'ready', suffix = '%', color }: { value: number | null; size?: number; label?: string; suffix?: string; color?: keyof typeof TONE_VAR }) {
   const r = 42
   const c = 2 * Math.PI * r
-  const stroke = TONE_HEX[color ?? (value === null ? 'lime' : scoreTone(value))]
+  const stroke = TONE_VAR[color ?? (value === null ? 'gold' : scoreTone(value))]
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90" aria-hidden="true">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="#232838" strokeWidth="8" />
+        <circle cx="50" cy="50" r={r} fill="none" style={{ stroke: 'var(--hover)' }} strokeWidth="7" />
         {value !== null && (
-          <circle cx="50" cy="50" r={r} fill="none" stroke={stroke} strokeWidth="8" strokeLinecap="round"
+          <circle cx="50" cy="50" r={r} fill="none" style={{ stroke }} strokeWidth="7" strokeLinecap="round"
             strokeDasharray={c} strokeDashoffset={c * (1 - Math.max(0, Math.min(100, value)) / 100)} />
         )}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono font-semibold tracking-tight" style={{ fontSize: size * 0.24 }}>{value === null ? '—' : `${value}${suffix}`}</span>
+        <span className="font-display font-semibold leading-none text-ink" style={{ fontSize: size * 0.3 }}>{value === null ? '—' : `${value}${suffix}`}</span>
         {label && <span className="text-xs text-muted">{label}</span>}
       </div>
     </div>
   )
 }
 
-export function Bar({ value, tone }: { value: number; tone?: 'lime' | 'amber' | 'rose' | 'sky' }) {
-  const color = { lime: 'bg-lime', amber: 'bg-amber', rose: 'bg-rose', sky: 'bg-sky' }[tone ?? scoreTone(value)]
+export function Bar({ value, tone }: { value: number; tone?: 'good' | 'warn' | 'bad' | 'gold' | 'info' }) {
+  const color = { good: 'bg-good', warn: 'bg-warn', bad: 'bg-bad', gold: 'bg-gold', info: 'bg-info' }[tone ?? scoreTone(value)]
   return (
-    <div className="h-1.5 rounded-full bg-[#232838] overflow-hidden">
+    <div className="h-1.5 rounded-full bg-hover overflow-hidden">
       <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
     </div>
   )
@@ -119,14 +130,14 @@ export function Bar({ value, tone }: { value: number; tone?: 'lime' | 'amber' | 
 
 export function ScoreChip({ score, outOf = 100 }: { score: number; outOf?: number }) {
   const tone = scoreTone((score / outOf) * 100)
-  const cls = { lime: 'bg-lime-deep text-lime', amber: 'bg-amber-deep text-amber', rose: 'bg-rose-deep text-rose' }[tone]
+  const cls = { good: 'bg-good-soft text-good', warn: 'bg-warn-soft text-warn', bad: 'bg-bad-soft text-bad' }[tone]
   return <span className={`inline-block font-mono text-sm font-semibold rounded-full px-3 py-0.5 ${cls}`}>{score}{outOf === 10 ? '/10' : ''}</span>
 }
 
 export function Spinner({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="flex items-center gap-3 text-muted text-sm" role="status">
-      <span className="w-5 h-5 rounded-full border-2 border-line-strong border-t-lime animate-spin" />
+      <span className="w-5 h-5 rounded-full border-2 border-line-strong border-t-gold animate-spin" />
       {label}
     </div>
   )
@@ -135,7 +146,7 @@ export function Spinner({ label = 'Loading…' }: { label?: string }) {
 export function EmptyState({ title, body, action }: { title: string; body: string; action?: ReactNode }) {
   return (
     <Card className="text-center py-12">
-      <p className="font-display text-3xl">{title}</p>
+      <p className="font-display font-semibold text-3xl">{title}</p>
       <p className="text-sm text-muted mt-2 max-w-md mx-auto">{body}</p>
       {action && <div className="mt-6 flex justify-center">{action}</div>}
     </Card>
@@ -154,8 +165,8 @@ export function ChoiceCards<T extends string>({ options, value, onChange, column
       {options.map((o) => (
         <button key={o.id} type="button" onClick={() => onChange(o.id)} aria-pressed={value === o.id}
           className={`text-left rounded-xl border px-4 py-3 transition-colors ${value === o.id
-            ? 'border-lime bg-lime-deep ring-1 ring-lime' : 'border-line-strong bg-ink-750 hover:border-muted'}`}>
-          <span className="font-medium text-fg">{o.label}</span>
+            ? 'border-gold bg-gold-soft ring-1 ring-gold' : 'border-line-strong bg-card hover:border-muted'}`}>
+          <span className="font-medium text-ink">{o.label}</span>
           {o.description && <span className="block text-sm text-muted mt-0.5">{o.description}</span>}
         </button>
       ))}
