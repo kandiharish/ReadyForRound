@@ -1,4 +1,5 @@
 import { supabase } from '../db/supabase.js'
+import { logError } from '../errors.js'
 import { chat } from '../llm/client.js'
 import type { InterviewContext } from '../interview/prompts.js'
 import type { RoundId } from '../interview/rounds.js'
@@ -15,7 +16,7 @@ export function startReport(sessionId: string) {
   running.add(sessionId)
   generate(sessionId)
     .catch(async (err) => {
-      console.error(`Report for ${sessionId} failed:`, err)
+      logError('server', err as Error, { path: `report ${sessionId}` })
       await supabase!.from('interview_reports')
         .update({ status: 'failed', error: String((err as Error).message).slice(0, 500), updated_at: new Date().toISOString() })
         .eq('session_id', sessionId)

@@ -1,5 +1,6 @@
 import express, { Router, type Response } from 'express'
 import { SttUnavailableError, transcribe } from '../stt/transcribe.js'
+import { logError } from '../errors.js'
 import { z } from 'zod'
 import { requireAuth } from '../auth/requireAuth.js'
 import { roundIds } from '../interview/rounds.js'
@@ -23,7 +24,7 @@ const idSchema = z.string().uuid()
 
 function handleError(res: Response, err: unknown) {
   if (err instanceof InterviewError) return res.status(err.status).json({ error: err.message })
-  console.error(err)
+  logError('server', err as Error, { path: 'interviews' })
   res.status(500).json({ error: 'Something went wrong' })
 }
 

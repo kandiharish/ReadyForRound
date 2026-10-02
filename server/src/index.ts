@@ -2,9 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import { rateLimit, ipKeyGenerator } from 'express-rate-limit'
 import { config } from './config.js'
-import { chat, isLlmReachable } from './llm/client.js'
-import { isDbConnected } from './db/supabase.js'
-import { requireAuth } from './auth/requireAuth.js'
+import { isLlmReachable } from './llm/client.js'
+import { isDbConnected, supabase } from './db/supabase.js'
+import { logError } from './errors.js'
 import { profileRouter } from './routes/profile.js'
 import { interviewsRouter } from './routes/interviews.js'
 import { goalsRouter } from './routes/goals.js'
@@ -42,24 +42,36 @@ app.get('/api/health', async (_req, res) => {
 app.use('/api', profileRouter)
 // Interview routes: /api/interviews/...
 app.use('/api/interviews', interviewsRouter)
-// Goals, Home stats and the Reports list: /api/goals, /api/home, /api/reports
+// Errors from students' browsers (a page crashed, a script failed). Logged in or not.
+app.post('/api/client-errors', async (req, res) => {
+  const body = req.body ?? {}
+  let userId: string | undefined
+  const token = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null
+  if (token && supabase) userId = (await supabase.auth.getUser(token)).data.user?.id
+  logError('client', { message: body.message, stack: body.stack }, { path: body.path, userId, userAgent: req.headers['user-agent'] })
+  res.status(204).end()
+})
+
+// Your data (download / delete): /api/account
 app.use('/api/account', accountRouter)
+// Goals, Home stats and the Reports list: /api/goals, /api/home, /api/reports
 app.use('/api', goalsRouter)
 
-// Temporary test route: send a message, get the AI's reply.
-// Logged-in users only, so strangers can't use up our AI quota.
-app.post('/api/llm/test', requireAuth, async (req, res) => {
-  const message = typeof req.body?.message === 'string' ? req.body.message : 'Say hello in one sentence.'
-  try {
-    const reply = await chat([
-      { role: 'system', content: 'You are a friendly job interviewer. Keep replies short.' },
-      { role: 'user', content: message },
-    ])
-    res.json(reply)
-  } catch (err) {
-    res.status(502).json({ error: (err as Error).message })
+// Catch-all for anything unexpected: log it, and give the student a calm message instead of a crash.
+app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  // 4xx = the request itself was bad (e.g. broken JSON, too large). That's not our bug, so don't log it.
+  if (err.status && err.status < 500) {
+    if (!res.headersSent) res.status(err.status).json({ error: 'That request could not be read. Please try again.' })
+    return
   }
+  logError('server', err, { path: `${req.method} ${req.originalUrl}`, userId: req.user?.id, userAgent: req.headers['user-agent'] })
+  if (res.headersSent) return
+  res.status(500).json({ error: 'Something went wrong on our side. Please try again.' })
 })
+
+// Errors outside any request (e.g. a background report) are logged too, instead of silently crashing the server.
+process.on('unhandledRejection', (reason) => logError('server', reason instanceof Error ? reason : { message: String(reason) }, { path: 'unhandledRejection' }))
+process.on('uncaughtException', (err) => logError('server', err, { path: 'uncaughtException' }))
 
 app.listen(config.PORT, () => {
   console.log(`Server running on http://localhost:${config.PORT} (AI provider: ${config.LLM_PROVIDER})`)
