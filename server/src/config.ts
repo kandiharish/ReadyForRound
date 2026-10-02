@@ -30,7 +30,7 @@ const schema = z.object({
   OLLAMA_MODEL: z.string().default('llama3.2:3b'),
 
   GROQ_API_KEY: z.string().optional(),
-  GROQ_MODEL: z.string().default('openai/gpt-oss-20b'), // asks the interview questions (when LLM_PROVIDER=groq)
+  GROQ_MODEL: z.string().default('openai/gpt-oss-120b'), // asks the interview questions (when LLM_PROVIDER=groq); most reliable in tests
   GROQ_REPORT_MODEL: z.string().default('openai/gpt-oss-120b'), // grades answers and writes the report
   // Speech-to-text model on Groq (Whisper). Used for spoken answers even when the chat AI is Ollama.
   GROQ_STT_MODEL: z.string().default('whisper-large-v3-turbo'),

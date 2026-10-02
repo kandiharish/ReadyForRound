@@ -65,7 +65,12 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
   })
 
   if (!res.ok) {
-    throw new Error(`${provider} returned ${res.status}: ${await res.text()}`)
+    const body = await res.text()
+    // Reasoning models (like gpt-oss) sometimes wrap a normal reply in a broken "tool call". Groq then refuses it,
+    // but still sends back what the model wrote ("failed_generation"). Recover that text instead of failing.
+    const recovered = recoverFailedGeneration(body)
+    if (recovered) return { provider, model, text: recovered, usage: undefined }
+    throw new Error(`${provider} returned ${res.status}: ${body}`)
   }
 
   const data = await res.json()
@@ -74,6 +79,20 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
     model,
     text: data.choices[0].message.content as string,
     usage: data.usage, // how many tokens the question and reply used
+  }
+}
+
+export function recoverFailedGeneration(body: string): string | null {
+  try {
+    const err = JSON.parse(body)?.error
+    if (err?.code !== 'tool_use_failed' || typeof err.failed_generation !== 'string') return null
+    const raw: string = err.failed_generation
+    // The text usually sits after "arguments": ... ; fall back to the whole thing.
+    const m = raw.match(/"arguments"\s*:\s*"?([\s\S]*?)"?\s*}\s*$/)
+    const text = (m ? m[1] : raw).replace(/\\n/g, '\n').trim() // turn written "\n" back into real line breaks
+    return text.length > 3 ? text : null
+  } catch {
+    return null
   }
 }
 
