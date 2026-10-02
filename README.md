@@ -43,3 +43,7 @@ Edit `server/.env`:
 
 - Local: `LLM_PROVIDER=ollama`
 - Online: `LLM_PROVIDER=groq` and set `GROQ_API_KEY` (free key from https://console.groq.com)
+
+## Going online
+
+See [DEPLOY.md](DEPLOY.md) for the step-by-step guide (GitHub, Render, Vercel, email, keys).
