@@ -30,7 +30,8 @@
   --color-on-accent: var(--on-accent); /* text on top of the accent colour */
   --color-accent-deep: var(--accent-deep); /* accent-coloured text (readable on the page) */
   --color-accent-soft: var(--accent-soft); /* accent-tinted background */
-  --color-accent-bright: #8ea7ff; /* accent on the dark interview stage */
+  --color-accent-bright: var(--accent-bright); /* accent on the interview stage */
+  --color-on-accent-bright: var(--on-accent-bright);
 
   --color-good: var(--good);
   --color-good-soft: var(--good-soft);
@@ -42,14 +43,33 @@
   --color-info-soft: var(--info-soft);
   --color-danger: #c4322b; /* end call */
 
-  /* The interview "stage": deep navy in both themes, so the interviewer stands out */
-  --color-stage: #0b1020;
-  --color-stage-card: #131b2e;
-  --color-stage-raised: #1a2440;
-  --color-stage-line: #27324f;
-  --color-stage-text: #eef2fa;
-  --color-stage-soft: #c9d2e3;
-  --color-stage-muted: #96a2b9;
+  /* Soft classic pastels for variety: a light background + a matching readable text colour */
+  --color-blush: var(--blush);
+  --color-blush-ink: var(--blush-ink);
+  --color-sage: var(--sage);
+  --color-sage-ink: var(--sage-ink);
+  --color-lavender: var(--lavender);
+  --color-lavender-ink: var(--lavender-ink);
+  --color-peach: var(--peach);
+  --color-peach-ink: var(--peach-ink);
+  --color-sky: var(--sky);
+  --color-sky-ink: var(--sky-ink);
+
+  /* The interview room ("stage"): follows light/dark mode */
+  --color-stage: var(--stage);
+  --color-stage-card: var(--stage-card);
+  --color-stage-raised: var(--stage-raised);
+  --color-stage-line: var(--stage-line);
+  --color-stage-text: var(--stage-text);
+  --color-stage-soft: var(--stage-soft);
+  --color-stage-muted: var(--stage-muted);
+
+  /* "Night": always dark, for the one card that should stand out on every theme (Up next) */
+  --color-night: #0b1020;
+  --color-night-line: #27324f;
+  --color-night-text: #eef2fa;
+  --color-night-soft: #c9d2e3;
+  --color-night-accent: #8ea7ff;
 }
 
 /* Light: cool blue-white, deep navy text, sapphire */
@@ -79,6 +99,25 @@
   --bad-soft: #fde6e3;
   --info: #0e7490;
   --info-soft: #ddf2f6;
+  --accent-bright: #3354d6;
+  --on-accent-bright: #ffffff;
+
+  --blush: #fbe7ee;     --blush-ink: #a3385c;
+  --sage: #e3f2e8;      --sage-ink: #2b6a44;
+  --lavender: #ede9fc;  --lavender-ink: #5944ad;
+  --peach: #fdecdf;     --peach-ink: #984a12;
+  --sky: #e2f0fb;       --sky-ink: #1c5c8b;
+
+  --stage: #edf1f8;
+  --stage-card: #ffffff;
+  --stage-raised: #f1f4fa;
+  --stage-line: #dbe2ed;
+  --stage-text: #0f172a;
+  --stage-soft: #334155;
+  --stage-muted: #5a6577;
+  --avatar-from: #e3eaf8;
+  --avatar-to: #c7d3ec;
+  --glow-rgb: 51, 84, 214; /* sapphire glow around the interviewer */
 }
 
 /* Dark: deep navy, soft white text, bright periwinkle */
@@ -108,6 +147,25 @@
   --bad-soft: #32181a;
   --info: #5ccadb;
   --info-soft: #0f2a33;
+  --accent-bright: #8ea7ff;
+  --on-accent-bright: #0b1020;
+
+  --blush: #3a1e29;     --blush-ink: #f3a9c1;
+  --sage: #172d20;      --sage-ink: #9fd6b1;
+  --lavender: #251f40;  --lavender-ink: #c0b5f6;
+  --peach: #33231a;     --peach-ink: #f5bb8c;
+  --sky: #142838;       --sky-ink: #95c9ef;
+
+  --stage: #0b1020;
+  --stage-card: #131b2e;
+  --stage-raised: #1a2440;
+  --stage-line: #27324f;
+  --stage-text: #eef2fa;
+  --stage-soft: #c9d2e3;
+  --stage-muted: #96a2b9;
+  --avatar-from: #2a3658;
+  --avatar-to: #151d33;
+  --glow-rgb: 142, 167, 255;
 }
 
 body {
@@ -148,4 +206,15 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .avatar-blink, .avatar-nod { animation: none; }
   body { transition: none; }
+}
+
+/* Toasts and dialogs slide in gently */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes story-progress {
+  from { width: 0; }
+  to { width: 100%; }
 }

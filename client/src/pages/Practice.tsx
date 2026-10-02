@@ -3,10 +3,18 @@ import { Link, useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
-import { Button, ButtonLink, EmptyState, Icon, PageHeader, Spinner } from '../components/ui'
+import { Button, ButtonLink, EmptyState, Icon, PageHeader, Spinner, type IconName } from '../components/ui'
 import type { Interview, RoundId } from '../types'
 
 type Choice = { mode: 'complete' } | { mode: 'single'; round: RoundId }
+
+// Each round gets its own soft colour and icon, so they're easy to tell apart.
+const ROUND_STYLE: Record<RoundId, { tint: string; icon: IconName }> = {
+  technical: { tint: 'bg-sky text-sky-ink', icon: 'keyboard' },
+  project: { tint: 'bg-peach text-peach-ink', icon: 'book' },
+  behavioural: { tint: 'bg-sage text-sage-ink', icon: 'target' },
+  hr: { tint: 'bg-blush text-blush-ink', icon: 'profile' },
+}
 
 // Choose an interview: a complete one (rounds depend on the goal's company type) or a single round.
 export default function Practice() {
@@ -87,8 +95,13 @@ export default function Practice() {
           {catalog.rounds.map((r) => (
             <button key={r.id} type="button" onClick={() => setChoice({ mode: 'single', round: r.id })}
               aria-pressed={isSelected({ mode: 'single', round: r.id })} className={cardClass({ mode: 'single', round: r.id })}>
-              <span className="font-semibold">{r.label}</span>
-              <span className="block text-sm text-muted mt-1">{r.description}</span>
+              <span className="flex items-center gap-3">
+                <span className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center ${ROUND_STYLE[r.id].tint}`}>
+                  <Icon name={ROUND_STYLE[r.id].icon} size={17} />
+                </span>
+                <span className="font-semibold">{r.label}</span>
+              </span>
+              <span className="block text-sm text-muted mt-2">{r.description}</span>
             </button>
           ))}
         </div>

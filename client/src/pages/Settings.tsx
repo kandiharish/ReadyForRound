@@ -1,7 +1,9 @@
 import { apiFetch } from '../lib/api'
+import { Select } from '../components/Select'
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import { useMe } from '../auth/MeProvider'
+import { useFeedback } from '../components/Feedback'
 import { saveProfile } from '../lib/profile'
 import { supabase } from '../lib/supabase'
 import { loadSettings, saveSettings, type RoomSettings } from '../components/PreJoin'
@@ -13,7 +15,7 @@ export default function Settings() {
   const { me, refresh } = useMe()
   const [room, setRoom] = useState<RoomSettings>(loadSettings)
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
-  const [saved, setSaved] = useState<string | null>(null)
+  const { toast } = useFeedback()
 
   useEffect(() => { loadVoices().then(setVoices) }, [])
   if (!me) return <Spinner />
@@ -31,8 +33,7 @@ export default function Settings() {
     flash()
   }
   function flash() {
-    setSaved('Saved')
-    setTimeout(() => setSaved(null), 1500)
+    toast('Settings saved')
   }
 
   const voice = voices.find((v) => v.voiceURI === room.voiceURI) ?? pickVoice(voices, INTERVIEWERS[room.interviewer].gender)
@@ -40,7 +41,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Settings" title="Make it yours"
-        actions={saved && <span className="text-sm text-accent-deep self-center" role="status">{saved}</span>} />
+ />
 
       <Card className="space-y-5">
         <h2 className="font-semibold">Your interviewer</h2>
@@ -54,14 +55,11 @@ export default function Settings() {
           ))}
         </div>
         <div className="flex flex-wrap items-end gap-2">
-          <label className="flex flex-col gap-2 text-sm font-medium text-soft flex-1 min-w-60 max-w-md">
+          <div className="flex flex-col gap-2 text-sm font-medium text-soft flex-1 min-w-60 max-w-md">
             Voice
-            <select value={voice?.voiceURI ?? ''} onChange={(e) => updateRoom({ voiceURI: e.target.value })}
-              className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal">
-              {voices.length === 0 && <option value="">Default voice</option>}
-              {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{v.name} ({v.lang})</option>)}
-            </select>
-          </label>
+            <Select label="Interviewer voice" value={voice?.voiceURI ?? ''} onChange={(v) => updateRoom({ voiceURI: v })}
+              options={voices.length === 0 ? [{ value: '', label: 'Default voice' }] : voices.map((v) => ({ value: v.voiceURI, label: v.name, hint: v.lang }))} />
+          </div>
           <Button type="button" variant="secondary" onClick={() => speak(`Hello, I'm ${INTERVIEWERS[room.interviewer].name}. Ready when you are.`, voice, me.speaking_pace === 'slow' ? 0.85 : 1)}>
             Test voice
           </Button>

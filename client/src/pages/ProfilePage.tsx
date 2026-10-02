@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
+import { Select } from '../components/Select'
 import { useMe } from '../auth/MeProvider'
+import { useFeedback } from '../components/Feedback'
 import { saveProfile } from '../lib/profile'
 import { Button, Card, PageHeader, Spinner } from '../components/ui'
 
@@ -8,6 +10,7 @@ const RATING_LABELS = ['', 'Just started', 'Basic', 'Comfortable', 'Good', 'Expe
 // Who you are: name, experience and skills. (What you're preparing for lives on the Goals page.)
 export default function ProfilePage() {
   const { me, catalog, refresh, label } = useMe()
+  const { toast } = useFeedback()
   const [name, setName] = useState(me?.full_name ?? '')
   const [level, setLevel] = useState(me?.experience_level ?? 'final_year')
   const [skills, setSkills] = useState<Record<string, number>>(Object.fromEntries((me?.user_skills ?? []).map((s) => [s.skill, s.self_rating])))
@@ -41,7 +44,8 @@ export default function ProfilePage() {
     try {
       await saveProfile(me!, { full_name: name, experience_level: level, skills: Object.entries(skills).map(([skill, self_rating]) => ({ skill, self_rating })) })
       await refresh()
-      setStatus({ ok: true, text: 'Saved' })
+      setStatus(null)
+      toast('Profile saved')
     } catch (err) {
       setStatus({ ok: false, text: (err as Error).message })
     } finally {
@@ -60,12 +64,11 @@ export default function ProfilePage() {
           <input value={name} onChange={(e) => setName(e.target.value)} required maxLength={80}
             className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal" />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-soft">
+        <div className="flex flex-col gap-2 text-sm font-medium text-soft">
           Experience
-          <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal">
-            {catalog.experienceLevels.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
-          </select>
-        </label>
+          <Select label="Experience" value={level} onChange={setLevel}
+            options={catalog.experienceLevels.map((l) => ({ value: l.id, label: l.label }))} />
+        </div>
       </Card>
 
       <Card className="space-y-5">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { thoughtOfTheDay } from '../lib/inspiration'
 import { useParams } from 'react-router'
 import { useMe } from '../auth/MeProvider'
 import { Button, ButtonLink, Card, Icon, PageHeader, type IconName } from '../components/ui'
@@ -55,6 +56,7 @@ export default function ReportPage() {
             <div className="w-10 h-10 mx-auto rounded-full border-4 border-accent/30 border-t-accent animate-spin" />
             <p className="font-semibold mt-4">Preparing your report…</p>
             <p className="text-sm text-muted mt-1">Our AI coach is reviewing each of your answers. This usually takes under a minute.</p>
+            <p className="font-display text-xl text-blush-ink bg-blush rounded-xl px-4 py-3 mt-6 max-w-md mx-auto">“{thoughtOfTheDay()}”</p>
           </Card>
         )}
 

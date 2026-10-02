@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Select } from '../components/Select'
 import { Link } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { sessionTitle } from '../lib/sessions'
@@ -36,15 +37,15 @@ export default function Reports() {
     <div className="space-y-6">
       <PageHeader eyebrow="Reports" title="Your feedback history"
         actions={
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <div className="flex items-center gap-2 text-sm text-muted">
             Goal
-            <select value={goalFilter} onChange={(e) => setGoalFilter(e.target.value)}
-              className="min-h-11 rounded-xl bg-card border border-line-strong px-3 text-ink">
-              <option value="active">Current goal</option>
-              <option value="all">All goals</option>
-              {goals.filter((g) => g.id !== activeId).map((g) => <option key={g.id} value={g.id}>{goalName(g.id)}</option>)}
-            </select>
-          </label>
+            <Select label="Show reports for" value={goalFilter} onChange={setGoalFilter} className="w-60"
+              options={[
+                { value: 'active', label: 'Current goal' },
+                { value: 'all', label: 'All goals' },
+                ...goals.filter((g) => g.id !== activeId).map((g) => ({ value: g.id, label: goalName(g.id), hint: g.status === 'achieved' ? 'Achieved' : 'Paused' })),
+              ]} />
+          </div>
         } />
 
       {shown.length === 0 ? (

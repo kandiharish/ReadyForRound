@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router'
 import { ThemeToggle } from './components/ThemeToggle'
+import { FeedbackProvider } from './components/Feedback'
 import { AuthProvider } from './auth/AuthProvider'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import AppLayout from './layout/AppLayout'
@@ -22,6 +23,7 @@ import { PrivacyPage, TermsPage } from './pages/Legal'
 function App() {
   return (
     <AuthProvider>
+      <FeedbackProvider>
       <BrowserRouter>
         <CornerThemeToggle />
         <Routes>
@@ -54,6 +56,7 @@ function App() {
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>
+      </FeedbackProvider>
     </AuthProvider>
   )
 }

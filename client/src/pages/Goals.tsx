@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Select } from '../components/Select'
 import { apiFetch } from '../lib/api'
 import { useMe } from '../auth/MeProvider'
+import { useFeedback } from '../components/Feedback'
 import { Bar, Button, Card, ChoiceCards, Icon, PageHeader, ScoreRing, Spinner } from '../components/ui'
 import type { GoalWithStats } from '../types'
 
@@ -13,6 +15,7 @@ const STATUS = {
 // Your goals over time: what you're preparing for now, and everything you've prepared for before.
 export default function Goals() {
   const { me, catalog, label, refresh } = useMe()
+  const { toast, confirm } = useFeedback()
   const [goals, setGoals] = useState<GoalWithStats[] | null>(null)
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -24,8 +27,13 @@ export default function Goals() {
   if (!goals || !catalog || !me) return <Spinner />
 
   async function setStatus(id: string, status: 'active' | 'achieved' | 'archived') {
+    if (status === 'achieved') {
+      const ok = await confirm({ title: 'Mark this goal as achieved?', body: 'Congratulations! It moves to your career timeline, and you can start a new goal.', confirmLabel: 'Yes, I achieved it' })
+      if (!ok) return
+    }
     await apiFetch(`/goals/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }).catch((e) => setError(e.message))
     await Promise.all([load(), refresh()])
+    toast(status === 'achieved' ? 'Goal achieved, well done!' : status === 'active' ? 'Switched your current goal' : 'Goal paused')
   }
 
   const active = goals.find((g) => g.status === 'active')
@@ -39,7 +47,7 @@ export default function Goals() {
 
       {creating && (
         <NewGoalForm defaultLevel={me.experience_level} onCancel={() => setCreating(false)}
-          onCreated={async () => { setCreating(false); await Promise.all([load(), refresh()]) }} />
+          onCreated={async () => { setCreating(false); await Promise.all([load(), refresh()]); toast('New goal started') }} />
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
@@ -168,12 +176,11 @@ function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: stri
           <ChoiceCards columns={2} options={catalog!.companyTypes} value={company} onChange={setCompany} />
         </fieldset>
         <div className="grid gap-4 sm:grid-cols-3">
-          <label className="flex flex-col gap-2 text-sm font-medium text-soft">
+          <div className="flex flex-col gap-2 text-sm font-medium text-soft">
             Your experience now
-            <select value={level} onChange={(e) => setLevel(e.target.value)} className="min-h-11 rounded-xl bg-raised border border-line-strong px-3 text-ink font-normal">
-              {catalog!.experienceLevels.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
-            </select>
-          </label>
+            <Select label="Your experience now" value={level} onChange={setLevel}
+              options={catalog!.experienceLevels.map((l) => ({ value: l.id, label: l.label }))} />
+          </div>
           <label className="flex flex-col gap-2 text-sm font-medium text-soft">
             Target date (optional)
             <input type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)}

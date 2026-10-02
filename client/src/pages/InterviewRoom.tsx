@@ -3,6 +3,7 @@ import { Navigate, useParams } from 'react-router'
 import { ApiError, apiFetch } from '../lib/api'
 import { sessionTitle } from '../lib/sessions'
 import { Icon } from '../components/ui'
+import { useFeedback } from '../components/Feedback'
 import { Avatar, INTERVIEWERS, type AvatarState } from '../components/Avatar'
 import { PreJoin, type RoomSettings } from '../components/PreJoin'
 import { speak, stopSpeaking } from '../lib/speech'
@@ -256,44 +257,44 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       {/* Video area: interviewer big, student small */}
       <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-stage-card to-stage overflow-hidden flex items-center justify-center min-h-75">
         {/* overflow-hidden lets the circle trim the shoulders, so the portrait sits exactly in the middle */}
-        <div className={`relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden bg-[radial-gradient(circle_at_50%_35%,#2a3658,#151d33)] ring-1 ring-white/10 transition-shadow ${
-          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(142,167,255,0.45),0_0_60px_rgba(142,167,255,0.25)]' : 'shadow-[0_20px_60px_rgba(0,0,0,0.45)]'}`}>
+        <div className={`relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden bg-[radial-gradient(circle_at_50%_35%,var(--avatar-from),var(--avatar-to))] ring-1 ring-stage-line transition-shadow ${
+          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(var(--glow-rgb),0.45),0_0_60px_rgba(var(--glow-rgb),0.25)]' : 'shadow-[0_20px_60px_rgba(15,23,42,0.18)]'}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>
         {avatarState === 'thinking' && (
-          <div className="absolute top-[18%] right-[28%] bg-white text-[#0b1020] rounded-full px-3 py-1 text-lg animate-pulse">•••</div>
+          <div className="absolute top-[18%] right-[28%] bg-stage-card text-stage-text border border-stage-line rounded-full shadow px-3 py-1 text-lg animate-pulse">•••</div>
         )}
-        <span className="absolute bottom-3 left-3 bg-black/50 rounded px-2 py-0.5 text-sm">{interviewerName} · Interviewer</span>
+        <span className="absolute bottom-3 left-3 bg-stage-card/85 text-stage-text border border-stage-line rounded px-2 py-0.5 text-sm">{interviewerName} · Interviewer</span>
 
         {/* Student's camera tile: glows green with their voice while recording */}
         <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-stage rounded-lg overflow-hidden border-2 transition-colors"
           style={{
-            borderColor: avatarState === 'listening' ? `rgba(142,167,255,${0.35 + level * 0.65})` : '#34333b',
-            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(142,167,255,${0.2 + level * 0.6})` : undefined,
+            borderColor: avatarState === 'listening' ? `rgba(var(--glow-rgb),${0.35 + level * 0.65})` : 'var(--stage-line)',
+            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(var(--glow-rgb),${0.2 + level * 0.6})` : undefined,
           }}>
           {stream?.getVideoTracks().length && camOn
             ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
             : <div className="w-full h-full flex items-center justify-center text-stage-muted text-xs">Camera off</div>}
-          <span className="absolute bottom-1 left-1 bg-black/50 rounded px-1.5 py-0.5 text-xs inline-flex items-center gap-1">You{avatarState === 'listening' && <Icon name="mic" size={12} className="text-accent-bright" />}</span>
+          <span className="absolute bottom-1 left-1 bg-stage-card/85 text-stage-text border border-stage-line rounded px-1.5 py-0.5 text-xs inline-flex items-center gap-1">You{avatarState === 'listening' && <Icon name="mic" size={12} className="text-accent-bright" />}</span>
         </div>
       </section>
 
       {/* Question caption + answer status */}
       <section className="mx-4 mt-3 space-y-2">
-        <div className="bg-black/40 rounded-xl px-4 py-3">
-          <p className="text-xs text-[#9cc3e6]">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
+        <div className="bg-stage-card border border-stage-line rounded-xl px-4 py-3">
+          <p className="text-xs text-info">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
           <p className="font-display font-semibold text-2xl sm:text-[1.7rem] leading-snug">{current.question}</p>
         </div>
 
         {answerMode === 'voice' ? (
-          <div className="bg-black/20 rounded-xl px-4 py-3 min-h-14 flex items-center gap-4">
+          <div className="bg-stage-raised border border-stage-line rounded-xl px-4 py-3 min-h-14 flex items-center gap-4">
             {avatarState === 'listening' ? (
               <>
-                <span className="flex items-center gap-2 text-[#e8958c] font-semibold tabular-nums shrink-0">
-                  <span className="w-3 h-3 rounded-full bg-[#d9534f] animate-pulse" /> REC {formatTime(recSeconds)}
+                <span className="flex items-center gap-2 text-bad font-semibold tabular-nums shrink-0">
+                  <span className="w-3 h-3 rounded-full bg-bad animate-pulse" /> REC {formatTime(recSeconds)}
                 </span>
                 <SoundBars level={level} />
-                <p className={`text-sm ${heardVoice ? 'text-accent-bright' : recSeconds >= 5 ? 'text-[#e5b26b]' : 'text-stage-soft'}`}>
+                <p className={`text-sm ${heardVoice ? 'text-accent-bright' : recSeconds >= 5 ? 'text-warn' : 'text-stage-soft'}`}>
                   {heardVoice
                     ? 'We can hear you. Press "Done answering" when you finish.'
                     : recSeconds >= 5
@@ -310,22 +311,22 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
             )}
           </div>
         ) : (
-          <div className="bg-black/20 rounded-xl p-3">
+          <div className="bg-stage-raised border border-stage-line rounded-xl p-3">
             <textarea value={typed} onChange={(e) => setTyped(e.target.value)} rows={3} maxLength={3000}
               placeholder="Type your answer…" disabled={avatarState === 'thinking'}
               className="w-full bg-stage-card border border-stage-line rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-accent-bright" />
             <div className="flex justify-end mt-2">
               <button onClick={() => sendAnswer({ text: typed })} disabled={!typed.trim() || avatarState === 'thinking'}
-                className="bg-accent-bright text-[#0b1020] rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
+                className="bg-accent-bright text-on-accent-bright rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
             </div>
           </div>
         )}
 
         {error && (
-          <div className="flex flex-wrap items-center gap-3 text-sm text-[#e5b26b]">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-warn">
             <span>{error}</span>
             {failedAudio && (
-              <button onClick={() => sendAnswer({ audio: failedAudio })} className="underline text-white">Send my answer again</button>
+              <button onClick={() => sendAnswer({ audio: failedAudio })} className="underline text-stage-text font-medium">Send my answer again</button>
             )}
           </div>
         )}
@@ -337,14 +338,14 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         {answerMode === 'voice' && (avatarState === 'listening' ? (
           <>
             <button onClick={finishAnswer} disabled={!heardVoice}
-              className="bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+              className="bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
               <Icon name="check" size={18} strokeWidth={2.4} /> Done answering
             </button>
             <Control onClick={startAnswer}><Icon name="repeat" size={16} /> Start again</Control>
           </>
         ) : (
           <button onClick={startAnswer} disabled={avatarState !== 'idle'}
-            className="bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+            className="bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
             <Icon name="mic" size={18} /> Start answering
           </button>
         ))}
@@ -388,8 +389,10 @@ function Control({ children, onClick, active = true, disabled }: { children: Rea
 }
 
 function EndButton({ interviewId, onEnded }: { interviewId: string; onEnded: (i: Interview) => void }) {
+  const { confirm } = useFeedback()
   async function end() {
-    if (!confirm('End this interview now? Your answers so far are saved.')) return
+    const ok = await confirm({ title: 'End this interview?', body: "Your answers so far are saved, and you'll still get feedback on them.", confirmLabel: 'End interview', cancelLabel: 'Keep going', danger: true })
+    if (!ok) return
     onEnded(await apiFetch<Interview>(`/interviews/${interviewId}/end`, { method: 'POST' }))
   }
   return <button onClick={end} className="bg-danger hover:bg-[#8d2f2f] text-white rounded-full px-4 py-2 text-sm font-semibold inline-flex items-center gap-2"><Icon name="phoneOff" size={16} /> End</button>

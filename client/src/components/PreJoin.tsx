@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Select } from './Select'
 import { Avatar, INTERVIEWERS, type InterviewerId } from './Avatar'
 import { isRecordingSupported } from '../lib/recorder'
 import { loadVoices, pickVoice, speak, stopSpeaking } from '../lib/speech'
@@ -148,7 +149,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
             <p className="text-xs text-stage-muted mt-1">
               {hasMic ? 'Say something: the green bar should move.' : 'No microphone detected.'}
             </p>
-            {mediaError && <p className="text-sm text-[#e5b26b] mt-3">{mediaError}</p>}
+            {mediaError && <p className="text-sm text-warn mt-3">{mediaError}</p>}
             <p className="text-xs text-stage-muted mt-3">
               Your video is never recorded or uploaded, and it is not used for scoring. Only your voice answers are sent, to turn them into text.
             </p>
@@ -172,11 +173,8 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
             <div>
               <p className="text-sm font-medium text-stage-soft mb-2">Voice</p>
               <div className="flex gap-2">
-                <select value={voice?.voiceURI ?? ''} onChange={(e) => update({ voiceURI: e.target.value })}
-                  className="flex-1 bg-stage-card border border-stage-line rounded-lg px-3 py-2 text-sm">
-                  {voices.length === 0 && <option value="">Default voice</option>}
-                  {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{v.name} ({v.lang})</option>)}
-                </select>
+                <Select stage label="Interviewer voice" className="flex-1 min-w-0" value={voice?.voiceURI ?? ''} onChange={(v) => update({ voiceURI: v })}
+                  options={voices.length === 0 ? [{ value: '', label: 'Default voice' }] : voices.map((v) => ({ value: v.voiceURI, label: v.name, hint: v.lang }))} />
                 <button onClick={() => speak(`Hello, I'm ${INTERVIEWERS[settings.interviewer].name}. Can you hear me clearly?`, voice, rate)}
                   className="border border-stage-line rounded-lg px-3 text-sm hover:bg-stage-raised">
                   <Icon name="volume" size={15} /> Test
@@ -197,13 +195,13 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
                 </button>
               </div>
               {!isRecordingSupported() && (
-                <p className="text-xs text-[#e5b26b] mt-1">Your browser can't record audio. Please update it, or type your answers here.</p>
+                <p className="text-xs text-warn mt-1">Your browser can't record audio. Please update it, or type your answers here.</p>
               )}
               {isRecordingSupported() && !hasMic && (
-                <p className="text-xs text-[#e5b26b] mt-1">No microphone found, so you'll type your answers.</p>
+                <p className="text-xs text-warn mt-1">No microphone found, so you'll type your answers.</p>
               )}
               {hasMic && !voiceServiceReady && (
-                <p className="text-xs text-[#e5b26b] mt-1">Spoken answers are unavailable right now, so please type your answers.</p>
+                <p className="text-xs text-warn mt-1">Spoken answers are unavailable right now, so please type your answers.</p>
               )}
             </div>
 
@@ -234,7 +232,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               </>
             )}
 
-            <button onClick={join} className="w-full bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] rounded-lg py-3 font-semibold">
+            <button onClick={join} className="w-full bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-lg py-3 font-semibold">
               Join interview
             </button>
           </div>

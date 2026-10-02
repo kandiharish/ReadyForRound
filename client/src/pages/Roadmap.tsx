@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
+import { useFeedback } from '../components/Feedback'
 import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, Spinner } from '../components/ui'
 import type { Goal, RoadmapTask } from '../types'
 
@@ -17,6 +18,7 @@ const KIND = {
 export default function Roadmap() {
   const navigate = useNavigate()
   const { me, label, refreshUsage } = useMe()
+  const { toast } = useFeedback()
   const [data, setData] = useState<{ goal: Goal | null; tasks: RoadmapTask[] } | null>(null)
   const [building, setBuilding] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,6 +34,7 @@ export default function Roadmap() {
     setError(null)
     try {
       setData(await apiFetch('/roadmap/generate', { method: 'POST' }))
+      toast('Your roadmap is ready')
     } catch (e) {
       setError((e as Error).message)
     } finally {

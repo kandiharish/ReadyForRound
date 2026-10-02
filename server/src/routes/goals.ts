@@ -7,6 +7,7 @@ import { createGoal } from '../goals.js'
 import { goalsWithStats, homeStats, listSessions } from '../stats.js'
 import { getUsage } from '../usage.js'
 import { generateRoadmap, getRoadmap, setTaskDone } from '../roadmap.js'
+import { getNotifications } from '../notifications.js'
 
 export const goalsRouter = Router()
 goalsRouter.use(requireAuth)
@@ -14,6 +15,11 @@ goalsRouter.use(requireAuth)
 // Everything the Home page needs in one request.
 goalsRouter.get('/home', async (req, res) => {
   res.json(await homeStats(req.user!.id))
+})
+
+// In-app notifications for the bell (report ready, streak, roadmap, deadline, limit).
+goalsRouter.get('/notifications', async (req, res) => {
+  res.json(await getNotifications(req.user!.id))
 })
 
 // Today's usage and limits (shown in the sidebar and on the Practice page).

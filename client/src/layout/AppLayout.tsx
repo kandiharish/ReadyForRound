@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { MeProvider, useMe } from '../auth/MeProvider'
 import { Icon, Spinner, type IconName } from '../components/ui'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { NotificationBell } from '../components/NotificationBell'
 
 const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
   { to: '/home', label: 'Home', icon: 'home' },
@@ -40,8 +41,11 @@ function Shell() {
   return (
     <div className="min-h-screen flex">
       <Sidebar />
-      {/* Desktop: light/dark switch in the top-right corner */}
-      <ThemeToggle floating className="hidden lg:flex" />
+      {/* Desktop: notifications and the light/dark switch in the top-right corner */}
+      <div className="hidden lg:flex fixed top-5 right-5 z-30 items-center gap-2">
+        <NotificationBell />
+        <ThemeToggle />
+      </div>
       <main className="flex-1 min-w-0 px-4 sm:px-8 lg:px-10 pt-4 lg:pt-16 pb-28 lg:pb-10">
         <MobileTopBar />
         <div className="max-w-6xl mx-auto">
@@ -142,6 +146,7 @@ function MobileTopBar() {
         ReadyForRound
       </Link>
       <div className="flex items-center gap-1.5">
+        <NotificationBell />
         <ThemeToggle />
         <Link to="/settings" aria-label="Settings" className="w-11 h-11 rounded-xl text-muted hover:text-ink flex items-center justify-center"><Icon name="settings" /></Link>
         <Link to="/profile" aria-label="Profile" className="w-9 h-9 rounded-full bg-hover text-accent-deep text-xs font-semibold flex items-center justify-center">{initials}</Link>

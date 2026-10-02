@@ -59,7 +59,7 @@ const BUTTON = {
   primary: 'bg-accent text-on-accent hover:bg-accent-hover font-semibold',
   secondary: 'bg-card text-ink border border-line-strong hover:bg-raised font-medium',
   ghost: 'text-muted hover:text-ink hover:bg-raised font-medium',
-  accent: 'bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] font-semibold',
+  night: 'bg-night-accent text-night hover:bg-[#a9bcff] font-semibold', // bright button on the always-dark Up next card
 } as const
 
 type ButtonProps = { variant?: keyof typeof BUTTON; className?: string; children: ReactNode }

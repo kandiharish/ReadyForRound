@@ -5,6 +5,8 @@ import { sessionTitle, startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, ScoreChip, ScoreRing, Spinner } from '../components/ui'
 import type { HomeStats, Interview, RoundId } from '../types'
+import { StoriesRow } from '../components/Stories'
+import { thoughtOfTheDay } from '../lib/inspiration'
 
 const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
@@ -78,8 +80,8 @@ export default function Home() {
     <div className="space-y-5">
       <PageHeader eyebrow={today} title={`${greeting}, ${firstName}`}
         actions={
-          <span className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-card border border-line text-sm">
-            <Icon name="flame" size={16} className="text-warn" />
+          <span className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-peach text-peach-ink text-sm">
+            <Icon name="flame" size={16} />
             <b className="font-semibold">{stats.streak.days}-day</b><span className="text-muted">streak</span>
           </span>
         } />
@@ -87,11 +89,22 @@ export default function Home() {
       {actionError && <p className="rounded-xl border border-warn/40 bg-warn-soft px-4 py-3 text-sm text-warn" role="alert">{actionError}</p>}
 
       {stats.inProgress && (
-        <Link to={`/interview/${stats.inProgress.id}`} className="flex items-center justify-between gap-4 rounded-2xl border border-info/40 bg-info-soft px-5 py-4 hover:bg-info-soft">
-          <span className="text-sm"><b className="font-semibold">You have an unfinished interview.</b> <span className="text-soft">Pick up where you left off.</span></span>
-          <Icon name="arrow" className="text-info" />
+        <Link to={`/interview/${stats.inProgress.id}`} className="flex items-center justify-between gap-4 rounded-2xl bg-sky text-sky-ink px-5 py-4 hover:opacity-90">
+          <span className="text-sm"><b className="font-semibold">You have an unfinished interview.</b> Pick up where you left off.</span>
+          <Icon name="arrow" />
         </Link>
       )}
+
+      {/* Thought for today: a calm, positive line that changes daily */}
+      <section className="relative overflow-hidden rounded-2xl bg-blush text-blush-ink px-6 py-5 flex items-center gap-5">
+        <span aria-hidden="true" className="font-display text-7xl leading-none -mt-4 opacity-50 select-none">“</span>
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-80">Thought for today</p>
+          <p className="font-display font-semibold text-2xl sm:text-[1.7rem] leading-snug mt-1">{thoughtOfTheDay()}</p>
+        </div>
+      </section>
+
+      <StoriesRow />
 
       {/* Row 1: readiness · up next · daily habit */}
       <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr_0.85fr]">
@@ -128,18 +141,18 @@ export default function Home() {
         </Card>
 
         {/* The most important card: a deep "stage" colour with a thin accent frame, in both themes */}
-        <section className="relative overflow-hidden rounded-2xl bg-stage text-stage-text border border-stage-line p-6 flex flex-col">
-          <span className="pointer-events-none absolute inset-2 rounded-xl border border-accent-bright/35" aria-hidden="true" />
-          <span className="self-start text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright">Up next for you</span>
+        <section className="relative overflow-hidden rounded-2xl bg-night text-night-text border border-night-line p-6 flex flex-col">
+          <span className="pointer-events-none absolute inset-2 rounded-xl border border-night-accent/35" aria-hidden="true" />
+          <span className="self-start text-[11px] font-semibold uppercase tracking-[0.18em] text-night-accent">Up next for you</span>
           <h2 className="font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>
-          <p className="text-sm mt-3 text-stage-soft leading-relaxed">{rec.reason}</p>
+          <p className="text-sm mt-3 text-night-soft leading-relaxed">{rec.reason}</p>
           {interviewsLeft <= 0 && <p className="text-sm mt-2 font-semibold">You've used today's {stats.usage.interviews.limit} interviews. Try a drill, or come back tomorrow.</p>}
           <div className="flex-1 min-h-4" />
           <div className="flex flex-wrap gap-2">
-            <Button variant="accent" onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
+            <Button variant="night" onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
               <Icon name="play" size={16} /> {starting ? 'Preparing…' : 'Start interview'}
             </Button>
-            <Link to="/practice" className="relative inline-flex items-center min-h-11 px-4 rounded-xl border border-stage-line text-sm font-medium text-stage-text hover:bg-white/10">Choose another</Link>
+            <Link to="/practice" className="relative inline-flex items-center min-h-11 px-4 rounded-xl border border-night-line text-sm font-medium text-night-text hover:bg-white/10">Choose another</Link>
           </div>
         </section>
 
@@ -155,8 +168,8 @@ export default function Home() {
             ))}
           </div>
           <p className="text-sm text-soft">{stats.counts.thisWeek} session{stats.counts.thisWeek === 1 ? '' : 's'} in the last 7 days</p>
-          <div className="rounded-xl bg-raised border border-line-strong p-3.5 space-y-2.5">
-            <p className="text-xs text-muted flex items-center gap-1.5"><Icon name="bolt" size={13} className="text-accent-deep" /> 5-minute drill</p>
+          <div className="rounded-xl bg-lavender text-lavender-ink p-3.5 space-y-2.5">
+            <p className="text-xs flex items-center gap-1.5 opacity-90"><Icon name="bolt" size={13} /> 5-minute drill</p>
             <p className="text-sm font-medium leading-snug">{stats.drillTopic}</p>
             <Button variant="secondary" className="w-full min-h-10" onClick={drill} disabled={starting || drillsLeft <= 0}>
               {drillsLeft <= 0 ? 'No drills left today' : 'Start drill'}
@@ -177,7 +190,7 @@ export default function Home() {
       <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
         <Card>
           <div className="flex flex-wrap justify-between items-center gap-3">
-            <h2 className="font-semibold">Skills: what you claim vs what you prove</h2>
+            <h2 className="font-semibold flex items-center gap-2"><span className="w-7 h-7 rounded-lg bg-sage text-sage-ink flex items-center justify-center"><Icon name="target" size={15} /></span>Skills: what you claim vs what you prove</h2>
             <div className="flex gap-4 text-xs text-muted">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm border-[1.5px] border-info" />You said</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent" />Proven</span>
@@ -206,7 +219,7 @@ export default function Home() {
 
         <Card>
           <div className="flex justify-between items-center">
-            <h2 className="font-semibold">Recent interviews</h2>
+            <h2 className="font-semibold flex items-center gap-2"><span className="w-7 h-7 rounded-lg bg-sky text-sky-ink flex items-center justify-center"><Icon name="reports" size={15} /></span>Recent interviews</h2>
             <Link to="/reports" className="text-sm text-accent-deep">All reports</Link>
           </div>
           {stats.recent.length === 0 ? (
