@@ -51,15 +51,15 @@ export function Icon({ name, size = 18, className = '', strokeWidth = 1.8 }: { n
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`bg-card border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(60,45,20,0.05)] ${className}`}>{children}</section>
+  return <section className={`bg-card border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-18px_rgba(15,23,42,0.18)] ${className}`}>{children}</section>
 }
 
 // Classic style: a solid ink button for the main action (it flips to ivory in dark mode), outlined buttons for the rest.
 const BUTTON = {
-  primary: 'bg-ink text-paper hover:bg-ink-hover font-semibold',
+  primary: 'bg-accent text-on-accent hover:bg-accent-hover font-semibold',
   secondary: 'bg-card text-ink border border-line-strong hover:bg-raised font-medium',
   ghost: 'text-muted hover:text-ink hover:bg-raised font-medium',
-  gold: 'bg-gold-bright text-[#1b1b1f] hover:bg-[#dcbd80] font-semibold',
+  accent: 'bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] font-semibold',
 } as const
 
 type ButtonProps = { variant?: keyof typeof BUTTON; className?: string; children: ReactNode }
@@ -96,12 +96,12 @@ export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: st
 // Score colour: good (green), needs work (amber), low (red). They also differ in lightness, not only hue.
 // Colours are CSS variables, so they follow the light/dark theme.
 export const scoreTone = (score: number) => (score >= 70 ? 'good' : score >= 40 ? 'warn' : 'bad')
-const TONE_VAR = { good: 'var(--good)', warn: 'var(--warn)', bad: 'var(--bad)', gold: 'var(--gold)', info: 'var(--info)' }
+const TONE_VAR = { good: 'var(--good)', warn: 'var(--warn)', bad: 'var(--bad)', accent: 'var(--accent)', info: 'var(--info)' }
 
 export function ScoreRing({ value, size = 140, label = 'ready', suffix = '%', color }: { value: number | null; size?: number; label?: string; suffix?: string; color?: keyof typeof TONE_VAR }) {
   const r = 42
   const c = 2 * Math.PI * r
-  const stroke = TONE_VAR[color ?? (value === null ? 'gold' : scoreTone(value))]
+  const stroke = TONE_VAR[color ?? (value === null ? 'accent' : scoreTone(value))]
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90" aria-hidden="true">
@@ -119,8 +119,8 @@ export function ScoreRing({ value, size = 140, label = 'ready', suffix = '%', co
   )
 }
 
-export function Bar({ value, tone }: { value: number; tone?: 'good' | 'warn' | 'bad' | 'gold' | 'info' }) {
-  const color = { good: 'bg-good', warn: 'bg-warn', bad: 'bg-bad', gold: 'bg-gold', info: 'bg-info' }[tone ?? scoreTone(value)]
+export function Bar({ value, tone }: { value: number; tone?: 'good' | 'warn' | 'bad' | 'accent' | 'info' }) {
+  const color = { good: 'bg-good', warn: 'bg-warn', bad: 'bg-bad', accent: 'bg-accent', info: 'bg-info' }[tone ?? scoreTone(value)]
   return (
     <div className="h-1.5 rounded-full bg-hover overflow-hidden">
       <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
@@ -137,7 +137,7 @@ export function ScoreChip({ score, outOf = 100 }: { score: number; outOf?: numbe
 export function Spinner({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="flex items-center gap-3 text-muted text-sm" role="status">
-      <span className="w-5 h-5 rounded-full border-2 border-line-strong border-t-gold animate-spin" />
+      <span className="w-5 h-5 rounded-full border-2 border-line-strong border-t-accent animate-spin" />
       {label}
     </div>
   )
@@ -165,7 +165,7 @@ export function ChoiceCards<T extends string>({ options, value, onChange, column
       {options.map((o) => (
         <button key={o.id} type="button" onClick={() => onChange(o.id)} aria-pressed={value === o.id}
           className={`text-left rounded-xl border px-4 py-3 transition-colors ${value === o.id
-            ? 'border-gold bg-gold-soft ring-1 ring-gold' : 'border-line-strong bg-card hover:border-muted'}`}>
+            ? 'border-accent bg-accent-soft ring-1 ring-accent' : 'border-line-strong bg-card hover:border-muted'}`}>
           <span className="font-medium text-ink">{o.label}</span>
           {o.description && <span className="block text-sm text-muted mt-0.5">{o.description}</span>}
         </button>

@@ -28,7 +28,7 @@ export default function Practice() {
   const sequence = catalog.completeSequences[goal.company_type] ?? catalog.completeSequences.any
   const isSelected = (c: Choice) => c.mode === choice.mode && (c.mode === 'complete' || (choice.mode === 'single' && c.round === choice.round))
   const cardClass = (c: Choice) => `text-left rounded-2xl border p-5 transition-colors ${isSelected(c)
-    ? 'border-gold bg-gold-soft ring-1 ring-gold' : 'border-line bg-card hover:border-line-strong'}`
+    ? 'border-accent bg-accent-soft ring-1 ring-accent' : 'border-line bg-card hover:border-line-strong'}`
 
   async function start() {
     setStarting(true)
@@ -69,7 +69,7 @@ export default function Practice() {
       <button type="button" onClick={() => setChoice({ mode: 'complete' })} aria-pressed={isSelected({ mode: 'complete' })} className={`${cardClass({ mode: 'complete' })} w-full`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="font-display font-semibold text-3xl">Complete interview</span>
-          <span className="text-xs font-semibold bg-ink text-paper rounded-full px-2.5 py-1">Like a real drive</span>
+          <span className="text-xs font-semibold bg-accent text-on-accent rounded-full px-2.5 py-1">Like a real drive</span>
         </div>
         <div className="flex flex-wrap items-center gap-2 mt-3 text-sm">
           {sequence.map((id, i) => (
@@ -99,7 +99,7 @@ export default function Practice() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
         <p className="text-sm text-muted">
           {usage && <><b className="text-ink font-mono">{Math.max(0, interviewsLeft)}</b> of {usage.interviews.limit} interviews left today · </>}
-          Preparing for something else? <Link to="/goals" className="text-gold-deep">Change your goal</Link>
+          Preparing for something else? <Link to="/goals" className="text-accent-deep">Change your goal</Link>
         </p>
         <Button onClick={start} disabled={starting || interviewsLeft <= 0} className="px-6">
           <Icon name="play" size={16} /> {starting ? 'Preparing your interviewer…' : interviewsLeft <= 0 ? 'Daily limit reached' : 'Start interview'}
@@ -108,7 +108,7 @@ export default function Practice() {
 
       <section className="rounded-2xl border border-line bg-card p-5 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-semibold flex items-center gap-2"><Icon name="bolt" size={16} className="text-gold-deep" /> 5-minute drill</h2>
+          <h2 className="font-semibold flex items-center gap-2"><Icon name="bolt" size={16} className="text-accent-deep" /> 5-minute drill</h2>
           {usage && <span className="text-xs text-muted">{Math.max(0, drillsLeft)} of {usage.drills.limit} drills left today</span>}
         </div>
         <p className="text-sm text-muted">Three quick questions on one topic. Great for a daily habit, or right before an interview.</p>

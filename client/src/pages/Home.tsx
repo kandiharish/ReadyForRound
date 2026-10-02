@@ -104,7 +104,7 @@ export default function Home() {
               <>
                 <ScoreRing value={stats.readiness.score} />
                 {stats.readiness.delta !== null ? (
-                  <span className={`inline-flex items-center gap-1.5 text-sm ${stats.readiness.delta >= 0 ? 'text-gold-deep' : 'text-warn'}`}>
+                  <span className={`inline-flex items-center gap-1.5 text-sm ${stats.readiness.delta >= 0 ? 'text-accent-deep' : 'text-warn'}`}>
                     <Icon name={stats.readiness.delta >= 0 ? 'up' : 'down'} size={14} strokeWidth={2.4} />
                     {stats.readiness.delta >= 0 ? '+' : ''}{stats.readiness.delta} vs your earlier interviews
                   </span>
@@ -127,16 +127,16 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* The most important card: a deep "stage" colour with a thin gold frame, in both themes */}
+        {/* The most important card: a deep "stage" colour with a thin accent frame, in both themes */}
         <section className="relative overflow-hidden rounded-2xl bg-stage text-stage-text border border-stage-line p-6 flex flex-col">
-          <span className="pointer-events-none absolute inset-2 rounded-xl border border-gold-bright/35" aria-hidden="true" />
-          <span className="self-start text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-bright">Up next for you</span>
+          <span className="pointer-events-none absolute inset-2 rounded-xl border border-accent-bright/35" aria-hidden="true" />
+          <span className="self-start text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright">Up next for you</span>
           <h2 className="font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>
           <p className="text-sm mt-3 text-stage-soft leading-relaxed">{rec.reason}</p>
           {interviewsLeft <= 0 && <p className="text-sm mt-2 font-semibold">You've used today's {stats.usage.interviews.limit} interviews. Try a drill, or come back tomorrow.</p>}
           <div className="flex-1 min-h-4" />
           <div className="flex flex-wrap gap-2">
-            <Button variant="gold" onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
+            <Button variant="accent" onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
               <Icon name="play" size={16} /> {starting ? 'Preparing…' : 'Start interview'}
             </Button>
             <Link to="/practice" className="relative inline-flex items-center min-h-11 px-4 rounded-xl border border-stage-line text-sm font-medium text-stage-text hover:bg-white/10">Choose another</Link>
@@ -148,7 +148,7 @@ export default function Home() {
           <div className="flex justify-between">
             {stats.streak.week.map((d, i) => (
               <div key={d.date} className="flex flex-col items-center gap-1.5">
-                <span className={`w-6 h-6 rounded-full ${d.done ? 'bg-gold' : d.isToday ? 'border-2 border-dashed border-gold' : 'bg-hover'}`}
+                <span className={`w-6 h-6 rounded-full ${d.done ? 'bg-accent' : d.isToday ? 'border-2 border-dashed border-accent' : 'bg-hover'}`}
                   aria-label={`${d.date}: ${d.done ? 'practised' : 'not practised'}`} />
                 <span className="text-[11px] text-subtle">{DAY_LETTERS[i]}</span>
               </div>
@@ -156,7 +156,7 @@ export default function Home() {
           </div>
           <p className="text-sm text-soft">{stats.counts.thisWeek} session{stats.counts.thisWeek === 1 ? '' : 's'} in the last 7 days</p>
           <div className="rounded-xl bg-raised border border-line-strong p-3.5 space-y-2.5">
-            <p className="text-xs text-muted flex items-center gap-1.5"><Icon name="bolt" size={13} className="text-gold-deep" /> 5-minute drill</p>
+            <p className="text-xs text-muted flex items-center gap-1.5"><Icon name="bolt" size={13} className="text-accent-deep" /> 5-minute drill</p>
             <p className="text-sm font-medium leading-snug">{stats.drillTopic}</p>
             <Button variant="secondary" className="w-full min-h-10" onClick={drill} disabled={starting || drillsLeft <= 0}>
               {drillsLeft <= 0 ? 'No drills left today' : 'Start drill'}
@@ -167,7 +167,7 @@ export default function Home() {
             {stats.daysLeft !== null && stats.daysLeft >= 0 ? (
               <><span className="font-mono text-2xl font-semibold">{stats.daysLeft}</span><span className="text-sm text-muted">days to your target date</span></>
             ) : (
-              <Link to="/goals" className="text-sm text-gold-deep">Set a target date</Link>
+              <Link to="/goals" className="text-sm text-accent-deep">Set a target date</Link>
             )}
           </div>
         </Card>
@@ -180,7 +180,7 @@ export default function Home() {
             <h2 className="font-semibold">Skills: what you claim vs what you prove</h2>
             <div className="flex gap-4 text-xs text-muted">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm border-[1.5px] border-info" />You said</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-gold" />Proven</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-accent" />Proven</span>
             </div>
           </div>
           <div className="mt-4 space-y-3">
@@ -192,7 +192,7 @@ export default function Home() {
                   <span className="w-24 text-sm text-soft truncate">{s.skill}</span>
                   <div className="flex-1 space-y-1">
                     <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className="h-full rounded-full border-[1.5px] border-info box-border" style={{ width: `${claim}%` }} /></div>
-                    <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className="h-full rounded-full bg-gold" style={{ width: `${s.proven_score ?? 0}%` }} /></div>
+                    <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className="h-full rounded-full bg-accent" style={{ width: `${s.proven_score ?? 0}%` }} /></div>
                   </div>
                   <span className={`w-20 text-right font-mono text-xs ${gap === null ? 'text-subtle' : gap <= -20 ? 'text-bad' : 'text-muted'}`}>
                     {gap === null ? 'not tested' : hideScores ? 'tested' : gap > 0 ? `+${gap}` : gap}
@@ -201,13 +201,13 @@ export default function Home() {
               )
             })}
           </div>
-          <Link to="/profile" className="inline-block mt-4 text-sm text-gold-deep">Edit skills</Link>
+          <Link to="/profile" className="inline-block mt-4 text-sm text-accent-deep">Edit skills</Link>
         </Card>
 
         <Card>
           <div className="flex justify-between items-center">
             <h2 className="font-semibold">Recent interviews</h2>
-            <Link to="/reports" className="text-sm text-gold-deep">All reports</Link>
+            <Link to="/reports" className="text-sm text-accent-deep">All reports</Link>
           </div>
           {stats.recent.length === 0 ? (
             <p className="text-sm text-muted mt-4">No interviews for this goal yet. Your reports will appear here.</p>
@@ -215,7 +215,7 @@ export default function Home() {
             <ul className="mt-2">
               {stats.recent.map((s) => (
                 <li key={s.id} className="border-t border-line first:border-t-0">
-                  <Link to={`/interview/${s.id}/report`} className="flex items-center gap-3 min-h-12 hover:text-gold-deep">
+                  <Link to={`/interview/${s.id}/report`} className="flex items-center gap-3 min-h-12 hover:text-accent-deep">
                     <span className="flex-1 min-w-0">
                       <span className="block text-sm font-medium truncate">{sessionTitle(s, roundLabel)}</span>
                       <span className="block text-xs text-muted">{new Date(s.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}{s.status === 'ended_early' ? ' · ended early' : ''}</span>

@@ -38,14 +38,14 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Settings" title="Make it yours"
-        actions={saved && <span className="text-sm text-gold-deep self-center" role="status">{saved}</span>} />
+        actions={saved && <span className="text-sm text-accent-deep self-center" role="status">{saved}</span>} />
 
       <Card className="space-y-5">
         <h2 className="font-semibold">Your interviewer</h2>
         <div className="grid grid-cols-2 gap-3 max-w-md">
           {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
             <button key={id} type="button" onClick={() => updateRoom({ interviewer: id, voiceURI: null })} aria-pressed={room.interviewer === id}
-              className={`rounded-2xl border p-4 ${room.interviewer === id ? 'border-gold bg-gold-soft' : 'border-line-strong bg-raised hover:border-muted'}`}>
+              className={`rounded-2xl border p-4 ${room.interviewer === id ? 'border-accent bg-accent-soft' : 'border-line-strong bg-raised hover:border-muted'}`}>
               <div className="w-20 h-20 mx-auto"><Avatar who={id} state="idle" /></div>
               <p className="mt-1 font-medium">{INTERVIEWERS[id].name}</p>
             </button>
@@ -88,7 +88,7 @@ export default function Settings() {
         </div>
         <label className="inline-flex items-center gap-3 cursor-pointer">
           <input type="checkbox" checked={me.practice_without_score} onChange={(e) => updateProfile({ practice_without_score: e.target.checked })}
-            className="w-5 h-5 accent-[var(--gold-deep)]" />
+            className="w-5 h-5 accent-[var(--accent-deep)]" />
           <span className="text-sm">{me.practice_without_score ? 'On' : 'Off'}</span>
         </label>
       </Card>

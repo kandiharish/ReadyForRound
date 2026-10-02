@@ -18,8 +18,9 @@ export function Avatar({ who, state }: { who: InterviewerId; state: AvatarState 
   const look = LOOKS[who]
   const mouthOpen = useMouthMovement(state === 'speaking')
 
+  // The viewBox frames head and shoulders like a portrait photo, so the face sits in the middle of any circle.
   return (
-    <svg viewBox="0 0 200 200" className={`w-full h-full ${state === 'listening' ? 'avatar-nod' : ''}`} role="img"
+    <svg viewBox="20 28 160 160" className={`w-full h-full ${state === 'listening' ? 'avatar-nod' : ''}`} role="img"
       aria-label={`${INTERVIEWERS[who].name}, your interviewer, is ${state}`}>
       {/* Long hair behind the head (Priya) */}
       {who === 'priya' && <path d="M58 92 Q56 40 100 38 Q144 40 142 92 L146 150 Q100 160 54 150 Z" fill={look.hair} />}

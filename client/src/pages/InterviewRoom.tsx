@@ -245,7 +245,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     <main className="min-h-screen bg-stage text-stage-text flex flex-col">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 text-sm">
-        <span className="font-semibold text-gold-bright">ReadyForRound</span>
+        <span className="font-semibold text-accent-bright">ReadyForRound</span>
         <span className="text-stage-soft">
           {interview.mode === 'drill' ? `Drill · ${interview.focus_topic}` : `${roundLabel(currentRound)} round`} · Q{mainInRound} of {interview.questionsPerRound}
           {interview.rounds.length > 1 && ` · Round ${interview.current_round_index + 1}/${interview.rounds.length}`}
@@ -255,25 +255,26 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
 
       {/* Video area: interviewer big, student small */}
       <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-stage-card to-stage overflow-hidden flex items-center justify-center min-h-75">
-        <div className={`w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-stage-raised p-2 transition-shadow ${
-          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(208,173,104,0.5)]' : ''}`}>
+        {/* overflow-hidden lets the circle trim the shoulders, so the portrait sits exactly in the middle */}
+        <div className={`relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden bg-[radial-gradient(circle_at_50%_35%,#2a3658,#151d33)] ring-1 ring-white/10 transition-shadow ${
+          avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(142,167,255,0.45),0_0_60px_rgba(142,167,255,0.25)]' : 'shadow-[0_20px_60px_rgba(0,0,0,0.45)]'}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>
         {avatarState === 'thinking' && (
-          <div className="absolute top-[18%] right-[28%] bg-white text-stage-soft rounded-full px-3 py-1 text-lg animate-pulse">•••</div>
+          <div className="absolute top-[18%] right-[28%] bg-white text-[#0b1020] rounded-full px-3 py-1 text-lg animate-pulse">•••</div>
         )}
         <span className="absolute bottom-3 left-3 bg-black/50 rounded px-2 py-0.5 text-sm">{interviewerName} · Interviewer</span>
 
         {/* Student's camera tile: glows green with their voice while recording */}
         <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-stage rounded-lg overflow-hidden border-2 transition-colors"
           style={{
-            borderColor: avatarState === 'listening' ? `rgba(208,173,104,${0.35 + level * 0.65})` : '#34333b',
-            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(208,173,104,${0.2 + level * 0.6})` : undefined,
+            borderColor: avatarState === 'listening' ? `rgba(142,167,255,${0.35 + level * 0.65})` : '#34333b',
+            boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(142,167,255,${0.2 + level * 0.6})` : undefined,
           }}>
           {stream?.getVideoTracks().length && camOn
             ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
             : <div className="w-full h-full flex items-center justify-center text-stage-muted text-xs">Camera off</div>}
-          <span className="absolute bottom-1 left-1 bg-black/50 rounded px-1.5 py-0.5 text-xs inline-flex items-center gap-1">You{avatarState === 'listening' && <Icon name="mic" size={12} className="text-gold-bright" />}</span>
+          <span className="absolute bottom-1 left-1 bg-black/50 rounded px-1.5 py-0.5 text-xs inline-flex items-center gap-1">You{avatarState === 'listening' && <Icon name="mic" size={12} className="text-accent-bright" />}</span>
         </div>
       </section>
 
@@ -292,7 +293,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
                   <span className="w-3 h-3 rounded-full bg-[#d9534f] animate-pulse" /> REC {formatTime(recSeconds)}
                 </span>
                 <SoundBars level={level} />
-                <p className={`text-sm ${heardVoice ? 'text-gold-bright' : recSeconds >= 5 ? 'text-[#e5b26b]' : 'text-stage-soft'}`}>
+                <p className={`text-sm ${heardVoice ? 'text-accent-bright' : recSeconds >= 5 ? 'text-[#e5b26b]' : 'text-stage-soft'}`}>
                   {heardVoice
                     ? 'We can hear you. Press "Done answering" when you finish.'
                     : recSeconds >= 5
@@ -312,10 +313,10 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
           <div className="bg-black/20 rounded-xl p-3">
             <textarea value={typed} onChange={(e) => setTyped(e.target.value)} rows={3} maxLength={3000}
               placeholder="Type your answer…" disabled={avatarState === 'thinking'}
-              className="w-full bg-stage-card border border-stage-line rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-gold-bright" />
+              className="w-full bg-stage-card border border-stage-line rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-accent-bright" />
             <div className="flex justify-end mt-2">
               <button onClick={() => sendAnswer({ text: typed })} disabled={!typed.trim() || avatarState === 'thinking'}
-                className="bg-gold-bright text-[#1b1b1f] rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
+                className="bg-accent-bright text-[#0b1020] rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40">Submit answer</button>
             </div>
           </div>
         )}
@@ -336,14 +337,14 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         {answerMode === 'voice' && (avatarState === 'listening' ? (
           <>
             <button onClick={finishAnswer} disabled={!heardVoice}
-              className="bg-gold-bright text-[#1b1b1f] hover:bg-[#dcbd80] rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+              className="bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
               <Icon name="check" size={18} strokeWidth={2.4} /> Done answering
             </button>
             <Control onClick={startAnswer}><Icon name="repeat" size={16} /> Start again</Control>
           </>
         ) : (
           <button onClick={startAnswer} disabled={avatarState !== 'idle'}
-            className="bg-gold-bright text-[#1b1b1f] hover:bg-[#dcbd80] rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+            className="bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
             <Icon name="mic" size={18} /> Start answering
           </button>
         ))}
@@ -370,7 +371,7 @@ function SoundBars({ level }: { level: number }) {
   return (
     <div className="flex items-center gap-1 h-8 shrink-0" aria-hidden>
       {shape.map((s, i) => (
-        <span key={i} className="w-1.5 rounded-full bg-gold-bright transition-[height] duration-100"
+        <span key={i} className="w-1.5 rounded-full bg-accent-bright transition-[height] duration-100"
           style={{ height: `${Math.max(12, Math.min(100, level * s * 140))}%` }} />
       ))}
     </div>

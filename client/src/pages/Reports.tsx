@@ -91,12 +91,12 @@ function Trend({ scores }: { scores: number[] }) {
     <Card>
       <div className="flex justify-between items-baseline">
         <h2 className="font-semibold">Score trend</h2>
-        <span className={`text-sm ${change >= 0 ? 'text-gold-deep' : 'text-warn'}`}>{change >= 0 ? '+' : ''}{change} since your first interview here</span>
+        <span className={`text-sm ${change >= 0 ? 'text-accent-deep' : 'text-warn'}`}>{change >= 0 ? '+' : ''}{change} since your first interview here</span>
       </div>
       <svg viewBox={`-6 -6 ${w + 12} ${h + 12}`} className="w-full h-32 mt-4" role="img" aria-label={`Scores over time, from ${scores[0]} to ${scores[scores.length - 1]}`}>
         {[0, 50, 100].map((v) => <line key={v} x1="0" x2={w} y1={h - (v / 100) * h} y2={h - (v / 100) * h} className="stroke-line" />)}
-        <polyline points={points} fill="none" className="stroke-gold" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        {scores.map((s, i) => <circle key={i} cx={i * step} cy={h - (s / 100) * h} r="4" className="fill-card stroke-gold" strokeWidth="2" />)}
+        <polyline points={points} fill="none" className="stroke-accent" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        {scores.map((s, i) => <circle key={i} cx={i * step} cy={h - (s / 100) * h} r="4" className="fill-card stroke-accent" strokeWidth="2" />)}
       </svg>
     </Card>
   )

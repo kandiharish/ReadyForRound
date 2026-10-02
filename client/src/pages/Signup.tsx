@@ -61,7 +61,7 @@ export default function Signup() {
         </button>
       </form>
       <p className="text-sm text-muted mt-4 text-center">
-        Already have an account? <Link to="/login" className="text-gold-deep font-medium">Log in</Link>
+        Already have an account? <Link to="/login" className="text-accent-deep font-medium">Log in</Link>
       </p>
     </AuthCard>
   )

@@ -40,7 +40,7 @@ export default function Login() {
         </button>
       </form>
       <p className="text-sm text-muted mt-4 text-center">
-        New here? <Link to="/signup" className="text-gold-deep font-medium">Create an account</Link>
+        New here? <Link to="/signup" className="text-accent-deep font-medium">Create an account</Link>
       </p>
     </AuthCard>
   )

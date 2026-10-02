@@ -52,7 +52,7 @@ export default function ReportPage() {
 
         {(!res || res.status === 'generating') && !error && (
           <Card className="text-center py-10">
-            <div className="w-10 h-10 mx-auto rounded-full border-4 border-gold/30 border-t-gold animate-spin" />
+            <div className="w-10 h-10 mx-auto rounded-full border-4 border-accent/30 border-t-accent animate-spin" />
             <p className="font-semibold mt-4">Preparing your report…</p>
             <p className="text-sm text-muted mt-1">Our AI coach is reviewing each of your answers. This usually takes under a minute.</p>
           </Card>
@@ -101,11 +101,11 @@ function ReportView({ report, hideScores, roundLabel }: { report: Report; hideSc
       {/* Study next */}
       {report.studyNext.length > 0 && (
         <section className="bg-card border border-line rounded-2xl p-6">
-          <h2 className="font-display font-semibold text-2xl text-ink flex items-center gap-2"><Icon name="book" size={18} className="text-gold" /> Study next</h2>
+          <h2 className="font-display font-semibold text-2xl text-ink flex items-center gap-2"><Icon name="book" size={18} className="text-accent" /> Study next</h2>
           <ol className="mt-3 space-y-3">
             {report.studyNext.map((s, i) => (
               <li key={i} className="flex gap-3">
-                <span className="w-6 h-6 shrink-0 rounded-full bg-gold-soft text-gold-deep text-sm font-semibold flex items-center justify-center">{i + 1}</span>
+                <span className="w-6 h-6 shrink-0 rounded-full bg-accent-soft text-accent-deep text-sm font-semibold flex items-center justify-center">{i + 1}</span>
                 <span><b className="text-ink">{s.topic}</b>{s.why && <span className="text-soft">: {s.why}</span>}</span>
               </li>
             ))}
@@ -131,7 +131,7 @@ function QuestionCard({ q, hideScores, roundLabel }: { q: QuestionFeedback; hide
     <section className="bg-card border border-line rounded-2xl p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs text-gold-deep font-medium uppercase tracking-wide">
+          <p className="text-xs text-accent-deep font-medium uppercase tracking-wide">
             {roundLabel(q.round)}{q.skill ? ` · ${q.skill}` : ''}
           </p>
           <p className="font-semibold text-ink mt-1">{q.question}</p>
@@ -144,7 +144,7 @@ function QuestionCard({ q, hideScores, roundLabel }: { q: QuestionFeedback; hide
       {!q.skipped && (
         <div className="mt-4 space-y-3 text-sm">
           <div>
-            <p className="font-medium text-gold-deep">What went well</p>
+            <p className="font-medium text-accent-deep">What went well</p>
             <p className="text-soft mt-0.5">{q.wentWell}</p>
           </div>
           {q.missing.length > 0 && (
@@ -160,10 +160,10 @@ function QuestionCard({ q, hideScores, roundLabel }: { q: QuestionFeedback; hide
 
       {q.betterAnswer && (
         <div className="mt-4">
-          <button onClick={() => setShowAnswer(!showAnswer)} className="text-sm text-gold-deep font-medium">
+          <button onClick={() => setShowAnswer(!showAnswer)} className="text-sm text-accent-deep font-medium">
             {showAnswer ? '▾ Hide' : '▸ Show'} one strong way to answer
           </button>
-          {showAnswer && <p className="text-sm text-soft bg-gold-soft rounded-lg p-3 mt-2 leading-relaxed">{q.betterAnswer}</p>}
+          {showAnswer && <p className="text-sm text-soft bg-accent-soft rounded-lg p-3 mt-2 leading-relaxed">{q.betterAnswer}</p>}
         </div>
       )}
 

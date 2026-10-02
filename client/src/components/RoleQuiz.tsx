@@ -73,15 +73,15 @@ export function RoleQuiz({ roles, onPick, onCancel }: {
     const bestId = (Object.keys(scores) as RoleId[]).reduce((a, b) => (scores[b] > scores[a] ? b : a))
     const best = roles.find((r) => r.id === bestId)!
     return (
-      <div className="border border-gold/40 bg-gold-soft rounded-xl p-5">
-        <p className="text-sm text-gold-deep font-medium">Our suggestion for you</p>
+      <div className="border border-accent/40 bg-accent-soft rounded-xl p-5">
+        <p className="text-sm text-accent-deep font-medium">Our suggestion for you</p>
         <p className="text-xl font-bold text-ink mt-1">{best.label}</p>
         <p className="text-soft mt-1">{best.description}</p>
         <p className="text-xs text-muted mt-3">
           This is just a starting point. You can change your role any time.
         </p>
         <div className="flex gap-2 mt-4">
-          <button onClick={() => onPick(best.id)} className="bg-ink text-paper rounded-lg px-4 py-2 font-medium">
+          <button onClick={() => onPick(best.id)} className="bg-accent text-on-accent rounded-lg px-4 py-2 font-medium">
             Choose {best.label}
           </button>
           <button onClick={onCancel} className="text-soft px-4 py-2">Pick myself</button>
@@ -98,7 +98,7 @@ export function RoleQuiz({ roles, onPick, onCancel }: {
       <div className="mt-3 space-y-2">
         {q.answers.map((a) => (
           <button key={a.text} onClick={() => answer(a)}
-            className="w-full text-left border border-line-strong rounded-lg px-3 py-2 hover:border-gold hover:bg-gold-soft">
+            className="w-full text-left border border-line-strong rounded-lg px-3 py-2 hover:border-accent hover:bg-accent-soft">
             {a.text}
           </button>
         ))}

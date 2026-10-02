@@ -8,7 +8,7 @@ import type { Goal, RoadmapTask } from '../types'
 
 const KIND = {
   learn: { label: 'Learn', cls: 'bg-info-soft text-info' },
-  practice: { label: 'Practice', cls: 'bg-gold-soft text-gold-deep' },
+  practice: { label: 'Practice', cls: 'bg-accent-soft text-accent-deep' },
   build: { label: 'Build', cls: 'bg-warn-soft text-warn' },
   mock: { label: 'Mock interview', cls: 'bg-bad-soft text-bad' },
 } as const
@@ -86,7 +86,7 @@ export default function Roadmap() {
           <Card className="flex flex-wrap items-center gap-6">
             <div className="flex-1 min-w-60 space-y-2">
               <div className="flex justify-between text-sm"><span className="text-soft">Overall progress</span><span className="font-mono">{done} / {tasks.length} tasks</span></div>
-              <Bar value={(done / tasks.length) * 100} tone="gold" />
+              <Bar value={(done / tasks.length) * 100} tone="accent" />
             </div>
             <p className="text-sm text-muted">You're on <b className="text-ink">week {currentWeek}</b> of {weeks.length}</p>
           </Card>
@@ -97,7 +97,7 @@ export default function Roadmap() {
               const complete = wt.every((t) => t.done)
               return (
                 <button key={w} role="tab" aria-selected={w === shownWeek} onClick={() => setOpenWeek(w)}
-                  className={`min-h-10 px-4 rounded-full text-sm border inline-flex items-center gap-2 ${w === shownWeek ? 'bg-ink text-paper border-gold font-semibold' : 'bg-card border-line-strong text-soft hover:border-muted'}`}>
+                  className={`min-h-10 px-4 rounded-full text-sm border inline-flex items-center gap-2 ${w === shownWeek ? 'bg-accent text-on-accent border-accent font-semibold' : 'bg-card border-line-strong text-soft hover:border-muted'}`}>
                   {complete && <Icon name="check" size={14} strokeWidth={2.6} />} Week {w}
                 </button>
               )
@@ -113,7 +113,7 @@ export default function Roadmap() {
               {tasks.filter((t) => t.week === shownWeek).map((t) => (
                 <li key={t.id} className="flex gap-4 px-5 sm:px-6 py-4 border-t border-line first:border-t-0">
                   <input type="checkbox" checked={t.done} onChange={() => toggle(t)} aria-label={`Mark "${t.title}" as done`}
-                    className="mt-1 w-5 h-5 shrink-0 accent-[var(--gold-deep)] cursor-pointer" />
+                    className="mt-1 w-5 h-5 shrink-0 accent-[var(--accent-deep)] cursor-pointer" />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`text-[11px] font-semibold uppercase tracking-wide rounded-full px-2 py-0.5 ${KIND[t.kind].cls}`}>{KIND[t.kind].label}</span>

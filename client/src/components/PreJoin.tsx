@@ -142,7 +142,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
             <div className="mt-3 flex items-center gap-3">
               <span className="text-sm text-stage-soft w-24">Microphone</span>
               <div className="flex-1 h-2 bg-stage-raised rounded-full overflow-hidden">
-                <div className="h-full bg-gold-bright transition-[width] duration-75" style={{ width: `${level * 100}%` }} />
+                <div className="h-full bg-accent-bright transition-[width] duration-75" style={{ width: `${level * 100}%` }} />
               </div>
             </div>
             <p className="text-xs text-stage-muted mt-1">
@@ -161,7 +161,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               <div className="grid grid-cols-2 gap-3">
                 {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
                   <button key={id} onClick={() => update({ interviewer: id, voiceURI: null })}
-                    className={`rounded-xl p-3 border ${settings.interviewer === id ? 'border-gold-bright bg-gold-bright/15' : 'border-stage-line hover:border-stage-muted'}`}>
+                    className={`rounded-xl p-3 border ${settings.interviewer === id ? 'border-accent-bright bg-accent-bright/15' : 'border-stage-line hover:border-stage-muted'}`}>
                     <div className="w-20 h-20 mx-auto"><Avatar who={id} state="idle" /></div>
                     <p className="mt-1 font-medium">{INTERVIEWERS[id].name}</p>
                   </button>
@@ -188,11 +188,11 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               <p className="text-sm font-medium text-stage-soft mb-2">How will you answer?</p>
               <div className="grid grid-cols-2 gap-2">
                 <button disabled={!canSpeak} onClick={() => update({ answerMode: 'voice' })}
-                  className={`rounded-lg px-3 py-2 border text-sm disabled:opacity-40 ${answerMode === 'voice' ? 'border-gold-bright bg-gold-bright/15' : 'border-stage-line'}`}>
+                  className={`rounded-lg px-3 py-2 border text-sm disabled:opacity-40 ${answerMode === 'voice' ? 'border-accent-bright bg-accent-bright/15' : 'border-stage-line'}`}>
                   <Icon name="mic" size={15} /> Speak
                 </button>
                 <button onClick={() => update({ answerMode: 'text' })}
-                  className={`rounded-lg px-3 py-2 border text-sm ${answerMode === 'text' ? 'border-gold-bright bg-gold-bright/15' : 'border-stage-line'}`}>
+                  className={`rounded-lg px-3 py-2 border text-sm ${answerMode === 'text' ? 'border-accent-bright bg-accent-bright/15' : 'border-stage-line'}`}>
                   <Icon name="keyboard" size={15} /> Type
                 </button>
               </div>
@@ -214,7 +214,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
                   <div className="grid grid-cols-2 gap-2">
                     {([['button', 'When I press "Start answering"'], ['auto', 'Right after the question']] as const).map(([mode, label]) => (
                       <button key={mode} onClick={() => update({ startMode: mode })}
-                        className={`rounded-lg px-2 py-2 border text-sm ${settings.startMode === mode ? 'border-gold-bright bg-gold-bright/15' : 'border-stage-line'}`}>
+                        className={`rounded-lg px-2 py-2 border text-sm ${settings.startMode === mode ? 'border-accent-bright bg-accent-bright/15' : 'border-stage-line'}`}>
                         {label}
                       </button>
                     ))}
@@ -225,7 +225,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
                   <div className="grid grid-cols-3 gap-2">
                     {([5, 3, 0] as const).map((s) => (
                       <button key={s} onClick={() => update({ autoSendSeconds: s })}
-                        className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-gold-bright bg-gold-bright/15' : 'border-stage-line'}`}>
+                        className={`rounded-lg px-2 py-2 border text-sm ${settings.autoSendSeconds === s ? 'border-accent-bright bg-accent-bright/15' : 'border-stage-line'}`}>
                         {s === 0 ? 'When I press "Done"' : `After a ${s}s pause`}
                       </button>
                     ))}
@@ -234,7 +234,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               </>
             )}
 
-            <button onClick={join} className="w-full bg-gold-bright text-[#1b1b1f] hover:bg-[#dcbd80] rounded-lg py-3 font-semibold">
+            <button onClick={join} className="w-full bg-accent-bright text-[#0b1020] hover:bg-[#a9bcff] rounded-lg py-3 font-semibold">
               Join interview
             </button>
           </div>

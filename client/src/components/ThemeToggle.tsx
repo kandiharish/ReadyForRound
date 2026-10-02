@@ -16,7 +16,7 @@ function subscribe(onChange: () => void) {
 
 function setTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#131316' : '#F7F3EA')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0A0F1D' : '#F4F6FB')
   try { localStorage.setItem(KEY, theme) } catch { /* private mode: the choice just isn't remembered */ }
   window.dispatchEvent(new Event(EVENT)) // tell every switch on the page
 }
@@ -37,10 +37,10 @@ export function ThemeToggle({ floating = false, className = '' }: { floating?: b
   return (
     <button type="button" onClick={() => setTheme(next)}
       aria-label={`Switch to ${next} mode`} title={`Switch to ${next} mode`}
-      className={`${floating ? 'fixed top-3 right-3 lg:top-5 lg:right-5 z-30' : ''} w-10 h-10 rounded-full bg-card border border-line-strong text-ink shadow-sm hover:border-gold flex items-center justify-center transition-colors ${className}`}>
+      className={`${floating ? 'fixed top-3 right-3 lg:top-5 lg:right-5 z-30' : ''} w-10 h-10 rounded-full bg-card border border-line-strong text-ink shadow-sm hover:border-accent flex items-center justify-center transition-colors ${className}`}>
       {theme === 'dark' ? (
         // Sun: back to light mode
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true" className="text-gold">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true" className="text-accent">
           <circle cx="12" cy="12" r="4.2" />
           <path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" />
         </svg>

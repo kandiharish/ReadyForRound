@@ -78,7 +78,7 @@ export default function ProfilePage() {
         <div className="flex flex-wrap gap-2">
           {allSkills.map((s) => (
             <button key={s} type="button" onClick={() => toggle(s)} aria-pressed={!!skills[s]}
-              className={`px-3.5 py-1.5 rounded-full border text-sm ${skills[s] ? 'bg-ink border-ink text-paper font-medium' : 'border-line-strong text-soft hover:border-muted'}`}>
+              className={`px-3.5 py-1.5 rounded-full border text-sm ${skills[s] ? 'bg-accent border-accent text-on-accent font-medium' : 'border-line-strong text-soft hover:border-muted'}`}>
               {s}
             </button>
           ))}
@@ -99,7 +99,7 @@ export default function ProfilePage() {
                 <div className="flex gap-1" role="group" aria-label={`How good are you at ${skill}?`}>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button key={n} type="button" onClick={() => setSkills({ ...skills, [skill]: n })} aria-pressed={n === rating} title={RATING_LABELS[n]}
-                      className={`w-9 h-9 rounded-lg text-sm font-mono ${n <= rating ? 'bg-ink text-paper' : 'bg-raised text-muted'}`}>{n}</button>
+                      className={`w-9 h-9 rounded-lg text-sm font-mono ${n <= rating ? 'bg-accent text-on-accent' : 'bg-raised text-muted'}`}>{n}</button>
                   ))}
                 </div>
                 <span className="text-xs text-muted w-24">{RATING_LABELS[rating]}</span>
@@ -113,7 +113,7 @@ export default function ProfilePage() {
       </Card>
 
       <div className="flex items-center justify-end gap-4">
-        {status && <span className={`text-sm ${status.ok ? 'text-gold-deep' : 'text-bad'}`} role="status">{status.text}</span>}
+        {status && <span className={`text-sm ${status.ok ? 'text-accent-deep' : 'text-bad'}`} role="status">{status.text}</span>}
         <Button type="submit" disabled={busy || Object.keys(skills).length === 0}>{busy ? 'Saving…' : 'Save profile'}</Button>
       </div>
     </form>

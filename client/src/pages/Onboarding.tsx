@@ -115,7 +115,7 @@ export default function Onboarding() {
       {/* Progress bar */}
       <div className="flex gap-1 mb-6">
         {STEP_TITLES.map((_, i) => (
-          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-gold' : 'bg-line-strong'}`} />
+          <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-accent' : 'bg-line-strong'}`} />
         ))}
       </div>
       <p className="text-xs text-muted">Step {step + 1} of {STEP_TITLES.length}</p>
@@ -130,7 +130,7 @@ export default function Onboarding() {
       ) : (
         <>
           <Choices options={catalog.roles} value={answers.target_role} onChange={(v) => set('target_role', v)} />
-          <button onClick={() => setShowQuiz(true)} className="mt-4 text-gold-deep font-medium text-sm">
+          <button onClick={() => setShowQuiz(true)} className="mt-4 text-accent-deep font-medium text-sm">
             Not sure? Take a 1-minute quiz
           </button>
         </>
@@ -158,7 +158,7 @@ export default function Onboarding() {
             {[...new Set([...(role?.skills ?? []), ...Object.keys(answers.skills)])].map((skill) => (
               <button key={skill} onClick={() => toggleSkill(skill)}
                 className={`px-3 py-1.5 rounded-full border text-sm ${answers.skills[skill]
-                  ? 'bg-gold border-gold text-ink' : 'border-line-strong text-soft hover:border-gold'}`}>
+                  ? 'bg-accent border-accent text-ink' : 'border-line-strong text-soft hover:border-accent'}`}>
                 {skill}
               </button>
             ))}
@@ -178,7 +178,7 @@ export default function Onboarding() {
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} onClick={() => set('skills', { ...answers.skills, [skill]: n })} title={RATING_LABELS[n]}
-                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-ink text-paper' : 'bg-raised text-muted'}`}>
+                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-accent text-on-accent' : 'bg-raised text-muted'}`}>
                         {n}
                       </button>
                     ))}
@@ -226,12 +226,12 @@ export default function Onboarding() {
         </button>
         {step < STEP_TITLES.length - 1 ? (
           <button onClick={() => setStep(step + 1)} disabled={!canContinue}
-            className="bg-ink text-paper rounded-lg px-5 py-2 font-medium disabled:opacity-40">
+            className="bg-accent text-on-accent rounded-lg px-5 py-2 font-medium disabled:opacity-40">
             Continue
           </button>
         ) : (
           <button onClick={finish} disabled={saving}
-            className="bg-ink text-paper rounded-lg px-5 py-2 font-medium disabled:opacity-40">
+            className="bg-accent text-on-accent rounded-lg px-5 py-2 font-medium disabled:opacity-40">
             {saving ? 'Saving…' : 'Finish'}
           </button>
         )}
@@ -244,7 +244,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-start sm:items-center justify-center p-4">
       <div className="bg-card border border-line rounded-2xl p-6 sm:p-8 max-w-lg w-full">
-        <p className="text-sm font-semibold text-gold-deep mb-4">ReadyForRound</p>
+        <p className="text-sm font-semibold text-accent-deep mb-4">ReadyForRound</p>
         {children}
       </div>
     </main>
@@ -258,7 +258,7 @@ function Choices({ options, value, onChange }: { options: Option[]; value: strin
       {options.map((o) => (
         <button key={o.id} onClick={() => onChange(o.id)}
           className={`w-full text-left border rounded-lg px-4 py-3 ${value === o.id
-            ? 'border-gold bg-gold-soft ring-1 ring-gold' : 'border-line-strong hover:border-gold'}`}>
+            ? 'border-accent bg-accent-soft ring-1 ring-accent' : 'border-line-strong hover:border-accent'}`}>
           <span className="font-medium text-ink">{o.label}</span>
           {o.description && <span className="block text-sm text-muted">{o.description}</span>}
         </button>

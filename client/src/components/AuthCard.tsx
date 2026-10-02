@@ -7,7 +7,7 @@ export function AuthCard({ title, children }: { title: string; children: ReactNo
     <main className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-card border border-line rounded-3xl p-8 max-w-sm w-full">
         <p className="flex items-center gap-2 text-sm font-semibold">
-          <span className="w-7 h-7 rounded-lg bg-ink text-paper flex items-center justify-center">
+          <span className="w-7 h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 17l5-5 4 4 7-8M15 8h5v5" /></svg>
           </span>
           ReadyForRound
@@ -48,6 +48,6 @@ export function Divider() {
 }
 
 export const inputClass =
-  'w-full min-h-11 bg-raised border border-line-strong rounded-xl px-3 text-ink placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-gold'
+  'w-full min-h-11 bg-raised border border-line-strong rounded-xl px-3 text-ink placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-accent'
 export const primaryButtonClass =
-  'w-full min-h-11 bg-ink text-paper rounded-xl font-semibold hover:bg-ink-hover disabled:opacity-50'
+  'w-full min-h-11 bg-accent text-on-accent rounded-xl font-semibold hover:bg-ink-hover disabled:opacity-50'
