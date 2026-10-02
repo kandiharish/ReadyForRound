@@ -42,6 +42,9 @@ export default function Login() {
       <p className="text-sm text-muted mt-4 text-center">
         New here? <Link to="/signup" className="text-accent-deep font-medium">Create an account</Link>
       </p>
+      <p className="text-xs text-subtle mt-4 text-center">
+        <Link to="/privacy" className="hover:text-ink">Privacy</Link> · <Link to="/terms" className="hover:text-ink">Terms</Link>
+      </p>
     </AuthCard>
   )
 }

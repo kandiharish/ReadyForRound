@@ -9,13 +9,16 @@ export class ApiError extends Error {
   }
 }
 
+// Where the backend lives. Empty on your laptop (Vite forwards /api to it); the backend's web address when online.
+export const API_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
+
 // Calls our backend and attaches the logged-in user's token,
 // so the backend knows who is asking.
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { data } = await supabase.auth.getSession()
   const token = data.session?.access_token
 
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${API_URL}/api${path}`, {
     ...options,
     headers: {
       // Audio uploads set their own type; everything else is JSON.

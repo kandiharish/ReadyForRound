@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { API_URL } from '../lib/api'
 
 type Health = {
   status: string
@@ -14,7 +15,7 @@ export default function Status() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/health')
+    fetch(`${API_URL}/api/health`)
       .then((res) => res.json())
       .then(setHealth)
       .catch(() => setError('Cannot reach the backend. Is the server running?'))

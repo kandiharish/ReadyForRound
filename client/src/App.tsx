@@ -16,6 +16,7 @@ import Roadmap from './pages/Roadmap'
 import ProfilePage from './pages/ProfilePage'
 import Settings from './pages/Settings'
 import InterviewRoom from './pages/InterviewRoom'
+import { PrivacyPage, TermsPage } from './pages/Legal'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -27,6 +28,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/status" element={<Status />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
 
           {/* Full-screen pages (no sidebar) */}
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
@@ -59,7 +62,7 @@ function App() {
 // Pages inside the shell place it themselves.
 function CornerThemeToggle() {
   const { pathname } = useLocation()
-  return ['/login', '/signup', '/onboarding', '/status'].includes(pathname) ? <ThemeToggle floating /> : null
+  return ['/login', '/signup', '/onboarding', '/status', '/privacy', '/terms'].includes(pathname) ? <ThemeToggle floating /> : null
 }
 
 export default App

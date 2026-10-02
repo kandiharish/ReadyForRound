@@ -1,3 +1,5 @@
+import { apiFetch } from '../lib/api'
+import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import { useMe } from '../auth/MeProvider'
 import { saveProfile } from '../lib/profile'
@@ -100,6 +102,81 @@ export default function Settings() {
         </div>
         <Button variant="secondary" onClick={() => supabase.auth.signOut()}><Icon name="logout" size={16} /> Log out</Button>
       </Card>
+
+      <YourData />
     </div>
+  )
+}
+
+// Privacy controls: download a copy of everything, or delete the account for good.
+function YourData() {
+  const [busy, setBusy] = useState<'export' | 'delete' | null>(null)
+  const [confirming, setConfirming] = useState(false)
+  const [typed, setTyped] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  async function download() {
+    setBusy('export')
+    setError(null)
+    try {
+      const data = await apiFetch<unknown>('/account/export')
+      const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'readyforround-my-data.json'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function deleteAccount() {
+    setBusy('delete')
+    setError(null)
+    try {
+      await apiFetch('/account', { method: 'DELETE', body: JSON.stringify({ confirm: typed }) })
+      await supabase.auth.signOut({ scope: 'local' })
+    } catch (e) {
+      setError((e as Error).message)
+      setBusy(null)
+    }
+  }
+
+  return (
+    <Card className="space-y-4">
+      <div>
+        <h2 className="font-semibold">Your data</h2>
+        <p className="text-sm text-muted mt-1">
+          See exactly what we store in our <Link to="/privacy" className="text-accent-deep underline">privacy policy</Link>.
+          You can take a copy, or delete everything.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="secondary" onClick={download} disabled={busy !== null}>{busy === 'export' ? 'Preparing…' : 'Download my data'}</Button>
+        {!confirming && <Button variant="ghost" className="text-bad hover:text-bad" onClick={() => setConfirming(true)}>Delete my account</Button>}
+      </div>
+      {confirming && (
+        <div className="rounded-xl border border-bad/40 bg-bad-soft p-4 space-y-3">
+          <p className="text-sm text-ink">
+            <b>This permanently deletes</b> your account, goals, interviews, reports and roadmap. It can't be undone.
+          </p>
+          <label className="flex flex-col gap-1.5 text-sm text-soft">
+            Type DELETE to confirm
+            <input value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off"
+              className="min-h-11 max-w-60 rounded-xl bg-card border border-line-strong px-3 text-ink" />
+          </label>
+          <div className="flex gap-2">
+            <Button className="bg-bad! text-white! hover:opacity-90" onClick={deleteAccount} disabled={typed !== 'DELETE' || busy !== null}>
+              {busy === 'delete' ? 'Deleting…' : 'Delete everything'}
+            </Button>
+            <Button variant="ghost" onClick={() => { setConfirming(false); setTyped('') }}>Cancel</Button>
+          </div>
+        </div>
+      )}
+      {error && <p className="text-sm text-bad" role="alert">{error}</p>}
+    </Card>
   )
 }

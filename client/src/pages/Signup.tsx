@@ -63,6 +63,9 @@ export default function Signup() {
       <p className="text-sm text-muted mt-4 text-center">
         Already have an account? <Link to="/login" className="text-accent-deep font-medium">Log in</Link>
       </p>
+      <p className="text-xs text-subtle mt-4 text-center">
+        By signing up you agree to our <Link to="/terms" className="underline hover:text-ink">Terms</Link> and <Link to="/privacy" className="underline hover:text-ink">Privacy policy</Link>.
+      </p>
     </AuthCard>
   )
 }

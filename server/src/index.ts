@@ -8,10 +8,15 @@ import { requireAuth } from './auth/requireAuth.js'
 import { profileRouter } from './routes/profile.js'
 import { interviewsRouter } from './routes/interviews.js'
 import { goalsRouter } from './routes/goals.js'
+import { accountRouter } from './routes/account.js'
 
 const app = express()
 
-app.use(cors({ origin: config.CLIENT_URL })) // only our frontend may call this server
+// Online, the server sits behind the hosting company's proxy. This lets rate limits see each visitor's real address.
+app.set('trust proxy', 1)
+
+// Only our own website may call this server. CLIENT_URL can list several addresses, separated by commas.
+app.use(cors({ origin: config.CLIENT_URL.split(',').map((u) => u.trim()) }))
 app.use(express.json()) // lets us read JSON sent by the frontend
 
 // Rate limits: stop scripts or bots from hammering the server. Counted per logged-in user
@@ -38,6 +43,7 @@ app.use('/api', profileRouter)
 // Interview routes: /api/interviews/...
 app.use('/api/interviews', interviewsRouter)
 // Goals, Home stats and the Reports list: /api/goals, /api/home, /api/reports
+app.use('/api/account', accountRouter)
 app.use('/api', goalsRouter)
 
 // Temporary test route: send a message, get the AI's reply.

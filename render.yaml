@@ -1,0 +1,29 @@
+# Render "Blueprint": how to run the backend online. Render reads this file from the GitHub repo.
+# Secrets are NOT stored here: "sync: false" means you type the value into Render's dashboard once.
+services:
+  - type: web
+    name: readyforround-api
+    runtime: node
+    plan: free
+    region: singapore # closest free Render region to India
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: CLIENT_URL # the website's address, e.g. https://readyforround.vercel.app
+        sync: false
+      - key: LLM_PROVIDER # online, Groq asks the questions (Ollama only runs on a laptop)
+        value: groq
+      - key: REPORT_LLM_PROVIDER
+        value: groq
+      - key: LLM_FALLBACK_PROVIDER
+        value: none
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
