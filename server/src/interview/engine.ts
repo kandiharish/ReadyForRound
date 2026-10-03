@@ -21,16 +21,19 @@ const db = () => {
 }
 
 // Ask the AI for the next step, and check its reply is usable. One retry if it isn't.
-async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step: NextStep): Promise<AiReply> {
-  const messages = buildMessages(ctx, round, turns, step)
+async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step: NextStep, progress?: { next: number; total: number }): Promise<AiReply> {
+  let firm = false
   const defaultType = step.kind === 'follow_up_or_done' ? 'follow_up' : 'new_question'
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const reply = await chat(messages, { temperature: 0.7, maxTokens: 200 })
+      const reply = await chat(buildMessages(ctx, round, turns, step, progress, firm), { temperature: 0.7, maxTokens: 200 })
       const parsed = parseAiReply(reply.text, defaultType)
       // The backend, not the AI, decides what's allowed: a follow-up is only a follow-up if we permitted one.
       if (step.kind === 'new_only' || step.kind === 'start_round') parsed.type = 'new_question'
-      if (parsed.type === 'done' && step.kind !== 'follow_up_or_done') throw new Error('"done" not allowed here')
+      if (parsed.type === 'done' && step.kind !== 'follow_up_or_done') {
+        firm = true // retry with a firmer instruction to keep going
+        throw new Error('"done" not allowed here')
+      }
       // Every interviewer turn must actually be a question (this also catches replies like "You scored 6/10.").
       if (parsed.type !== 'done' && (!parsed.question.includes('?') || parsed.question.length > 600)) {
         throw new Error(`unusable question: ${reply.text.slice(0, 100)}`)
@@ -184,7 +187,7 @@ export async function answerQuestion(userId: string, sessionId: string, answer: 
   // Decide what the AI may do next, then ask it.
   let next: { round: RoundId; reply: AiReply } | null = null
   if (mainLeft > 0) {
-    const reply = await askAi(ctx, round, updatedTurns, { kind: followUpAllowed ? 'follow_up_or_new' : 'new_only' })
+    const reply = await askAi(ctx, round, updatedTurns, { kind: followUpAllowed ? 'follow_up_or_new' : 'new_only' }, { next: mainAsked + 1, total: session.questionsPerRound })
     next = { round, reply: reply.type === 'done' ? { ...reply, type: 'new_question' } : reply }
   } else if (followUpAllowed) {
     const reply = await askAi(ctx, round, updatedTurns, { kind: 'follow_up_or_done' })
@@ -195,7 +198,7 @@ export async function answerQuestion(userId: string, sessionId: string, answer: 
   if (!next && roundIndex + 1 < session.rounds.length) {
     roundIndex += 1
     const nextRound = session.rounds[roundIndex] as RoundId
-    const reply = await askAi(ctx, nextRound, updatedTurns, { kind: 'start_round', isFirstRound: false })
+    const reply = await askAi(ctx, nextRound, updatedTurns, { kind: 'start_round', isFirstRound: false }, { next: 1, total: session.questionsPerRound })
     next = { round: nextRound, reply: { ...reply, type: 'new_question' } }
   }
 

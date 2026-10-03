@@ -150,7 +150,7 @@ export default function Practice() {
           <h2 className="font-semibold flex items-center gap-2"><Icon name="bolt" size={16} className="text-accent-deep" /> 5-minute drill</h2>
           {usage && <span className="text-xs text-muted">{Math.max(0, drillsLeft)} of {usage.drills.limit} drills left today</span>}
         </div>
-        <p className="text-sm text-muted">Three quick questions on one topic. Great for a daily habit, or right before an interview.</p>
+        <p className="text-sm text-muted">Five quick questions on one topic. Great for a daily habit, or right before an interview.</p>
         <div className="flex flex-col sm:flex-row gap-2">
           <label htmlFor="drill-topic" className="sr-only">Drill topic</label>
           <input id="drill-topic" value={topic} onChange={(e) => setTopic(e.target.value)} maxLength={80} placeholder="Topic, e.g. SQL joins or React hooks"

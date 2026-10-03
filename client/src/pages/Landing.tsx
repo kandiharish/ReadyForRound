@@ -408,14 +408,14 @@ function ForEveryone() {
 
 const STEPS: { icon: IconName; tint: Tint; title: string; body: string }[] = [
   { icon: 'goals', tint: 'lavender', title: 'Pick your goal', body: 'Role, company type, interview date.' },
-  { icon: 'mic', tint: 'sky', title: 'Talk it out', body: 'A 10-minute interview, by voice.' },
+  { icon: 'mic', tint: 'sky', title: 'Talk it out', body: 'Up to 10 questions per round, by voice.' },
   { icon: 'reports', tint: 'sage', title: 'Get your plan', body: 'Score, gaps and what to study next.' },
 ]
 
 function HowItWorks() {
   const { ref, inView } = useInView<HTMLOListElement>(0.35)
   return (
-    <Section id="how" eyebrow="How it works" title="Three steps. Ten minutes." center>
+    <Section id="how" eyebrow="How it works" title="Three steps. Real practice." center>
       <ol ref={ref} className="grid gap-10 md:gap-6 md:grid-cols-3 relative max-w-5xl mx-auto">
         {/* The line between the steps draws itself from left to right */}
         <span aria-hidden="true" className="hidden md:block absolute top-7 left-[16%] right-[16%] h-0.5 bg-line" />
@@ -644,7 +644,7 @@ function FinalCta() {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#7ef0b4]" /> 100% free
               </span>
               <h2 className="font-display font-semibold text-3xl sm:text-5xl leading-[1.05] mt-4">Your next interview is<br className="hidden sm:block" /> a practice round away.</h2>
-              <p className="text-white/80 mt-3">Start your first mock interview in under 10 minutes.</p>
+              <p className="text-white/80 mt-3">Start your first mock interview in under a minute.</p>
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
               <Link to="/signup" className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-xl bg-white text-[#2f3fd0] font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">

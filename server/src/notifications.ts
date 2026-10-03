@@ -32,7 +32,7 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
   const finished = sessions.filter((s) => s.completed_at)
   const practisedToday = finished.some((s) => s.completed_at!.slice(0, 10) === today)
   if (finished.length === 0) {
-    out.push({ id: 'welcome', kind: 'welcome', title: 'Start with your first interview', body: 'It takes about 10 minutes and shows exactly what to work on.', link: '/practice', at: now.toISOString() })
+    out.push({ id: 'welcome', kind: 'welcome', title: 'Start with your first interview', body: 'Answer up to 10 questions and see exactly what to work on.', link: '/practice', at: now.toISOString() })
   } else if (!practisedToday && usage.interviews.used < usage.interviews.limit) {
     out.push({ id: `practice-${today}`, kind: 'streak', title: 'A little practice today?', body: 'A 5-minute drill keeps your streak and your confidence going.', link: '/home', at: now.toISOString() })
   }

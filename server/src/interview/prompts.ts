@@ -144,11 +144,17 @@ function instruction(step: NextStep, ctx: InterviewContext, round: RoundId) {
 }
 
 // Builds the full list of messages sent to the AI for the next question.
-export function buildMessages(ctx: InterviewContext, round: RoundId, turns: Turn[], step: NextStep): ChatMessage[] {
+// progress: which main question comes next in this round, so the AI knows the round is not over yet.
+export function buildMessages(ctx: InterviewContext, round: RoundId, turns: Turn[], step: NextStep, progress?: { next: number; total: number }, firm = false): ChatMessage[] {
   const earlier = turns.filter((t) => t.round !== round).map((t) => t.question)
   const thisRound = turns.filter((t) => t.round === round)
 
-  const messages: ChatMessage[] = [{ role: 'system', content: systemPrompt(ctx, round, earlier, step) }]
+  let system = systemPrompt(ctx, round, earlier, step)
+  if (progress && step.kind !== 'follow_up_or_done') {
+    system += `\n\nProgress: the next main question is number ${progress.next} of ${progress.total} in this round. The interview is NOT finished: never say goodbye or end it.`
+  }
+  if (firm) system += '\nYour last reply tried to end the interview. Do not end it. Ask the next interview question now.'
+  const messages: ChatMessage[] = [{ role: 'system', content: system }]
   // Chat models expect the conversation to start with a user message.
   if (thisRound.length === 0) messages.push({ role: 'user', content: '(The candidate is ready to begin.)' })
   for (const t of thisRound) {
