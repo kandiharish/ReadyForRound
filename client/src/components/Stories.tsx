@@ -5,11 +5,11 @@ const SEEN_KEY = 'rfr-seen-stories'
 const SLIDE_MS = 8000 // auto-advance time per slide
 
 const TINT = {
-  blush: { ring: '#f29ab7, #f6c0a0, #f7a8d0, #f29ab7', chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
-  sage: { ring: '#8fd1a6, #bfe3a0, #7fd8c4, #8fd1a6', chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
-  lavender: { ring: '#a99af0, #d7a6ef, #8ea7ff, #a99af0', chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
-  peach: { ring: '#f6b07e, #f7d27a, #f59a9a, #f6b07e', chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
-  sky: { ring: '#7fbbf0, #8ee0d6, #a99af0, #7fbbf0', chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
+  blush: { glow: '242, 154, 183', ring: '#f29ab7, #f6c0a0, #f7a8d0, #f29ab7', chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
+  sage: { glow: '110, 200, 140', ring: '#8fd1a6, #bfe3a0, #7fd8c4, #8fd1a6', chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
+  lavender: { glow: '160, 140, 240', ring: '#a99af0, #d7a6ef, #8ea7ff, #a99af0', chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
+  peach: { glow: '246, 160, 100', ring: '#f6b07e, #f7d27a, #f59a9a, #f6b07e', chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
+  sky: { glow: '110, 180, 240', ring: '#7fbbf0, #8ee0d6, #a99af0, #7fbbf0', chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
 } as const
 
 function loadSeen(): Set<string> {
@@ -36,14 +36,14 @@ export function StoriesRow() {
         <h2 className="font-display font-semibold text-2xl">Interview guides</h2>
         <span className="text-xs text-muted hidden sm:inline">Tips interviewers commonly share. General guidance, not quotes from specific people.</span>
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+      <div className="flex gap-4 overflow-x-auto py-4 -my-3 px-3 -mx-3 snap-x">
         {STORIES.map((s, i) => {
           const isSeen = seen.has(s.id)
           return (
             <button key={s.id} type="button" onClick={() => setOpenIndex(i)} className="snap-start shrink-0 w-20 flex flex-col items-center gap-2 group">
-              {/* The ring turns and glows all the time; new guides get a thicker, brighter ring */}
+              {/* The ring turns and glows in its own colour all the time; new guides get a thicker, brighter ring */}
               <span className="relative w-[70px] h-[70px] rounded-full overflow-hidden motion-safe:animate-[ring-glow_2.8s_ease-in-out_infinite]"
-                style={{ animationDelay: `${i * 0.3}s` }}>
+                style={{ animationDelay: `${i * 0.3}s`, ['--ring-glow' as string]: TINT[s.tint].glow }}>
                 <span className="absolute inset-0 rounded-full motion-safe:animate-[ring-spin_4s_linear_infinite]" aria-hidden="true"
                   style={{ background: `conic-gradient(${TINT[s.tint].ring})`, opacity: isSeen ? 0.75 : 1 }} />
                 <span className={`absolute rounded-full bg-paper p-[3px] block ${isSeen ? 'inset-[2px]' : 'inset-[3px]'}`}>
