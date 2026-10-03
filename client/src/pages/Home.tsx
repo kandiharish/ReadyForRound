@@ -36,7 +36,7 @@ export default function Home() {
   if (!goal) {
     return (
       <div className="space-y-6">
-        <PageHeader eyebrow={today} title={`${greeting}, ${firstName}`} />
+        <PageHeader eyebrow={today} title={firstName ? `${greeting}, ${firstName}` : greeting} />
         <EmptyState title="Choose what you're preparing for"
           body="Your interviews, reports and progress are organised around a goal, like 'Frontend Developer at a product company'."
           action={<ButtonLink to="/goals">Create a goal</ButtonLink>} />
@@ -78,7 +78,7 @@ export default function Home() {
 
   return (
     <div className="space-y-5">
-      <PageHeader eyebrow={today} title={`${greeting}, ${firstName}`}
+      <PageHeader eyebrow={today} title={firstName ? `${greeting}, ${firstName}` : greeting}
         actions={
           <span className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-peach text-peach-ink text-sm">
             <Icon name="flame" size={16} />
@@ -127,12 +127,12 @@ export default function Home() {
               </>
             )}
           </div>
-          <div className="flex-1 flex flex-col justify-center gap-4">
+          <div className="flex-1 min-w-36 flex flex-col justify-center gap-4">
             {stats.roundScores.map((r) => (
               <div key={r.round} className="space-y-1.5">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between gap-3 text-sm">
                   <span className="text-soft">{roundLabel(r.round)}</span>
-                  <span className="font-mono">{r.score === null ? 'not tried' : hideScores ? '✓' : r.score}</span>
+                  <span className={`font-mono whitespace-nowrap ${r.score === null ? 'text-xs text-muted' : ''}`}>{r.score === null ? 'not tried' : hideScores ? '✓' : r.score}</span>
                 </div>
                 <Bar value={r.score ?? 0} />
               </div>
@@ -140,19 +140,19 @@ export default function Home() {
           </div>
         </Card>
 
-        {/* The most important card: a deep "stage" colour with a thin accent frame, in both themes */}
-        <section className="relative overflow-hidden rounded-2xl bg-night text-night-text border border-night-line p-6 flex flex-col">
-          <span className="pointer-events-none absolute inset-2 rounded-xl border border-night-accent/35" aria-hidden="true" />
-          <span className="self-start text-[11px] font-semibold uppercase tracking-[0.18em] text-night-accent">Up next for you</span>
-          <h2 className="font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>
-          <p className="text-sm mt-3 text-night-soft leading-relaxed">{rec.reason}</p>
-          {interviewsLeft <= 0 && <p className="text-sm mt-2 font-semibold">You've used today's {stats.usage.interviews.limit} interviews. Try a drill, or come back tomorrow.</p>}
+        {/* The most important card: a soft lavender-to-sky glow that suits both themes */}
+        <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-lavender via-sky to-sage text-ink border border-line p-6 flex flex-col shadow-sm">
+          <span className="pointer-events-none absolute -top-12 -right-12 w-40 h-40 rounded-full bg-blush opacity-70 blur-2xl" aria-hidden="true" />
+          <span className="relative self-start rounded-full bg-card/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-lavender-ink">Up next for you</span>
+          <h2 className="relative font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>
+          <p className="relative text-sm mt-3 text-soft leading-relaxed">{rec.reason}</p>
+          {interviewsLeft <= 0 && <p className="relative text-sm mt-2 font-semibold">You've used today's {stats.usage.interviews.limit} interviews. Try a drill, or come back tomorrow.</p>}
           <div className="flex-1 min-h-4" />
           <div className="flex flex-wrap gap-2">
-            <Button variant="night" onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
+            <Button onClick={startRecommended} disabled={starting || interviewsLeft <= 0} className="relative">
               <Icon name="play" size={16} /> {starting ? 'Preparing…' : 'Start interview'}
             </Button>
-            <Link to="/practice" className="relative inline-flex items-center min-h-11 px-4 rounded-xl border border-night-line text-sm font-medium text-night-text hover:bg-white/10">Choose another</Link>
+            <Link to="/practice" className="relative inline-flex items-center min-h-11 px-4 rounded-xl border border-line-strong bg-card/60 text-sm font-medium text-ink hover:bg-card">Choose another</Link>
           </div>
         </section>
 

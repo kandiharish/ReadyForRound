@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { RoleQuiz } from '../components/RoleQuiz'
+import { SkillPicker } from '../components/SkillPicker'
 import type { Catalog, Option, Profile } from '../types'
 
 type Answers = {
@@ -23,14 +24,11 @@ const STEP_TITLES = [
   'How would you like to practise?',
 ]
 
-const RATING_LABELS = ['', 'Just started', 'Basic', 'Comfortable', 'Good', 'Expert']
-
 export default function Onboarding() {
   const navigate = useNavigate()
   const [catalog, setCatalog] = useState<Catalog | null>(null)
   const [step, setStep] = useState(0)
   const [showQuiz, setShowQuiz] = useState(false)
-  const [customSkill, setCustomSkill] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Answers>({
@@ -78,19 +76,6 @@ export default function Onboarding() {
     Object.keys(answers.skills).length > 0,
     true,
   ][step]
-
-  function toggleSkill(skill: string) {
-    const next = { ...answers.skills }
-    if (next[skill]) delete next[skill]
-    else next[skill] = 3 // start in the middle; the student adjusts it
-    set('skills', next)
-  }
-
-  function addCustomSkill() {
-    const skill = customSkill.trim()
-    if (skill && !answers.skills[skill]) set('skills', { ...answers.skills, [skill]: 3 })
-    setCustomSkill('')
-  }
 
   async function finish() {
     setSaving(true)
@@ -150,44 +135,11 @@ export default function Onboarding() {
 
       {step === 4 && (
         <>
-          <p className="text-sm text-muted mb-3">
-            Tap the skills you know{role ? ` for ${role.label}` : ''}, then rate yourself honestly.
+          <p className="text-sm text-muted mb-4">
+            Search and add the skills you know{role ? ` (with suggestions for ${role.label})` : ''}. You'll rate each one as you add it.
             Your interviews will show how your rating compares with what you can prove.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {[...new Set([...(role?.skills ?? []), ...Object.keys(answers.skills)])].map((skill) => (
-              <button key={skill} onClick={() => toggleSkill(skill)}
-                className={`px-3 py-1.5 rounded-full border text-sm ${answers.skills[skill]
-                  ? 'bg-accent border-accent text-ink' : 'border-line-strong text-soft hover:border-accent'}`}>
-                {skill}
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2 mt-3">
-            <input value={customSkill} onChange={(e) => setCustomSkill(e.target.value)} placeholder="Add another skill"
-              onKeyDown={(e) => e.key === 'Enter' && addCustomSkill()} maxLength={40}
-              className="flex-1 border border-line-strong rounded-lg px-3 py-1.5 text-sm" />
-            <button onClick={addCustomSkill} className="text-sm border border-line-strong rounded-lg px-3">Add</button>
-          </div>
-
-          {Object.keys(answers.skills).length > 0 && (
-            <div className="mt-5 space-y-3">
-              {Object.entries(answers.skills).map(([skill, rating]) => (
-                <div key={skill} className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-ink w-28 shrink-0">{skill}</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <button key={n} onClick={() => set('skills', { ...answers.skills, [skill]: n })} title={RATING_LABELS[n]}
-                        className={`w-8 h-8 rounded-md text-sm ${n <= rating ? 'bg-accent text-on-accent' : 'bg-raised text-muted'}`}>
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="text-xs text-muted w-24 text-right hidden sm:block">{RATING_LABELS[rating]}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <SkillPicker skills={answers.skills} onChange={(next) => set('skills', next)} suggested={role?.skills ?? []} />
         </>
       )}
 

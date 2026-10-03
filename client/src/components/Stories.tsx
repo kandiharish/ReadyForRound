@@ -5,11 +5,11 @@ const SEEN_KEY = 'rfr-seen-stories'
 const SLIDE_MS = 8000 // auto-advance time per slide
 
 const TINT = {
-  blush: { ring: 'from-[#f29ab7] to-[#f6c0a0]', chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
-  sage: { ring: 'from-[#8fd1a6] to-[#bfe3a0]', chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
-  lavender: { ring: 'from-[#a99af0] to-[#d7a6ef]', chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
-  peach: { ring: 'from-[#f6b07e] to-[#f7d27a]', chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
-  sky: { ring: 'from-[#7fbbf0] to-[#8ee0d6]', chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
+  blush: { ring: '#f29ab7, #f6c0a0, #f7a8d0, #f29ab7', chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
+  sage: { ring: '#8fd1a6, #bfe3a0, #7fd8c4, #8fd1a6', chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
+  lavender: { ring: '#a99af0, #d7a6ef, #8ea7ff, #a99af0', chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
+  peach: { ring: '#f6b07e, #f7d27a, #f59a9a, #f6b07e', chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
+  sky: { ring: '#7fbbf0, #8ee0d6, #a99af0, #7fbbf0', chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
 } as const
 
 function loadSeen(): Set<string> {
@@ -41,8 +41,12 @@ export function StoriesRow() {
           const isSeen = seen.has(s.id)
           return (
             <button key={s.id} type="button" onClick={() => setOpenIndex(i)} className="snap-start shrink-0 w-20 flex flex-col items-center gap-2 group">
-              <span className={`w-[70px] h-[70px] rounded-full p-[3px] ${isSeen ? 'bg-line-strong' : `bg-linear-to-tr ${TINT[s.tint].ring}`}`}>
-                <span className="w-full h-full rounded-full bg-paper p-[3px] block">
+              {/* The ring turns and glows all the time; new guides get a thicker, brighter ring */}
+              <span className="relative w-[70px] h-[70px] rounded-full overflow-hidden motion-safe:animate-[ring-glow_2.8s_ease-in-out_infinite]"
+                style={{ animationDelay: `${i * 0.3}s` }}>
+                <span className="absolute inset-0 rounded-full motion-safe:animate-[ring-spin_4s_linear_infinite]" aria-hidden="true"
+                  style={{ background: `conic-gradient(${TINT[s.tint].ring})`, opacity: isSeen ? 0.75 : 1 }} />
+                <span className={`absolute rounded-full bg-paper p-[3px] block ${isSeen ? 'inset-[2px]' : 'inset-[3px]'}`}>
                   <span className={`w-full h-full rounded-full flex items-center justify-center transition-transform group-hover:scale-105 ${TINT[s.tint].chip}`}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={s.icon} /></svg>
                   </span>

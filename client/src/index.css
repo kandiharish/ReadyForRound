@@ -65,11 +65,6 @@
   --color-stage-muted: var(--stage-muted);
 
   /* "Night": always dark, for the one card that should stand out on every theme (Up next) */
-  --color-night: #0b1020;
-  --color-night-line: #27324f;
-  --color-night-text: #eef2fa;
-  --color-night-soft: #c9d2e3;
-  --color-night-accent: #8ea7ff;
 }
 
 /* Light: cool blue-white, deep navy text, sapphire */
@@ -217,4 +212,11 @@ body {
 @keyframes story-progress {
   from { width: 0; }
   to { width: 100%; }
+}
+
+/* Story circles: a slowly turning colour ring and a soft breathing glow, always on */
+@keyframes ring-spin { to { transform: rotate(360deg); } }
+@keyframes ring-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--glow-rgb), 0); }
+  50% { box-shadow: 0 0 18px 3px rgba(var(--glow-rgb), 0.35); }
 }

@@ -1,0 +1,197 @@
+// The skill dictionary students pick from. Typing searches it; only skills listed here can be added,
+// so profiles never fill up with typos or random words.
+// Format: "Name|nickname,nickname". Nicknames are extra search words (e.g. "k8s" finds Kubernetes).
+
+const GROUPS: Record<string, string[]> = {
+  'Programming languages': [
+    'C', 'C++|cpp,cplusplus', 'C#|csharp,c sharp', 'Java', 'Python|py', 'JavaScript|js,ecmascript,es6', 'TypeScript|ts',
+    'Go|golang', 'Rust', 'Kotlin', 'Swift', 'Objective-C|objc', 'Dart', 'Ruby', 'PHP', 'Perl', 'Scala', 'R|r language',
+    'MATLAB', 'Julia', 'Lua', 'Haskell', 'Elixir', 'Erlang', 'Clojure', 'F#|fsharp', 'OCaml', 'Groovy', 'Visual Basic|vb,vb6',
+    'VB.NET|vbnet', 'COBOL', 'Fortran', 'Pascal', 'Delphi', 'Assembly Language|asm,x86', 'Ada', 'Lisp', 'Prolog', 'Smalltalk',
+    'Scheme', 'ABAP|sap abap', 'Apex|salesforce apex', 'Solidity', 'Zig', 'Nim', 'Crystal', 'Mojo', 'Bash|shell scripting,sh',
+    'PowerShell', 'Shell Scripting|bash,unix shell', 'SQL|structured query language', 'PL/SQL|plsql', 'T-SQL|tsql',
+    'VBA|excel macros', 'Verilog', 'VHDL', 'SystemVerilog', 'Embedded C', 'CUDA', 'OpenCL', 'WebAssembly|wasm',
+    'GraphQL', 'Racket', 'Tcl', 'AWK', 'Sed', 'Hack', 'Elm', 'PureScript', 'ReScript', 'CoffeeScript', 'ActionScript|flash',
+    'Visual FoxPro|foxpro', 'RPG|ibm rpg', 'JCL|mainframe', 'Scratch', 'LabVIEW', 'Ladder Logic|plc', 'Q#', 'Move', 'Cairo',
+  ],
+  'Web frontend': [
+    'HTML|html5', 'CSS|css3', 'React|reactjs,react.js', 'React Native|rn,react-native', 'React Router', 'Redux|redux toolkit,rtk',
+    'Zustand', 'MobX', 'Recoil', 'Jotai', 'TanStack Query|react query', 'React Hook Form', 'Next.js|nextjs,next', 'Remix',
+    'Gatsby', 'Angular|angular 2+', 'AngularJS|angular 1', 'Vue.js|vue,vuejs', 'Vuex', 'Pinia', 'Nuxt.js|nuxt', 'Svelte',
+    'SvelteKit', 'SolidJS|solid', 'Qwik', 'Astro', 'Preact', 'Lit', 'Alpine.js|alpine', 'HTMX', 'Ember.js|ember',
+    'Backbone.js|backbone', 'Knockout.js|knockout', 'jQuery|jquery ui', 'Bootstrap', 'Tailwind CSS|tailwind', 'Material UI|mui',
+    'Chakra UI', 'Ant Design|antd', 'shadcn/ui|shadcn', 'Radix UI', 'Bulma', 'Foundation', 'Semantic UI', 'Sass|scss',
+    'Less', 'Stylus', 'PostCSS', 'CSS Modules', 'Styled Components', 'Emotion', 'Web Components', 'Responsive Design',
+    'Web Accessibility|a11y,wcag', 'Web Performance|core web vitals', 'Progressive Web Apps|pwa', 'Service Workers',
+    'WebSockets|socket', 'Socket.IO|socketio', 'WebRTC', 'Canvas API', 'WebGL', 'Three.js|threejs', 'D3.js|d3',
+    'Chart.js|chartjs', 'Recharts', 'Webpack', 'Vite', 'Rollup', 'Parcel', 'esbuild', 'Babel', 'Gulp', 'Grunt',
+    'npm', 'Yarn', 'pnpm', 'Bun', 'Storybook', 'Framer Motion', 'GSAP', 'Micro-frontends', 'SEO|search engine optimization',
+    'DOM Manipulation|dom', 'AJAX', 'Fetch API', 'Axios', 'JSON', 'XML', 'Browser DevTools|devtools', 'Figma to Code',
+  ],
+  'Backend and APIs': [
+    'Node.js|node,nodejs', 'Express.js|express,expressjs', 'NestJS|nest', 'Fastify', 'Koa', 'Hapi', 'Deno',
+    'Spring|spring framework', 'Spring Boot|springboot', 'Spring MVC', 'Spring Security', 'Hibernate', 'JPA', 'JDBC',
+    'JSP', 'Struts', 'Java EE|j2ee,jakarta ee', 'Maven', 'Gradle', 'Quarkus', 'Micronaut', 'Vert.x',
+    'Django', 'Django REST Framework|drf', 'Flask', 'FastAPI', 'Pyramid', 'Tornado', 'Celery', 'SQLAlchemy',
+    'Ruby on Rails|rails,ror', 'Sinatra', 'Laravel', 'Symfony', 'CodeIgniter', 'CakePHP', 'Yii', 'WordPress', 'Drupal',
+    'Joomla', 'Magento', 'Shopify', '.NET|dotnet', 'ASP.NET|aspnet', 'ASP.NET Core|aspnet core', 'ASP.NET MVC',
+    'Entity Framework|ef core', 'Blazor', 'WCF', 'Gin', 'Echo', 'Fiber', 'Actix', 'Axum', 'Rocket', 'Phoenix',
+    'REST APIs|rest,restful,api', 'GraphQL APIs|apollo', 'gRPC', 'SOAP', 'tRPC', 'OpenAPI|swagger', 'Postman',
+    'Microservices', 'Monolithic Architecture', 'Serverless', 'Event-Driven Architecture', 'API Gateway', 'OAuth|oauth2',
+    'JWT|json web token', 'Authentication', 'Session Management', 'Rate Limiting', 'Caching', 'Message Queues',
+    'Apache Kafka|kafka', 'RabbitMQ', 'ActiveMQ', 'Amazon SQS|sqs', 'Redis Pub/Sub', 'NATS', 'Webhooks', 'Nginx', 'Apache HTTP Server|apache',
+    'Tomcat', 'IIS', 'Prisma', 'Sequelize', 'TypeORM', 'Mongoose', 'Drizzle ORM|drizzle', 'Supabase', 'Firebase',
+    'Appwrite', 'Strapi', 'Sanity', 'Contentful', 'Payment Gateways|razorpay,stripe', 'Stripe', 'Razorpay',
+  ],
+  Databases: [
+    'MySQL', 'PostgreSQL|postgres', 'SQLite', 'Oracle Database|oracle', 'Microsoft SQL Server|mssql,sql server',
+    'MariaDB', 'IBM Db2|db2', 'MongoDB|mongo', 'Cassandra', 'Redis', 'Memcached', 'DynamoDB', 'Couchbase', 'CouchDB',
+    'Neo4j', 'Elasticsearch|elastic', 'OpenSearch', 'Solr', 'InfluxDB', 'TimescaleDB', 'ClickHouse', 'Snowflake',
+    'BigQuery', 'Amazon Redshift|redshift', 'Firestore', 'Realtime Database', 'HBase', 'Hive', 'CockroachDB',
+    'PlanetScale', 'Neon', 'Pinecone', 'Weaviate', 'Milvus', 'Chroma|chromadb', 'pgvector', 'Vector Databases',
+    'Microsoft Access|ms access', 'DBMS|database management', 'RDBMS', 'Database Design', 'Normalization',
+    'Indexing', 'Transactions|acid', 'Stored Procedures', 'Query Optimization', 'NoSQL', 'Data Modeling', 'ER Diagrams',
+  ],
+  'Cloud and DevOps': [
+    'Amazon Web Services|aws', 'AWS EC2|ec2', 'AWS S3|s3', 'AWS Lambda|lambda', 'AWS RDS|rds', 'AWS IAM|iam',
+    'AWS CloudFormation|cloudformation', 'Microsoft Azure|azure', 'Azure DevOps', 'Google Cloud Platform|gcp,google cloud',
+    'Firebase Hosting', 'Oracle Cloud|oci', 'IBM Cloud', 'DigitalOcean', 'Heroku', 'Vercel', 'Netlify', 'Render',
+    'Cloudflare', 'Linux', 'Ubuntu', 'Red Hat Linux|rhel', 'Unix', 'Windows Server', 'Docker', 'Docker Compose',
+    'Kubernetes|k8s', 'Helm', 'OpenShift', 'Podman', 'Terraform', 'Ansible', 'Chef', 'Puppet', 'Vagrant', 'Pulumi',
+    'Jenkins', 'GitHub Actions', 'GitLab CI/CD|gitlab ci', 'CircleCI', 'Travis CI', 'Argo CD|argocd', 'CI/CD|continuous integration',
+    'Prometheus', 'Grafana', 'ELK Stack|elk', 'Splunk', 'Datadog', 'New Relic', 'Sentry', 'Nagios', 'Zabbix',
+    'Site Reliability Engineering|sre', 'Infrastructure as Code|iac', 'Load Balancing', 'Networking', 'TCP/IP|tcp ip',
+    'DNS', 'HTTP/HTTPS|http', 'SSH', 'VPN', 'Cloud Computing', 'Virtualization|vmware', 'VMware', 'Hyper-V',
+  ],
+  'Tools and practices': [
+    'Git', 'GitHub', 'GitLab', 'Bitbucket', 'SVN|subversion', 'Jira', 'Confluence', 'Trello', 'Notion', 'Slack',
+    'VS Code|visual studio code', 'Visual Studio', 'IntelliJ IDEA|intellij', 'Eclipse', 'NetBeans', 'Android Studio', 'Xcode',
+    'Vim', 'Agile', 'Scrum', 'Kanban', 'Waterfall', 'SDLC', 'Code Review', 'Pair Programming', 'Technical Documentation',
+    'UML', 'Design Patterns', 'SOLID Principles|solid', 'Clean Code', 'Test-Driven Development|tdd', 'Debugging',
+    'Object-Oriented Programming|oop,oops', 'Functional Programming', 'Multithreading|concurrency', 'Concurrency',
+    'Memory Management', 'Regular Expressions|regex', 'Command Line|cli,terminal',
+  ],
+  'Computer science fundamentals': [
+    'DSA|data structures and algorithms', 'Data Structures', 'Algorithms', 'Arrays', 'Strings', 'Linked Lists',
+    'Stacks and Queues', 'Trees', 'Binary Search Trees|bst', 'Heaps', 'Hashing|hash map', 'Graphs', 'Dynamic Programming|dp',
+    'Greedy Algorithms', 'Recursion', 'Backtracking', 'Sorting Algorithms', 'Searching Algorithms', 'Bit Manipulation',
+    'Time Complexity|big o', 'Competitive Programming|cp', 'Operating Systems|os', 'Computer Networks|cn',
+    'Computer Architecture|coa', 'Compiler Design', 'Theory of Computation|toc', 'Discrete Mathematics', 'System Design',
+    'Low-Level Design|lld', 'High-Level Design|hld', 'Distributed Systems', 'Scalability', 'Software Engineering',
+  ],
+  'Testing and quality': [
+    'Software Testing', 'Manual Testing', 'Automation Testing', 'Unit Testing', 'Integration Testing', 'End-to-End Testing|e2e',
+    'Performance Testing', 'Load Testing', 'Security Testing', 'API Testing', 'Regression Testing', 'Selenium', 'Cypress',
+    'Playwright', 'Puppeteer', 'Jest', 'Vitest', 'Mocha', 'Chai', 'Jasmine', 'Karma', 'React Testing Library', 'JUnit',
+    'TestNG', 'Mockito', 'PyTest', 'unittest', 'Cucumber', 'Behaviour-Driven Development|bdd', 'Appium', 'JMeter', 'k6',
+    'LoadRunner', 'SoapUI', 'Rest Assured', 'Katalon', 'TestRail', 'QTP/UFT|uft,qtp', 'SonarQube', 'ESLint', 'Prettier',
+  ],
+  'Data and analytics': [
+    'Microsoft Excel|excel,ms excel', 'Advanced Excel|vlookup,pivot tables', 'Google Sheets', 'Power BI|powerbi', 'Tableau',
+    'Looker', 'Qlik|qlikview,qliksense', 'Google Analytics', 'Data Analysis', 'Data Visualization', 'Data Cleaning',
+    'Statistics', 'Probability', 'Linear Algebra', 'Calculus', 'Hypothesis Testing', 'A/B Testing', 'Pandas', 'NumPy',
+    'Matplotlib', 'Seaborn', 'Plotly', 'SciPy', 'Jupyter Notebook|jupyter', 'Google Colab|colab', 'R Studio|rstudio',
+    'SAS', 'SPSS', 'Stata', 'ETL', 'Data Warehousing', 'Data Engineering', 'Apache Spark|spark,pyspark', 'PySpark',
+    'Hadoop', 'MapReduce', 'Apache Airflow|airflow', 'dbt', 'Databricks', 'Apache Flink|flink', 'Apache Beam', 'Talend',
+    'Informatica', 'SSIS', 'Alteryx', 'Microsoft Fabric', 'Azure Data Factory', 'AWS Glue', 'Data Mining', 'Business Intelligence|bi',
+  ],
+  'AI and machine learning': [
+    'Machine Learning|ml', 'Deep Learning|dl', 'Artificial Intelligence|ai', 'Neural Networks', 'Natural Language Processing|nlp',
+    'Computer Vision|cv', 'Reinforcement Learning', 'Generative AI|genai', 'Large Language Models|llm,llms',
+    'Prompt Engineering', 'Retrieval-Augmented Generation|rag', 'Fine-tuning', 'AI Agents|agents', 'LangChain', 'LlamaIndex',
+    'Hugging Face|huggingface,transformers', 'OpenAI API|chatgpt api,gpt', 'Claude API|anthropic', 'Gemini API',
+    'Ollama', 'Scikit-learn|sklearn', 'TensorFlow', 'Keras', 'PyTorch|torch', 'JAX', 'OpenCV', 'YOLO', 'spaCy', 'NLTK',
+    'XGBoost', 'LightGBM', 'MLOps', 'MLflow', 'Kubeflow', 'Model Deployment', 'Feature Engineering', 'Regression',
+    'Classification', 'Clustering', 'Time Series Analysis', 'Recommendation Systems', 'Transformers', 'CNN', 'RNN', 'LSTM',
+    'GANs', 'Diffusion Models', 'Speech Recognition', 'Embeddings', 'Weka',
+  ],
+  'Mobile and desktop': [
+    'Android Development|android', 'iOS Development|ios', 'Flutter', 'Jetpack Compose', 'SwiftUI', 'UIKit', 'Xamarin',
+    '.NET MAUI|maui', 'Ionic', 'Cordova|phonegap', 'Expo', 'Kotlin Multiplatform', 'Electron', 'Tauri', 'Qt', 'JavaFX',
+    'Java Swing|swing', 'WinForms|windows forms', 'WPF', 'GTK', 'Tkinter', 'PyQt', 'Unity', 'Unreal Engine', 'Godot',
+    'Game Development', 'Augmented Reality|ar', 'Virtual Reality|vr', 'ARCore', 'ARKit',
+  ],
+  'Security and networking': [
+    'Cybersecurity|cyber security', 'Network Security', 'Ethical Hacking', 'Penetration Testing|pentest', 'OWASP Top 10|owasp',
+    'Burp Suite', 'Wireshark', 'Nmap', 'Metasploit', 'Kali Linux', 'Cryptography', 'Firewalls', 'SIEM', 'Incident Response',
+    'Vulnerability Assessment', 'Identity and Access Management', 'Cloud Security', 'Application Security|appsec',
+    'Cisco Networking|ccna', 'CCNA', 'Routing and Switching', 'Network Administration', 'System Administration|sysadmin',
+    'Active Directory', 'IT Support', 'Troubleshooting',
+  ],
+  'Embedded, electronics and core engineering': [
+    'Embedded Systems', 'Arduino', 'Raspberry Pi', 'Microcontrollers', '8051 Microcontroller|8051', 'ARM', 'RTOS',
+    'IoT|internet of things', 'PCB Design', 'Circuit Design', 'Digital Electronics', 'Analog Electronics', 'VLSI', 'FPGA',
+    'Signal Processing|dsp', 'Control Systems', 'Robotics', 'ROS|robot operating system', 'PLC Programming', 'SCADA',
+    'AutoCAD', 'SolidWorks', 'CATIA', 'ANSYS', 'Creo', 'Fusion 360', 'Revit', 'STAAD Pro', 'ETABS', 'Simulink', 'Proteus',
+    'Multisim', 'Keil', 'Power Systems', 'Electrical Machines', 'Thermodynamics', 'Manufacturing', 'CNC Programming|cnc',
+  ],
+  'Design and product': [
+    'UI Design', 'UX Design', 'UI/UX Design|ui ux', 'Figma', 'Adobe XD|xd', 'Sketch', 'Adobe Photoshop|photoshop',
+    'Adobe Illustrator|illustrator', 'Canva', 'InVision', 'Wireframing', 'Prototyping', 'User Research', 'Design Systems',
+    'Interaction Design', 'Graphic Design', 'Video Editing', 'Adobe Premiere Pro|premiere', 'After Effects', 'Blender',
+    'Product Management', 'Product Thinking', 'Business Analysis', 'Requirements Gathering', 'Market Research',
+    'Digital Marketing', 'Content Writing', 'Technical Writing', 'Project Management', 'Salesforce', 'SAP', 'ServiceNow',
+    'Zoho', 'HubSpot', 'Tally', 'ERP', 'CRM',
+  ],
+  'Blockchain and emerging tech': [
+    'Blockchain', 'Ethereum', 'Smart Contracts', 'Web3.js|web3', 'Ethers.js', 'Hardhat', 'Truffle', 'Hyperledger',
+    'Quantum Computing', 'Edge Computing', 'AR/VR',
+  ],
+  'Soft skills': [
+    'Communication', 'Teamwork', 'Leadership', 'Problem Solving', 'Critical Thinking', 'Time Management', 'Presentation Skills',
+    'Public Speaking', 'Negotiation', 'Adaptability', 'Creativity', 'Attention to Detail', 'Analytical Thinking',
+    'Decision Making', 'Conflict Resolution', 'Mentoring', 'Stakeholder Management', 'Customer Handling', 'English Proficiency',
+    'Aptitude|quantitative aptitude', 'Logical Reasoning', 'Verbal Ability',
+  ],
+}
+
+export type SkillEntry = { name: string; group: string; keys: string[] }
+
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9#+]+/g, '')
+
+export const SKILLS: SkillEntry[] = (() => {
+  const seen = new Set<string>()
+  const out: SkillEntry[] = []
+  for (const [group, items] of Object.entries(GROUPS)) {
+    for (const item of items) {
+      const [name, aliases = ''] = item.split('|')
+      if (seen.has(name.toLowerCase())) continue
+      seen.add(name.toLowerCase())
+      const keys = [name, ...aliases.split(',').filter(Boolean)].map(norm)
+      out.push({ name, group, keys })
+    }
+  }
+  return out
+})()
+
+const BY_NAME = new Map(SKILLS.map((s) => [s.name.toLowerCase(), s]))
+
+// The exact dictionary name for a skill ("react" -> "React"), or null if it isn't in the dictionary.
+export function canonicalSkill(text: string): string | null {
+  const t = text.trim().toLowerCase()
+  const direct = BY_NAME.get(t)
+  if (direct) return direct.name
+  const n = norm(text)
+  return SKILLS.find((s) => s.keys.includes(n))?.name ?? null
+}
+
+// Skills matching what the student has typed so far, best matches first.
+// "reac" -> React, React Native, React Router, ...; "js" -> JavaScript, Node.js, Next.js, ...
+export function searchSkills(query: string, exclude: Iterable<string> = [], limit = 8): SkillEntry[] {
+  const q = norm(query)
+  if (!q) return []
+  const skip = new Set([...exclude].map((s) => s.toLowerCase()))
+  const words = query.toLowerCase().split(/[\s/.-]+/).filter(Boolean)
+  const scored: { s: SkillEntry; score: number }[] = []
+  for (const s of SKILLS) {
+    if (skip.has(s.name.toLowerCase())) continue
+    let score = 0
+    if (s.keys.some((k) => k === q)) score = 100 // exact name or nickname
+    else if (s.keys[0].startsWith(q)) score = 80 - Math.min(20, s.keys[0].length - q.length) // name starts with it
+    else if (s.keys.some((k) => k.startsWith(q))) score = 60 // a nickname starts with it
+    else if (s.name.toLowerCase().split(/[\s/.()-]+/).some((w) => words.some((qw) => qw.length > 1 && w.startsWith(qw)))) score = 45 // a later word starts with it
+    else if (q.length >= 2 && s.keys.some((k) => k.includes(q))) score = 30 // somewhere inside
+    if (score) scored.push({ s, score })
+  }
+  return scored.sort((a, b) => b.score - a.score || a.s.name.length - b.s.name.length).slice(0, limit).map((x) => x.s)
+}
