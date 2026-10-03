@@ -28,6 +28,11 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     },
   })
 
+  // If the backend can't be reached, the website host may answer with a web page instead of data.
+  // Treat that as "server unavailable" rather than pretending it was an empty answer.
+  if (!(res.headers.get('content-type') ?? '').includes('application/json')) {
+    throw new ApiError(503, "Can't reach the ReadyForRound server right now. Please try again in a minute.")
+  }
   const body = await res.json().catch(() => ({}))
   // The login is no longer valid (expired, or the account was removed): log out, which sends the student to /login.
   if (res.status === 401 && token) await supabase.auth.signOut({ scope: 'local' })

@@ -163,7 +163,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
                 {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
                   <button key={id} onClick={() => update({ interviewer: id, voiceURI: null })}
                     className={`rounded-xl p-3 border ${settings.interviewer === id ? 'border-accent-bright bg-accent-bright/15' : 'border-stage-line hover:border-stage-muted'}`}>
-                    <div className="w-20 h-20 mx-auto"><Avatar who={id} state="idle" /></div>
+                    <div className="w-20 h-20 mx-auto rounded-full overflow-hidden ring-2 ring-line"><Avatar who={id} state="idle" /></div>
                     <p className="mt-1 font-medium">{INTERVIEWERS[id].name}</p>
                   </button>
                 ))}

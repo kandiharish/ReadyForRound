@@ -49,7 +49,7 @@ export default function Settings() {
           {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
             <button key={id} type="button" onClick={() => updateRoom({ interviewer: id, voiceURI: null })} aria-pressed={room.interviewer === id}
               className={`rounded-2xl border p-4 ${room.interviewer === id ? 'border-accent bg-accent-soft' : 'border-line-strong bg-raised hover:border-muted'}`}>
-              <div className="w-20 h-20 mx-auto"><Avatar who={id} state="idle" /></div>
+              <div className="w-20 h-20 mx-auto rounded-full overflow-hidden ring-2 ring-line"><Avatar who={id} state="idle" /></div>
               <p className="mt-1 font-medium">{INTERVIEWERS[id].name}</p>
             </button>
           ))}

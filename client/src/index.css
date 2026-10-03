@@ -226,3 +226,13 @@ body {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
+
+/* Interviewer photo: a slight "breathing" while talking, and sound bars */
+@keyframes avatar-talk {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+@keyframes voice-bar {
+  0%, 100% { height: 30%; }
+  50% { height: 100%; }
+}

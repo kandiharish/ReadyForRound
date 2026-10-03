@@ -1,13 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, Navigate } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
-import { Avatar } from '../components/Avatar'
+import { Avatar, INTERVIEWERS, type InterviewerId } from '../components/Avatar'
 import { Brand } from '../components/Brand'
 import { IntroVideo, introVideoExists, isFirstVisit } from '../components/IntroVideo'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { Icon, type IconName } from '../components/ui'
 
-// The public front page: what students struggle with, how ReadyForRound fixes it, and every feature.
+// The public front page. Students skim, so it's built from pictures and short lines, not paragraphs.
 // Logged-in students skip straight to their Home.
 export default function Landing() {
   const { session, loading } = useAuth()
@@ -30,11 +30,11 @@ export default function Landing() {
       <main>
         <Hero hasVideo={hasVideo} onWatch={() => setShowVideo(true)} />
         <Problems />
+        <Interviewers />
         <HowItWorks />
         <Features />
+        <FreeBanner />
         <SampleReport />
-        <ForWho />
-        <Privacy />
         <Faq />
         <FinalCta />
       </main>
@@ -55,14 +55,13 @@ const TINTS = {
 } as const
 type Tint = keyof typeof TINTS
 
-function Section({ id, eyebrow, title, subtitle, children, className = '' }: { id?: string; eyebrow: string; title: ReactNode; subtitle?: string; children: ReactNode; className?: string }) {
+function Section({ id, eyebrow, title, children, className = '', center = false }: { id?: string; eyebrow: string; title: ReactNode; children: ReactNode; className?: string; center?: boolean }) {
   return (
     <section id={id} className={`px-4 sm:px-6 py-20 sm:py-24 scroll-mt-16 ${className}`}>
       <div className="max-w-6xl mx-auto">
-        <div className="max-w-2xl">
+        <div className={center ? 'text-center max-w-2xl mx-auto' : 'max-w-2xl'}>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>
           <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-3">{title}</h2>
-          {subtitle && <p className="text-lg text-soft mt-4 leading-relaxed">{subtitle}</p>}
         </div>
         <div className="mt-12">{children}</div>
       </div>
@@ -72,8 +71,8 @@ function Section({ id, eyebrow, title, subtitle, children, className = '' }: { i
 
 function Chip({ tint, icon, size = 'md' }: { tint: Tint; icon: IconName; size?: 'md' | 'lg' }) {
   return (
-    <span className={`${size === 'lg' ? 'w-12 h-12 rounded-2xl' : 'w-10 h-10 rounded-xl'} shrink-0 flex items-center justify-center ${TINTS[tint]}`}>
-      <Icon name={icon} size={size === 'lg' ? 22 : 18} />
+    <span className={`${size === 'lg' ? 'w-14 h-14 rounded-2xl' : 'w-10 h-10 rounded-xl'} shrink-0 flex items-center justify-center ${TINTS[tint]}`}>
+      <Icon name={icon} size={size === 'lg' ? 26 : 18} />
     </span>
   )
 }
@@ -88,6 +87,14 @@ function CtaButtons({ center = false }: { center?: boolean }) {
         Log in
       </Link>
     </div>
+  )
+}
+
+function FreeBadge() {
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full bg-sage text-sage-ink px-3.5 py-1.5 text-sm font-semibold">
+      <Icon name="check" size={15} strokeWidth={2.6} /> 100% free for students
+    </span>
   )
 }
 
@@ -117,36 +124,33 @@ function TopNav() {
 function Hero({ hasVideo, onWatch }: { hasVideo: boolean; onWatch: () => void }) {
   return (
     <section className="relative px-4 sm:px-6 pt-14 sm:pt-20 pb-20">
-      {/* Soft colour glows behind the hero */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-sky opacity-80 blur-3xl" />
-        <div className="absolute top-10 right-[-6rem] w-[26rem] h-[26rem] rounded-full bg-lavender opacity-80 blur-3xl" />
-        <div className="absolute bottom-[-8rem] left-1/3 w-[24rem] h-[24rem] rounded-full bg-blush opacity-60 blur-3xl" />
+        <div className="absolute -top-24 -left-24 w-md h-112 rounded-full bg-sky opacity-80 blur-3xl" />
+        <div className="absolute top-10 -right-24 w-104 h-104 rounded-full bg-lavender opacity-80 blur-3xl" />
+        <div className="absolute -bottom-32 left-1/3 w-96 h-96 rounded-full bg-blush opacity-60 blur-3xl" />
       </div>
 
       <div className="relative max-w-6xl mx-auto grid gap-14 lg:grid-cols-[1.05fr_1fr] items-center">
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-card/80 border border-line px-3 py-1.5 text-xs font-medium text-soft">
-            <span className="w-2 h-2 rounded-full bg-good" /> Free for students · built for campus placements
-          </span>
+          <FreeBadge />
           <h1 className="font-display font-semibold text-5xl sm:text-6xl lg:text-[4.1rem] leading-[0.98] mt-6">
             Walk into your interview like you've{' '}
             <span className="bg-linear-to-r from-[#12a8f0] to-[#7b3cf0] bg-clip-text text-transparent">already done it.</span>
           </h1>
-          <p className="text-lg sm:text-xl text-soft mt-6 leading-relaxed max-w-xl">
-            Practise real interview rounds out loud with an AI interviewer. Get honest feedback in minutes, and a clear plan for what to study next.
+          <p className="text-lg sm:text-xl text-soft mt-6 max-w-lg">
+            Real mock interviews by voice. Honest feedback. A plan for what to study next.
           </p>
           <div className="mt-8"><CtaButtons /></div>
           {hasVideo && (
             <button type="button" onClick={onWatch} className="mt-5 inline-flex items-center gap-3 text-sm font-medium text-soft hover:text-ink group">
-              <span className="w-10 h-10 rounded-full bg-card border border-line-strong flex items-center justify-center text-accent group-hover:scale-105 transition-transform">
+              <span className="w-11 h-11 rounded-full bg-card border border-line-strong flex items-center justify-center text-accent shadow-sm group-hover:scale-105 transition-transform">
                 <Icon name="play" size={16} />
               </span>
               Watch the intro
             </button>
           )}
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-            {['No credit card', 'Works in your browser', 'Camera optional'].map((t) => (
+            {['No credit card', 'No hidden plans', 'Camera optional'].map((t) => (
               <li key={t} className="flex items-center gap-1.5"><Icon name="check" size={15} className="text-good" />{t}</li>
             ))}
           </ul>
@@ -158,7 +162,7 @@ function Hero({ hasVideo, onWatch }: { hasVideo: boolean; onWatch: () => void })
   )
 }
 
-// A picture of the product: an interview call with a floating feedback card. Built from the real components.
+// A picture of the product: an interview call with Priya and a floating feedback card.
 function HeroMockup() {
   return (
     <div className="relative mx-auto w-full max-w-lg mb-16 sm:mb-10" aria-label="Example of an interview on ReadyForRound">
@@ -168,32 +172,22 @@ function HeroMockup() {
           <span className="font-mono">04:12</span>
         </div>
         <div className="bg-stage px-6 pt-8 pb-6 flex flex-col items-center">
-          <div className="relative">
-            <span aria-hidden="true" className="absolute -inset-3 rounded-full motion-safe:animate-[ring-glow_2.8s_ease-in-out_infinite]" />
-            <div className="w-36 h-36 rounded-full overflow-hidden ring-4 ring-accent/40 bg-[radial-gradient(circle_at_50%_35%,var(--avatar-from),var(--avatar-to))]">
-              <Avatar who="priya" state="speaking" />
-            </div>
+          <div className="w-40 h-40 rounded-full overflow-hidden shadow-[0_0_0_6px_rgba(var(--glow-rgb),0.35),0_0_50px_rgba(var(--glow-rgb),0.25)]">
+            <Avatar who="priya" state="speaking" />
           </div>
           <p className="mt-3 text-xs text-stage-muted">Priya · Interviewer</p>
           <div className="mt-5 w-full rounded-2xl bg-stage-card border border-stage-line px-4 py-3">
-            <p className="text-[11px] font-semibold text-accent">Priya</p>
-            <p className="font-display text-xl leading-snug text-stage-text mt-0.5">
-              Good. And when would you choose a LEFT JOIN over an INNER JOIN?
+            <p className="font-display text-xl leading-snug text-stage-text">
+              When would you choose a LEFT JOIN over an INNER JOIN?
             </p>
           </div>
-          <div className="mt-5 flex items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-accent text-on-accent px-4 py-2 text-sm font-semibold">
-              <Icon name="mic" size={15} /> Start answering
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-stage-raised px-3 py-2 text-xs text-stage-soft">
-              <Icon name="repeat" size={13} /> Repeat
-            </span>
-          </div>
+          <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent text-on-accent px-4 py-2 text-sm font-semibold">
+            <Icon name="mic" size={15} /> Start answering
+          </span>
         </div>
       </div>
 
-      {/* Floating feedback card */}
-      <div className="absolute -right-2 sm:-right-10 -bottom-24 w-60 rounded-2xl bg-card border border-line shadow-xl p-4 motion-safe:animate-[float_6s_ease-in-out_infinite]">
+      <div className="absolute -right-2 sm:-right-12 -bottom-32 w-56 rounded-2xl bg-card border border-line shadow-xl p-4 motion-safe:animate-[float_6s_ease-in-out_infinite]">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted">Your feedback</span>
           <span className="text-[10px] uppercase tracking-wider text-muted">Example</span>
@@ -202,11 +196,10 @@ function HeroMockup() {
           <span className="font-display font-semibold text-4xl text-good">72</span>
           <span className="text-sm text-muted">/ 100</span>
         </div>
-        <p className="text-xs text-sage-ink bg-sage rounded-lg px-2 py-1.5 mt-2">✓ Clear explanation of joins</p>
-        <p className="text-xs text-peach-ink bg-peach rounded-lg px-2 py-1.5 mt-1.5">→ Study next: GROUP BY with HAVING</p>
+        <p className="text-xs text-sage-ink bg-sage rounded-lg px-2 py-1.5 mt-2">✓ Clear explanation</p>
+        <p className="text-xs text-peach-ink bg-peach rounded-lg px-2 py-1.5 mt-1.5">→ Study next: GROUP BY</p>
       </div>
 
-      {/* Floating streak chip */}
       <div className="absolute -left-3 sm:-left-8 top-16 rounded-2xl bg-card border border-line shadow-lg px-3 py-2 flex items-center gap-2 motion-safe:animate-[float_7s_ease-in-out_infinite_1s]">
         <Chip tint="peach" icon="flame" />
         <span className="text-xs leading-tight"><b className="block text-sm">5-day streak</b><span className="text-muted">Keep it going</span></span>
@@ -215,57 +208,83 @@ function HeroMockup() {
   )
 }
 
-const PROBLEMS: { tint: Tint; icon: IconName; pain: string; fix: string }[] = [
-  { tint: 'blush', icon: 'alert', pain: '"I know the answer, but I freeze when someone actually asks."',
-    fix: 'Practise out loud with an AI interviewer that speaks, listens and asks follow-ups, until speaking under pressure feels normal.' },
-  { tint: 'sky', icon: 'target', pain: '"I don\'t know what they\'ll ask for my role."',
-    fix: 'Questions are shaped for your role, your level and the kind of company you\'re aiming for: service, product or startup.' },
-  { tint: 'peach', icon: 'trophy', pain: '"Mock interviews cost money, or I have to wait for a senior to be free."',
-    fix: 'Practise any time, as often as you like within a generous daily limit. It\'s free for students.' },
-  { tint: 'lavender', icon: 'reports', pain: '"I got rejected and nobody told me why."',
-    fix: 'Every interview ends with an honest report: what went well, what was missing, and one strong way to answer each question.' },
-  { tint: 'sage', icon: 'map', pain: '"I study random topics and still don\'t feel ready."',
-    fix: 'Your weak spots become a weekly study plan, sized to the hours you actually have before your placement date.' },
-  { tint: 'sky', icon: 'volume', pain: '"English isn\'t my first language, so I get nervous."',
-    fix: 'Slow the interviewer down, repeat any question, or type instead of speaking. There\'s even a no-scores mode to build confidence first.' },
+const PAINS: { pain: string; fix: string; icon: IconName; tint: Tint }[] = [
+  { pain: 'I freeze when they ask', fix: 'Practise out loud until it feels normal', icon: 'mic', tint: 'sky' },
+  { pain: "I don't know what they'll ask", fix: 'Questions made for your role and company', icon: 'target', tint: 'lavender' },
+  { pain: 'Rejected, and nobody told me why', fix: 'An honest report after every interview', icon: 'reports', tint: 'sage' },
+  { pain: 'I study random topics', fix: 'A weekly plan built from your gaps', icon: 'map', tint: 'peach' },
+  { pain: 'Mock interviews cost money', fix: 'Completely free, any time', icon: 'check', tint: 'blush' },
 ]
 
 function Problems() {
   return (
-    <Section id="problems" eyebrow="Sound familiar?" title="Placement prep is stressful. It doesn't have to be."
-      subtitle="Most students don't fail interviews because they lack knowledge. They fail because they never practised saying it out loud, under pressure, with feedback.">
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {PROBLEMS.map((p) => (
-          <article key={p.pain} className="rounded-2xl bg-card border border-line p-6 flex flex-col shadow-sm hover:shadow-md hover:-translate-y-0.5 transition">
+    <Section id="problems" eyebrow="Sound familiar?" title="Every student feels this before placements.">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <figure className="rounded-3xl overflow-hidden border border-line shadow-sm">
+          <img src="/stressed-girl.webp" alt="A student worried about forgetting concepts, explaining her project and getting placed" loading="lazy" className="w-full aspect-3/2 object-cover" />
+        </figure>
+        <figure className="rounded-3xl overflow-hidden border border-line shadow-sm">
+          <img src="/stressed-boy.webp" alt="A student stressed about coding problems, his resume and failing again" loading="lazy" className="w-full aspect-3/2 object-cover" />
+        </figure>
+      </div>
+
+      <div className="mt-10 flex items-center gap-3">
+        <span className="h-px flex-1 bg-line" />
+        <span className="flex items-center gap-2 text-sm font-semibold text-accent"><img src="/logo-mark.png" alt="" className="w-6 h-6" /> ReadyForRound fixes this</span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+
+      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {PAINS.map((p) => (
+          <li key={p.pain} className="rounded-2xl bg-card border border-line p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-md transition">
+            <p className="text-sm text-muted line-through decoration-bad/50">{p.pain}</p>
             <Chip tint={p.tint} icon={p.icon} />
-            <p className="font-display font-semibold text-2xl leading-snug mt-5">{p.pain}</p>
-            <div className="flex-1" />
-            <p className="mt-5 pt-5 border-t border-line text-[15px] text-soft leading-relaxed">
-              <span className="font-semibold text-accent">How we fix it: </span>{p.fix}
-            </p>
+            <p className="font-semibold leading-snug">{p.fix}</p>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}
+
+function Interviewers() {
+  return (
+    <Section eyebrow="Meet your interviewers" title="Real conversations, not a quiz." className="bg-card border-y border-line" center>
+      <div className="grid gap-6 sm:grid-cols-2 max-w-3xl mx-auto">
+        {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
+          <article key={id} className="rounded-3xl bg-paper border border-line overflow-hidden text-center">
+            <div className="aspect-square overflow-hidden">
+              <img src={INTERVIEWERS[id].photo} alt={`${INTERVIEWERS[id].name}, AI interviewer`} loading="lazy" className="w-full h-full object-cover object-top hover:scale-[1.03] transition-transform duration-500" />
+            </div>
+            <div className="p-5">
+              <h3 className="font-display font-semibold text-3xl">{INTERVIEWERS[id].name}</h3>
+              <p className="text-soft mt-1">Your AI interviewer</p>
+            </div>
           </article>
         ))}
       </div>
+      <p className="text-soft text-center mt-6">Pick who you'd like to practise with. They speak every question out loud and listen to your answers.</p>
     </Section>
   )
 }
 
 const STEPS: { icon: IconName; tint: Tint; title: string; body: string }[] = [
-  { icon: 'goals', tint: 'lavender', title: 'Tell us your goal', body: 'Pick your role, your year, the type of company and your interview date. Add your skills and rate yourself honestly.' },
-  { icon: 'mic', tint: 'sky', title: 'Take a real interview', body: 'Join a video-call-style room. Your interviewer asks questions out loud; you answer by voice (or by typing). It takes about 10 minutes.' },
-  { icon: 'reports', tint: 'sage', title: 'Get feedback and a plan', body: 'In about a minute you get a score, strengths, gaps, model answers and exactly what to study next.' },
+  { icon: 'goals', tint: 'lavender', title: 'Pick your goal', body: 'Role, company type, interview date.' },
+  { icon: 'mic', tint: 'sky', title: 'Talk it out', body: 'A 10-minute interview, by voice.' },
+  { icon: 'reports', tint: 'sage', title: 'Get your plan', body: 'Score, gaps and what to study next.' },
 ]
 
 function HowItWorks() {
   return (
-    <Section id="how" eyebrow="How it works" title="From nervous to ready in three steps" className="bg-card border-y border-line">
-      <ol className="grid gap-6 md:grid-cols-3">
+    <Section id="how" eyebrow="How it works" title="Three steps. Ten minutes." center>
+      <ol className="grid gap-6 md:grid-cols-3 relative">
+        <span aria-hidden="true" className="hidden md:block absolute top-7 left-[16%] right-[16%] h-0.5 bg-linear-to-r from-lavender via-sky to-sage" />
         {STEPS.map((s, i) => (
-          <li key={s.title} className="relative rounded-2xl bg-paper border border-line p-6">
-            <span className="absolute top-5 right-6 font-display font-semibold text-6xl text-line-strong select-none" aria-hidden="true">{i + 1}</span>
+          <li key={s.title} className="relative flex flex-col items-center text-center">
             <Chip tint={s.tint} icon={s.icon} size="lg" />
-            <h3 className="text-xl font-semibold mt-5">{s.title}</h3>
-            <p className="text-soft mt-2 leading-relaxed">{s.body}</p>
+            <span className="mt-4 text-xs font-semibold text-muted">STEP {i + 1}</span>
+            <h3 className="text-xl font-semibold mt-1">{s.title}</h3>
+            <p className="text-soft mt-1">{s.body}</p>
           </li>
         ))}
       </ol>
@@ -273,90 +292,97 @@ function HowItWorks() {
   )
 }
 
-const FEATURES: { icon: IconName; tint: Tint; title: string; body: string }[] = [
-  { icon: 'mic', tint: 'sky', title: 'Voice interviews that feel real', body: 'An AI interviewer (Priya or Arjun) speaks every question. You press "Start answering" and talk, like a real call.' },
-  { icon: 'repeat', tint: 'lavender', title: 'Real follow-up questions', body: 'Give a vague answer and you\'ll get "Can you explain why?", just like a real interviewer would ask.' },
-  { icon: 'swap', tint: 'peach', title: 'Every round of a placement drive', body: 'Technical, Project deep-dive, Behavioural and HR. Practise one round, or a complete drive back to back.' },
-  { icon: 'reports', tint: 'sage', title: 'Honest feedback reports', body: 'A score, what went well, what was missing, and one strong way to answer each question.' },
-  { icon: 'target', tint: 'blush', title: 'Skills: claimed vs proven', body: 'See how your self-rating compares with what you actually showed in interviews.' },
-  { icon: 'map', tint: 'lavender', title: 'A personal study roadmap', body: 'Weekly tasks built from your feedback: what to learn, what to practise, and what to build.' },
-  { icon: 'bolt', tint: 'peach', title: '5-minute drills', body: 'Three quick questions on any topic, like "SQL joins" or "React hooks". Perfect before class or the night before.' },
-  { icon: 'flame', tint: 'blush', title: 'Streaks and progress', body: 'Daily streaks, score trends over time and a readiness score that grows as you improve.' },
-  { icon: 'book', tint: 'sky', title: 'Interview guides', body: 'Bite-sized tips: STAR answers, "Tell me about yourself", service vs product companies, the night before, and more.' },
-  { icon: 'goals', tint: 'sage', title: 'Grows with your career', body: 'Placements today, your first switch tomorrow. Each goal keeps its own history.' },
-  { icon: 'keyboard', tint: 'lavender', title: 'Comfortable for everyone', body: 'Slower speech, repeat questions, type instead of speak, a no-scores mode, and light or dark theme.' },
-  { icon: 'calendar', tint: 'peach', title: 'Gentle reminders', body: 'In-app notifications for ready reports, this week\'s plan and your upcoming interview date. No spam.' },
+const FEATURES: { icon: IconName; tint: Tint; title: string }[] = [
+  { icon: 'mic', tint: 'sky', title: 'Voice interviews' },
+  { icon: 'repeat', tint: 'lavender', title: 'Real follow-ups' },
+  { icon: 'swap', tint: 'peach', title: 'All 4 rounds' },
+  { icon: 'reports', tint: 'sage', title: 'Feedback reports' },
+  { icon: 'target', tint: 'blush', title: 'Claimed vs proven skills' },
+  { icon: 'map', tint: 'lavender', title: 'Study roadmap' },
+  { icon: 'bolt', tint: 'peach', title: '5-minute drills' },
+  { icon: 'flame', tint: 'blush', title: 'Streaks & progress' },
+  { icon: 'book', tint: 'sky', title: 'Interview guides' },
+  { icon: 'goals', tint: 'sage', title: 'Grows with your career' },
+  { icon: 'keyboard', tint: 'lavender', title: 'Type or speak' },
+  { icon: 'shield', tint: 'sky', title: 'Video never recorded' },
 ]
 
 function Features() {
   return (
-    <Section id="features" eyebrow="Everything you get" title="One place to prepare, practise and progress"
-      subtitle="Everything a student needs before placement season, in one simple app.">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <Section id="features" eyebrow="Everything you get" title="One app. Your whole prep." className="bg-card border-y border-line" center>
+      <ul className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
         {FEATURES.map((f) => (
-          <article key={f.title} className="rounded-2xl bg-card border border-line p-5 flex gap-4 hover:border-accent/40 transition-colors">
-            <Chip tint={f.tint} icon={f.icon} />
-            <div>
-              <h3 className="font-semibold">{f.title}</h3>
-              <p className="text-sm text-soft mt-1 leading-relaxed">{f.body}</p>
-            </div>
-          </article>
+          <li key={f.title} className="rounded-2xl bg-paper border border-line p-5 flex flex-col items-center text-center gap-3 hover:border-accent/40 hover:-translate-y-0.5 transition">
+            <Chip tint={f.tint} icon={f.icon} size="lg" />
+            <span className="font-semibold leading-snug">{f.title}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-8 flex flex-wrap justify-center gap-2 text-sm">
+        <span className="text-muted mr-1">Rounds:</span>
+        {['Technical', 'Project deep-dive', 'Behavioural', 'HR'].map((r) => (
+          <span key={r} className="rounded-full bg-accent-soft text-accent-deep px-3 py-1 font-medium">{r}</span>
         ))}
       </div>
     </Section>
   )
 }
 
+function FreeBanner() {
+  return (
+    <section className="px-4 sm:px-6 py-20">
+      <div className="relative max-w-6xl mx-auto overflow-hidden rounded-3xl bg-linear-to-br from-sage via-sky to-lavender border border-line px-6 py-14 sm:py-16 text-center">
+        <p className="font-display font-semibold text-6xl sm:text-8xl leading-none bg-linear-to-r from-[#12a8f0] to-[#7b3cf0] bg-clip-text text-transparent">100% free</p>
+        <p className="text-xl sm:text-2xl font-semibold mt-4">For every student. No catch.</p>
+        <ul className="mt-8 flex flex-wrap justify-center gap-3">
+          {['No credit card', 'No trial that runs out', 'No ads', 'We never sell your data'].map((t) => (
+            <li key={t} className="inline-flex items-center gap-2 rounded-full bg-card/80 px-4 py-2 text-sm font-medium">
+              <Icon name="check" size={15} strokeWidth={2.6} className="text-good" /> {t}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
 function SampleReport() {
   return (
-    <Section eyebrow="See the feedback" title="Feedback that tells you exactly what to fix"
-      subtitle="Not just a number. Every report explains your score and gives you a strong example answer to learn from."
-      className="bg-card border-y border-line">
-      <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr] items-start">
-        <div className="rounded-3xl bg-paper border border-line p-6 sm:p-8 shadow-sm">
+    <Section eyebrow="Your feedback" title="Know exactly what to fix.">
+      <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] items-center">
+        <div className="rounded-3xl bg-card border border-line p-6 sm:p-8 shadow-sm">
           <div className="flex items-center justify-between text-xs text-muted">
-            <span>Technical round · Frontend Developer</span>
+            <span>Technical round · Frontend</span>
             <span className="uppercase tracking-wider">Sample report</span>
           </div>
           <div className="flex items-center gap-5 mt-5">
-            <div className="w-24 h-24 rounded-full border-[6px] border-good/80 flex flex-col items-center justify-center">
+            <div className="w-24 h-24 shrink-0 rounded-full border-[6px] border-good/80 flex flex-col items-center justify-center">
               <span className="font-display font-semibold text-3xl leading-none">68</span>
               <span className="text-[10px] text-muted">out of 100</span>
             </div>
-            <p className="text-soft leading-relaxed flex-1">Good grasp of React basics. Answers got stronger with examples. Explain <b className="text-ink">why</b>, not only <b className="text-ink">what</b>.</p>
+            <p className="text-soft">Good React basics. Explain <b className="text-ink">why</b>, not only <b className="text-ink">what</b>.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 mt-6">
             <div className="rounded-xl bg-sage text-sage-ink p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider">What went well</p>
-              <p className="text-sm mt-1.5">Clear explanation of props vs state with a real example.</p>
+              <p className="text-xs font-semibold uppercase tracking-wider">Went well</p>
+              <p className="text-sm mt-1.5">Props vs state, with a real example.</p>
             </div>
             <div className="rounded-xl bg-peach text-peach-ink p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider">What to work on</p>
-              <p className="text-sm mt-1.5">When a useEffect cleanup runs, and why it prevents memory leaks.</p>
+              <p className="text-xs font-semibold uppercase tracking-wider">Work on</p>
+              <p className="text-sm mt-1.5">When useEffect cleanup runs.</p>
             </div>
           </div>
-          <div className="rounded-xl border border-line bg-card p-4 mt-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Study next</p>
-            <ol className="text-sm mt-2 space-y-1.5">
-              <li><span className="font-mono text-accent mr-2">1</span>useEffect dependencies and cleanup</li>
-              <li><span className="font-mono text-accent mr-2">2</span>Lifting state up vs Context</li>
-              <li><span className="font-mono text-accent mr-2">3</span>Explaining your project's architecture in 60 seconds</li>
-            </ol>
-          </div>
         </div>
-        <ul className="space-y-5">
+        <ul className="space-y-6">
           {[
-            { icon: 'check' as IconName, tint: 'sage' as Tint, t: 'Scored question by question', b: 'Each answer gets a mark out of 10, with what was good and what was missing.' },
-            { icon: 'book' as IconName, tint: 'sky' as Tint, t: 'Learn from a strong answer', b: 'Open "Show one strong way to answer" to see how a confident candidate would reply.' },
-            { icon: 'map' as IconName, tint: 'lavender' as Tint, t: 'Turns into your study plan', b: 'Your gaps feed your roadmap automatically, so you always know what to do next.' },
-            { icon: 'reports' as IconName, tint: 'peach' as Tint, t: 'Track your growth', b: 'Watch your scores rise across interviews, and your skills move from "claimed" to "proven".' },
+            { icon: 'check' as IconName, tint: 'sage' as Tint, t: 'A score for every answer' },
+            { icon: 'book' as IconName, tint: 'sky' as Tint, t: 'A strong example answer to learn from' },
+            { icon: 'map' as IconName, tint: 'lavender' as Tint, t: 'Gaps go straight into your study plan' },
+            { icon: 'up' as IconName, tint: 'peach' as Tint, t: 'Watch your scores rise over time' },
           ].map((x) => (
-            <li key={x.t} className="flex gap-4">
+            <li key={x.t} className="flex items-center gap-4">
               <Chip tint={x.tint} icon={x.icon} />
-              <div>
-                <h3 className="font-semibold text-lg">{x.t}</h3>
-                <p className="text-soft mt-1 leading-relaxed">{x.b}</p>
-              </div>
+              <span className="text-lg font-semibold">{x.t}</span>
             </li>
           ))}
         </ul>
@@ -365,75 +391,20 @@ function SampleReport() {
   )
 }
 
-function ForWho() {
-  const roles = ['Frontend Developer', 'Backend Developer', 'Full-Stack Developer', 'Data Analyst']
-  const who = [
-    { tint: 'sky' as Tint, icon: 'profile' as IconName, t: 'Final & pre-final year students', b: 'Getting ready for campus placements and off-campus drives.' },
-    { tint: 'lavender' as Tint, icon: 'trophy' as IconName, t: 'Freshers job hunting', b: 'Applying to service companies, product companies and startups.' },
-    { tint: 'sage' as Tint, icon: 'up' as IconName, t: 'Anyone rusty at interviews', b: 'Haven\'t interviewed in a while? Warm up before the real thing.' },
-  ]
-  return (
-    <Section eyebrow="Who it's for" title="Made for students like you">
-      <div className="grid gap-5 md:grid-cols-3">
-        {who.map((w) => (
-          <div key={w.t} className="rounded-2xl bg-card border border-line p-6">
-            <Chip tint={w.tint} icon={w.icon} />
-            <h3 className="font-semibold text-lg mt-4">{w.t}</h3>
-            <p className="text-soft mt-1">{w.b}</p>
-          </div>
-        ))}
-      </div>
-      <div className="mt-8 rounded-2xl bg-card border border-line p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-        <p className="font-semibold shrink-0">Roles available now:</p>
-        <ul className="flex flex-wrap gap-2">
-          {roles.map((r) => <li key={r} className="rounded-full bg-accent-soft text-accent-deep px-3 py-1.5 text-sm font-medium">{r}</li>)}
-          <li className="rounded-full border border-dashed border-line-strong text-muted px-3 py-1.5 text-sm">More coming soon</li>
-        </ul>
-      </div>
-    </Section>
-  )
-}
-
-function Privacy() {
-  const points = [
-    { icon: 'cameraOff' as IconName, t: 'Your video is never recorded', b: 'The camera is only there so it feels like a real call. Nothing is saved or uploaded.' },
-    { icon: 'download' as IconName, t: 'Your data is yours', b: 'Download everything with one click, or delete your account and all your data any time.' },
-    { icon: 'shield' as IconName, t: 'No spam, no selling', b: 'We never sell your data or show ads. Notifications stay inside the app.' },
-  ]
-  return (
-    <section className="px-4 sm:px-6 pb-20">
-      <div className="max-w-6xl mx-auto rounded-3xl bg-linear-to-br from-lavender via-sky to-sage border border-line p-8 sm:p-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-ink">Privacy first</p>
-        <h2 className="font-display font-semibold text-4xl sm:text-5xl mt-3 max-w-xl leading-[1.05]">Practise freely. Your mistakes stay private.</h2>
-        <div className="grid gap-6 md:grid-cols-3 mt-10">
-          {points.map((p) => (
-            <div key={p.t} className="rounded-2xl bg-card/70 backdrop-blur p-5">
-              <span className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-accent"><Icon name={p.icon} /></span>
-              <h3 className="font-semibold mt-4">{p.t}</h3>
-              <p className="text-sm text-soft mt-1 leading-relaxed">{p.b}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 const FAQS = [
-  { q: 'Is it really free?', a: 'Yes. ReadyForRound is free for students. To keep it running for everyone there\'s a daily limit (5 interviews and 10 drills a day), which resets at midnight.' },
-  { q: 'Do I need a camera or a good microphone?', a: 'No camera is needed; it\'s optional. A normal laptop or earphone mic works. You can also type your answers instead of speaking.' },
-  { q: 'Is the AI interviewer like a real interview?', a: 'It asks role-specific questions out loud, listens to your answer, and asks follow-ups when your answer is vague, like a real interviewer. It\'s practice, so the real interview may differ, but the pressure of answering out loud is the same.' },
-  { q: 'How accurate is the feedback?', a: 'Feedback is generated by AI and is usually a helpful guide, but it can make mistakes. Use it to find gaps, and double-check facts while you study.' },
-  { q: 'Does it work on my phone?', a: 'Yes. It works in any modern browser. Chrome or Edge on a laptop gives the best voice experience.' },
-  { q: 'Which roles and rounds can I practise?', a: 'Frontend, Backend, Full-Stack and Data Analyst roles, with Technical, Project deep-dive, Behavioural and HR rounds. More roles are coming.' },
+  { q: 'Is it really free?', a: 'Yes, completely free for students. A small daily limit (5 interviews and 10 drills) keeps it free for everyone. It resets at midnight.' },
+  { q: 'Do I need a camera?', a: 'No. The camera is optional and never recorded. You can even type your answers instead of speaking.' },
+  { q: 'Is it like a real interview?', a: 'The interviewer speaks every question, listens to your answer and asks follow-ups when you are vague, just like a real one.' },
+  { q: 'How accurate is the feedback?', a: 'It is AI feedback: a very useful guide, but it can make mistakes. Use it to find gaps and double-check facts as you study.' },
+  { q: 'Does it work on my phone?', a: 'Yes, in any modern browser. Chrome or Edge on a laptop gives the best voice experience.' },
 ]
 
 function Faq() {
   return (
-    <Section id="faq" eyebrow="Questions" title="Frequently asked questions">
+    <Section id="faq" eyebrow="Questions" title="Quick answers" className="bg-card border-y border-line">
       <div className="grid gap-3 max-w-3xl">
         {FAQS.map((f) => (
-          <details key={f.q} className="group rounded-2xl bg-card border border-line px-5 py-4 open:shadow-sm">
+          <details key={f.q} className="group rounded-2xl bg-paper border border-line px-5 py-4">
             <summary className="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold">
               {f.q}
               <span className="w-8 h-8 shrink-0 rounded-full bg-raised flex items-center justify-center transition-transform group-open:rotate-180"><Icon name="down" size={16} /></span>
@@ -448,16 +419,16 @@ function Faq() {
 
 function FinalCta() {
   return (
-    <section className="px-4 sm:px-6 pb-24">
-      <div className="relative max-w-6xl mx-auto overflow-hidden rounded-3xl bg-card border border-line px-6 py-16 sm:py-20 text-center shadow-sm">
-        <div aria-hidden="true" className="pointer-events-none absolute -top-20 left-1/4 w-80 h-80 rounded-full bg-sky blur-3xl opacity-70" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-1/4 w-80 h-80 rounded-full bg-lavender blur-3xl opacity-70" />
-        <div className="relative">
-          <img src="/logo-mark.png" alt="" className="w-16 h-16 mx-auto" />
-          <h2 className="font-display font-semibold text-4xl sm:text-6xl mt-6 leading-[1.02]">Your next interview is a practice<br className="hidden sm:block" /> round away.</h2>
-          <p className="text-lg text-soft mt-5 max-w-xl mx-auto">Create a free account and take your first mock interview in under 10 minutes.</p>
-          <div className="mt-8"><CtaButtons center /></div>
+    <section className="px-4 sm:px-6 py-24">
+      <div className="max-w-4xl mx-auto text-center">
+        <div className="flex justify-center -space-x-4">
+          {(Object.keys(INTERVIEWERS) as InterviewerId[]).map((id) => (
+            <img key={id} src={INTERVIEWERS[id].photo} alt="" className="w-20 h-20 rounded-full object-cover object-top ring-4 ring-paper" />
+          ))}
         </div>
+        <h2 className="font-display font-semibold text-4xl sm:text-6xl mt-6 leading-[1.02]">Your interviewer is ready.<br className="hidden sm:block" /> Are you?</h2>
+        <div className="mt-8 flex justify-center"><FreeBadge /></div>
+        <div className="mt-6"><CtaButtons center /></div>
       </div>
     </section>
   )
