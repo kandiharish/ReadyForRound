@@ -625,18 +625,33 @@ function Faq() {
   )
 }
 
+// A compact, colourful closing banner: message on the left, buttons on the right.
 function FinalCta() {
   return (
-    <section className="px-4 sm:px-6 pb-24">
+    <section className="px-4 sm:px-6 lg:px-10 pb-20">
       <Reveal from="zoom">
-        <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto overflow-hidden rounded-3xl bg-card border border-line px-6 py-16 sm:py-20 text-center shadow-sm">
-          <div aria-hidden="true" className="pointer-events-none absolute -top-20 left-1/4 w-80 h-80 rounded-full bg-sky blur-3xl opacity-70 motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-1/4 w-80 h-80 rounded-full bg-lavender blur-3xl opacity-70 motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]" />
-          <div className="relative">
-            <img src="/logo-mark.png" alt="" className="w-16 h-16 mx-auto motion-safe:animate-[float_5s_ease-in-out_infinite]" />
-            <h2 className="font-display font-semibold text-4xl sm:text-6xl mt-6 leading-[1.05]">Your next interview is<br className="hidden sm:block" /> <span className={GRADIENT_TEXT}>a practice round away.</span></h2>
-            <div className="mt-8 flex justify-center"><FreeBadge /></div>
-            <div className="mt-6"><CtaButtons center /></div>
+        <div className="relative max-w-6xl mx-auto overflow-hidden rounded-3xl bg-linear-to-r from-[#2f5bea] via-[#4a49e6] to-[#7b3cf0] px-6 py-10 sm:px-12 sm:py-12 shadow-xl shadow-accent/20">
+          {/* soft light spots and a faint "R" watermark for depth */}
+          <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-10 w-64 h-64 rounded-full bg-white/15 blur-3xl motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-1/4 w-72 h-72 rounded-full bg-[#12c8f5]/30 blur-3xl motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]" />
+          <img aria-hidden="true" src="/logo-mark.png" alt="" className="pointer-events-none absolute -right-6 -bottom-10 w-48 h-48 opacity-15 rotate-12 brightness-200 hidden sm:block" />
+
+          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="text-white">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#7ef0b4]" /> 100% free
+              </span>
+              <h2 className="font-display font-semibold text-3xl sm:text-5xl leading-[1.05] mt-4">Your next interview is<br className="hidden sm:block" /> a practice round away.</h2>
+              <p className="text-white/80 mt-3">Start your first mock interview in under 10 minutes.</p>
+            </div>
+            <div className="flex flex-wrap gap-3 shrink-0">
+              <Link to="/signup" className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-xl bg-white text-[#2f3fd0] font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">
+                Start practising free <Icon name="arrow" size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link to="/login" className="inline-flex items-center min-h-12 px-6 rounded-xl border border-white/40 text-white font-medium hover:bg-white/10 transition-colors">
+                Log in
+              </Link>
+            </div>
           </div>
         </div>
       </Reveal>
@@ -647,7 +662,7 @@ function FinalCta() {
 function Footer() {
   const contact = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
   return (
-    <footer className="border-t border-line px-4 sm:px-6 py-10">
+    <footer className="border-t border-line px-4 sm:px-6 pt-10 pb-24">
       <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         <Brand size="sm" tagline />
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-6 text-sm text-muted">
