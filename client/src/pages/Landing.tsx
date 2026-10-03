@@ -3,25 +3,16 @@ import { Link, Navigate } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
 import { Avatar, type AvatarState } from '../components/Avatar'
 import { Brand } from '../components/Brand'
-import { IntroVideo, introVideoExists, isFirstVisit } from '../components/IntroVideo'
 import { Reveal, useInView } from '../components/Reveal'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { Icon, type IconName } from '../components/ui'
+import { usePageTitle } from '../lib/pageTitle'
 
 // The public front page. Students skim, so it's built from pictures, motion and short lines, not paragraphs.
 // Logged-in students skip straight to their Home.
 export default function Landing() {
+  usePageTitle()
   const { session, loading } = useAuth()
-  const [hasVideo, setHasVideo] = useState(false)
-  const [showVideo, setShowVideo] = useState(false)
-
-  // Play the intro automatically on a visitor's first visit (only if the video file is there).
-  useEffect(() => {
-    introVideoExists().then((ok) => {
-      setHasVideo(ok)
-      if (ok && isFirstVisit()) setShowVideo(true)
-    })
-  }, [])
 
   if (!loading && session) return <Navigate to="/home" replace />
 
@@ -29,7 +20,7 @@ export default function Landing() {
     <div className="min-h-screen bg-paper text-ink overflow-x-hidden">
       <TopNav />
       <main>
-        <Hero hasVideo={hasVideo} onWatch={() => setShowVideo(true)} />
+        <Hero />
         <TopicRibbon />
         <Problems />
         <HowItWorks />
@@ -40,7 +31,6 @@ export default function Landing() {
         <FinalCta />
       </main>
       <Footer />
-      {showVideo && <IntroVideo onClose={() => setShowVideo(false)} />}
     </div>
   )
 }
@@ -148,7 +138,7 @@ function RotatingWord() {
   return <span key={i} className={`inline-block ${GRADIENT_TEXT} motion-safe:animate-[pop-in_0.5s_ease-out]`}>{ROTATING[i]}</span>
 }
 
-function Hero({ hasVideo, onWatch }: { hasVideo: boolean; onWatch: () => void }) {
+function Hero() {
   return (
     <section className="relative px-4 sm:px-6 pt-10 sm:pt-16 pb-24">
       <div aria-hidden="true" className="pointer-events-none absolute -top-16 inset-x-0 bottom-0 overflow-hidden">
@@ -165,7 +155,7 @@ function Hero({ hasVideo, onWatch }: { hasVideo: boolean; onWatch: () => void })
             <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] leading-[1.05] mt-6">
               <span className="block">Walk into your</span>
               <span className="block sm:whitespace-nowrap"><RotatingWord /> <span className="block sm:inline">interview like</span></span>
-              <span className="block">you've already done it.</span>
+              <span className="block">you've already <span className="block sm:inline">done it.</span></span>
             </h1>
           </Reveal>
           <Reveal delay={200}>
@@ -174,17 +164,6 @@ function Hero({ hasVideo, onWatch }: { hasVideo: boolean; onWatch: () => void })
             </p>
           </Reveal>
           <Reveal delay={300} className="mt-8"><CtaButtons /></Reveal>
-          {hasVideo && (
-            <Reveal delay={400}>
-              <button type="button" onClick={onWatch} className="mt-5 inline-flex items-center gap-3 text-sm font-medium text-soft hover:text-ink group">
-                <span className="relative w-11 h-11 rounded-full bg-card border border-line-strong flex items-center justify-center text-accent shadow-sm group-hover:scale-110 transition-transform">
-                  <span aria-hidden="true" className="absolute inset-0 rounded-full border-2 border-accent/40 motion-safe:animate-ping" />
-                  <Icon name="play" size={16} />
-                </span>
-                Watch the intro
-              </button>
-            </Reveal>
-          )}
           <Reveal delay={450}>
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
               {['No credit card', 'No hidden plans', 'Camera optional'].map((t) => (
@@ -345,15 +324,15 @@ function FlipCard({ p, index }: { p: (typeof PAINS)[number]; index: number }) {
 
   return (
     <button ref={ref} type="button" onClick={() => setFlipped((f) => !f)} aria-label={`${p.pain}. Fix: ${p.fix}`}
-      className="h-44 w-full perspective-[1000px] text-left">
+      className="h-28 sm:h-44 w-full perspective-[1000px] text-left">
       <span className={`relative block h-full w-full transition-transform duration-700 transform-3d ${flipped ? 'rotate-y-180' : ''}`}>
         {/* Front: the worry */}
-        <span className="absolute inset-0 rounded-2xl bg-card border border-line p-5 flex flex-col justify-between backface-hidden">
-          <span className="w-10 h-10 rounded-xl bg-blush text-blush-ink flex items-center justify-center"><Icon name="alert" size={18} /></span>
+        <span className="absolute inset-0 rounded-2xl bg-card border border-line p-5 flex flex-row sm:flex-col items-center sm:items-start gap-4 sm:justify-between backface-hidden">
+          <span className="w-10 h-10 shrink-0 rounded-xl bg-blush text-blush-ink flex items-center justify-center"><Icon name="alert" size={18} /></span>
           <span className="font-display font-semibold text-xl leading-snug">"{p.pain}"</span>
         </span>
         {/* Back: the fix */}
-        <span className="absolute inset-0 rounded-2xl bg-linear-to-br from-accent-soft to-card border border-accent/30 p-5 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
+        <span className="absolute inset-0 rounded-2xl bg-linear-to-br from-accent-soft to-card border border-accent/30 p-5 flex flex-row sm:flex-col items-center sm:items-start gap-4 sm:justify-between shadow-md backface-hidden rotate-y-180">
           <Chip tint={p.tint} icon={p.icon} />
           <span className="font-semibold leading-snug">{p.fix}</span>
         </span>

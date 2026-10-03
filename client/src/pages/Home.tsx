@@ -141,7 +141,7 @@ export default function Home() {
         </Card>
 
         {/* The most important card: a soft lavender-to-sky glow that suits both themes */}
-        <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-lavender via-sky to-sage text-ink border border-line p-6 flex flex-col shadow-sm">
+        <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-lavender via-sky to-sage text-ink border border-line p-6 flex flex-col shadow-sm order-first lg:order-none">
           <span className="pointer-events-none absolute -top-12 -right-12 w-40 h-40 rounded-full bg-blush opacity-70 blur-2xl" aria-hidden="true" />
           <span className="relative self-start rounded-full bg-card/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-lavender-ink">Up next for you</span>
           <h2 className="relative font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>

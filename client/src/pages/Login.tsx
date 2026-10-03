@@ -3,8 +3,10 @@ import { Link, Navigate, useNavigate } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { AuthCard, Divider, GoogleButton, inputClass, primaryButtonClass } from '../components/AuthCard'
+import { usePageTitle } from '../lib/pageTitle'
 
 export default function Login() {
+  usePageTitle('Log in')
   const navigate = useNavigate()
   const { session } = useAuth()
   const [email, setEmail] = useState('')

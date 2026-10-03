@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Brand } from '../components/Brand'
+import { usePageTitle } from '../lib/pageTitle'
 
 // Who students can contact about their data. Set VITE_CONTACT_EMAIL in client/.env.
 const CONTACT = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
@@ -29,6 +30,7 @@ function LegalLayout({ title, children }: { title: string; children: ReactNode }
 }
 
 export function PrivacyPage() {
+  usePageTitle('Privacy policy')
   return (
     <LegalLayout title="Privacy policy">
       <p>ReadyForRound helps you practise job interviews. This page explains, in plain words, what we collect, why, and the choices you have.</p>
@@ -82,6 +84,7 @@ export function PrivacyPage() {
 }
 
 export function TermsPage() {
+  usePageTitle('Terms of use')
   return (
     <LegalLayout title="Terms of use">
       <p>By using ReadyForRound you agree to these simple terms.</p>

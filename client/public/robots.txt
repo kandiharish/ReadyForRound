@@ -1,0 +1,15 @@
+# Tells search engines (Google, Bing) what they may look at.
+User-agent: *
+Allow: /
+# Private pages behind login: nothing useful for search results
+Disallow: /home
+Disallow: /practice
+Disallow: /reports
+Disallow: /roadmap
+Disallow: /goals
+Disallow: /profile
+Disallow: /settings
+Disallow: /onboarding
+Disallow: /interview/
+
+Sitemap: https://ready-for-round.vercel.app/sitemap.xml

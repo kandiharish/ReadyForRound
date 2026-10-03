@@ -247,7 +247,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     <main className="min-h-screen bg-stage text-stage-text flex flex-col">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 text-sm">
-        <Brand size="sm" />
+        <Brand size="sm" collapse />
         <span className="text-stage-soft">
           {interview.mode === 'drill' ? `Drill · ${interview.focus_topic}` : `${roundLabel(currentRound)} round`} · Q{mainInRound} of {interview.questionsPerRound}
           {interview.rounds.length > 1 && ` · Round ${interview.current_round_index + 1}/${interview.rounds.length}`}
@@ -268,7 +268,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
         <span className="absolute bottom-3 left-3 bg-stage-card/85 text-stage-text border border-stage-line rounded px-2 py-0.5 text-sm">{interviewerName} · Interviewer</span>
 
         {/* Student's camera tile: glows green with their voice while recording */}
-        <div className="absolute bottom-3 right-3 w-32 sm:w-48 aspect-video bg-stage rounded-lg overflow-hidden border-2 transition-colors"
+        <div className="absolute bottom-3 right-3 w-24 sm:w-48 aspect-video bg-stage rounded-lg overflow-hidden border-2 transition-colors"
           style={{
             borderColor: avatarState === 'listening' ? `rgba(var(--glow-rgb),${0.35 + level * 0.65})` : 'var(--stage-line)',
             boxShadow: avatarState === 'listening' ? `0 0 ${4 + level * 24}px rgba(var(--glow-rgb),${0.2 + level * 0.6})` : undefined,
@@ -284,7 +284,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       <section className="mx-4 mt-3 space-y-2">
         <div className="bg-stage-card border border-stage-line rounded-xl px-4 py-3">
           <p className="text-xs text-info">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
-          <p className="font-display font-semibold text-2xl sm:text-[1.7rem] leading-snug">{current.question}</p>
+          <p className="font-display font-semibold text-xl sm:text-[1.7rem] leading-snug">{current.question}</p>
         </div>
 
         {answerMode === 'voice' ? (
@@ -334,7 +334,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       </section>
 
       {/* Controls */}
-      <footer className="flex flex-wrap items-center justify-center gap-2 p-4">
+      <footer className="flex flex-wrap items-center justify-center gap-2 p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {/* Main action: Start answering → Done answering */}
         {answerMode === 'voice' && (avatarState === 'listening' ? (
           <>
@@ -350,13 +350,13 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
             <Icon name="mic" size={18} /> Start answering
           </button>
         ))}
-        <Control onClick={() => setCamOn(!camOn)} active={camOn} disabled={!stream?.getVideoTracks().length}>{camOn ? <><Icon name="camera" size={16} /> Camera on</> : <><Icon name="cameraOff" size={16} /> Camera off</>}</Control>
-        <Control onClick={() => askCurrentQuestion()} disabled={avatarState === 'thinking'}><Icon name="repeat" size={16} /> Repeat question</Control>
+        <Control onClick={() => setCamOn(!camOn)} active={camOn} disabled={!stream?.getVideoTracks().length}>{camOn ? <><Icon name="camera" size={16} /> <Label>Camera on</Label></> : <><Icon name="cameraOff" size={16} /> <Label>Camera off</Label></>}</Control>
+        <Control onClick={() => askCurrentQuestion()} disabled={avatarState === 'thinking'}><Icon name="repeat" size={16} /> <Label>Repeat question</Label></Control>
         <Control onClick={() => switchMode(answerMode === 'voice' ? 'text' : 'voice')}
           disabled={avatarState === 'thinking' || (answerMode === 'text' && !canSpeak)}>
-          {answerMode === 'voice' ? <><Icon name="keyboard" size={16} /> Type instead</> : <><Icon name="mic" size={16} /> Speak instead</>}
+          {answerMode === 'voice' ? <><Icon name="keyboard" size={16} /> <Label>Type instead</Label></> : <><Icon name="mic" size={16} /> <Label>Speak instead</Label></>}
         </Control>
-        <Control onClick={() => sendAnswer({ skip: true })} disabled={avatarState === 'thinking'}><Icon name="skip" size={16} /> Skip</Control>
+        <Control onClick={() => sendAnswer({ skip: true })} disabled={avatarState === 'thinking'}><Icon name="skip" size={16} /> <Label>Skip</Label></Control>
         <EndButton interviewId={interview.id} onEnded={(i) => { speakTurn.current++; stopSpeaking(); cancelRecording(); setInterview(i) }} />
       </footer>
     </main>
@@ -380,10 +380,15 @@ function SoundBars({ level }: { level: number }) {
   )
 }
 
+// Button text that hides on phones (the icon stays, and screen readers still hear the words).
+function Label({ children }: { children: React.ReactNode }) {
+  return <span className="max-sm:sr-only">{children}</span>
+}
+
 function Control({ children, onClick, active = true, disabled }: { children: React.ReactNode; onClick: () => void; active?: boolean; disabled?: boolean }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-stage-text disabled:opacity-40 ${active ? 'bg-stage-raised hover:bg-stage-line' : 'bg-danger hover:bg-[#8d2f2f] text-white'}`}>
+      className={`inline-flex items-center gap-2 rounded-full px-3.5 sm:px-4 py-2.5 sm:py-2 text-sm text-stage-text disabled:opacity-40 ${active ? 'bg-stage-raised hover:bg-stage-line' : 'bg-danger hover:bg-[#8d2f2f] text-white'}`}>
       {children}
     </button>
   )

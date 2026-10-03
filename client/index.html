@@ -6,7 +6,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#F4F6FB" />
-    <title>ReadyForRound · AI mock interviews for campus placements</title>
+    <title>ReadyForRound · Free AI mock interviews for campus placements</title>
     <meta name="description" content="Practise real placement interviews by voice with an AI interviewer. Get honest feedback in minutes and a weekly plan for what to study next. Free for students." />
     <!-- How the link looks when shared on WhatsApp, LinkedIn, etc. -->
     <meta property="og:type" content="website" />
@@ -15,6 +15,37 @@
     <meta property="og:url" content="https://ready-for-round.vercel.app/" />
     <meta property="og:image" content="https://ready-for-round.vercel.app/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="ReadyForRound" />
+    <link rel="canonical" href="https://ready-for-round.vercel.app/" />
+    <!-- Structured data: tells Google the site's name, logo and that it's a free app, so search results can show them -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "ReadyForRound",
+            "alternateName": ["Ready For Round", "ReadyForRound AI mock interviews"],
+            "url": "https://ready-for-round.vercel.app/"
+          },
+          {
+            "@type": "Organization",
+            "name": "ReadyForRound",
+            "url": "https://ready-for-round.vercel.app/",
+            "logo": "https://ready-for-round.vercel.app/icon-512.png"
+          },
+          {
+            "@type": "WebApplication",
+            "name": "ReadyForRound",
+            "url": "https://ready-for-round.vercel.app/",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Any (web browser)",
+            "description": "Free AI mock interviews for campus placements: practise technical, project, behavioural and HR rounds by voice, get honest feedback and a study plan.",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" }
+          }
+        ]
+      }
+    </script>
     <script>
       // Apply the saved light/dark theme before the page draws, so there's no flash of the wrong colours.
       (function () {
@@ -32,6 +63,7 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>ReadyForRound: free AI mock interviews for campus placements. Please turn on JavaScript to use the app.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

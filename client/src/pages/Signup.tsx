@@ -2,8 +2,10 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { AuthCard, Divider, GoogleButton, inputClass, primaryButtonClass } from '../components/AuthCard'
+import { usePageTitle } from '../lib/pageTitle'
 
 export default function Signup() {
+  usePageTitle('Create your free account')
   const navigate = useNavigate()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
