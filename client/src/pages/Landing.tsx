@@ -5,6 +5,7 @@ import { Avatar, type AvatarState } from '../components/Avatar'
 import { Brand } from '../components/Brand'
 import { Reveal, useInView } from '../components/Reveal'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { openFeedback } from '../components/FeedbackButton'
 import { Icon, type IconName } from '../components/ui'
 import { usePageTitle } from '../lib/pageTitle'
 
@@ -93,7 +94,7 @@ function FreeBadge() {
         <span className="absolute inset-0 rounded-full bg-good opacity-60 motion-safe:animate-ping" />
         <span className="relative w-2 h-2 rounded-full bg-good" />
       </span>
-      100% free for everyone
+      100% free
     </span>
   )
 }
@@ -221,7 +222,7 @@ function HeroDemo() {
           <div className={`w-36 h-36 rounded-full overflow-hidden transition-shadow duration-500 ${phase === 'asking' ? 'shadow-[0_0_0_6px_rgba(var(--glow-rgb),0.4),0_0_60px_rgba(var(--glow-rgb),0.3)]' : 'shadow-[0_0_0_3px_rgba(var(--glow-rgb),0.15)]'}`}>
             <Avatar who="priya" state={avatar} />
           </div>
-          <div className="mt-5 w-full min-h-22 rounded-2xl bg-stage-card border border-stage-line px-4 py-3">
+          <div className="mt-5 w-full h-28 sm:h-24 overflow-hidden rounded-2xl bg-stage-card border border-stage-line px-4 py-3">
             <p className="font-display text-xl leading-snug text-stage-text">
               {item.question.slice(0, typed)}
               {phase === 'asking' && <span className="inline-block w-0.5 h-5 bg-accent align-middle ml-0.5 animate-[caret_1s_steps(1)_infinite]" />}
@@ -386,7 +387,7 @@ const AUDIENCE: { icon: IconName; tint: Tint; title: string; body: string }[] = 
 
 function ForEveryone() {
   return (
-    <Section eyebrow="Who it's for" title="Free for everyone with an interview ahead." className="bg-card border-y border-line" center>
+    <Section eyebrow="Who it's for" title="Made for every stage of your career." className="bg-card border-y border-line" center>
       <ul className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {AUDIENCE.map((a, i) => (
           <li key={a.title}>
@@ -483,7 +484,7 @@ function FreeBanner() {
           <div aria-hidden="true" className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-card/40 blur-3xl motion-safe:animate-[blob-drift_16s_ease-in-out_infinite]" />
           <div aria-hidden="true" className="absolute -bottom-24 right-0 w-80 h-80 rounded-full bg-blush/60 blur-3xl motion-safe:animate-[blob-drift_20s_ease-in-out_infinite_reverse]" />
           <p className={`relative font-display font-semibold text-6xl sm:text-8xl leading-none ${GRADIENT_TEXT}`}>100% free</p>
-          <p className="relative text-xl sm:text-2xl font-semibold mt-4">For everyone. No catch.</p>
+          <p className="relative text-xl sm:text-2xl font-semibold mt-4">No catch. No hidden charges.</p>
           <ul className="relative mt-8 flex flex-wrap justify-center gap-3">
             {['No credit card', 'No trial that runs out', 'No ads', 'We never sell your data'].map((t, i) => (
               <li key={t}>
@@ -562,7 +563,7 @@ function SampleReport() {
 }
 
 const FAQS = [
-  { q: 'Is it really free?', a: 'Yes, completely free for everyone. A small daily limit (5 interviews and 10 drills) keeps it free for all. It resets at midnight.' },
+  { q: 'Is it really free?', a: 'Yes, 100% free. A small daily limit (5 interviews and 10 drills) keeps it running smoothly, and it resets at midnight.' },
   { q: 'Who is it for?', a: 'Anyone with an interview coming up: college students, freshers, working professionals and experienced people switching jobs. Questions adjust to your experience level.' },
   { q: 'Do I need a camera?', a: 'No. The camera is optional and never recorded. You can even type your answers instead of speaking.' },
   { q: 'Is it like a real interview?', a: 'The interviewer speaks every question, listens to your answer and asks follow-ups when you are vague, just like a real one.' },
@@ -570,23 +571,57 @@ const FAQS = [
   { q: 'Does it work on my phone?', a: 'Yes, in any modern browser. Chrome or Edge on a laptop gives the best voice experience.' },
 ]
 
+// Left: a short intro and a way to ask us directly. Right: one list of questions where only one answer
+// is open at a time, and it slides open smoothly (so nothing next to it jumps around).
 function Faq() {
+  const [open, setOpen] = useState<number | null>(0)
   return (
-    <Section id="faq" eyebrow="Questions" title="Quick answers">
-      <div className="grid gap-3 lg:grid-cols-2 items-start">
-        {FAQS.map((f, i) => (
-          <Reveal key={f.q} delay={i * 70}>
-            <details className="group rounded-2xl bg-card border border-line px-5 py-4 open:shadow-md open:border-accent/30 transition-all">
-              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold">
-                {f.q}
-                <span className="w-8 h-8 shrink-0 rounded-full bg-raised flex items-center justify-center transition-transform duration-300 group-open:rotate-180 group-open:bg-accent-soft group-open:text-accent"><Icon name="down" size={16} /></span>
-              </summary>
-              <p className="text-soft mt-3 leading-relaxed motion-safe:animate-[pop-in_0.3s_ease-out]">{f.a}</p>
-            </details>
-          </Reveal>
-        ))}
+    <section id="faq" className="px-4 sm:px-6 lg:px-10 py-20 sm:py-28 scroll-mt-16">
+      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 items-start">
+        <Reveal className="lg:sticky lg:top-24">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Questions</p>
+          <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-3">Quick answers</h2>
+          <p className="text-soft mt-4 max-w-sm">Everything you might wonder before your first practice interview.</p>
+          <div className="mt-8 rounded-3xl bg-linear-to-br from-lavender via-sky to-sage border border-line p-6 max-w-sm">
+            <span className="w-11 h-11 rounded-2xl bg-card flex items-center justify-center text-accent shadow-sm">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
+            </span>
+            <p className="font-semibold text-lg mt-4">Still have a question?</p>
+            <p className="text-sm text-soft mt-1">Send it to us. We read every message.</p>
+            <button type="button" onClick={openFeedback}
+              className="mt-5 inline-flex items-center gap-2 min-h-11 px-5 rounded-xl bg-card text-ink font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all">
+              Ask us anything <Icon name="arrow" size={16} />
+            </button>
+          </div>
+        </Reveal>
+
+        <ul className="divide-y divide-line border-y border-line">
+          {FAQS.map((f, i) => {
+            const isOpen = open === i
+            return (
+              <li key={f.q}>
+                <Reveal delay={i * 60}>
+                  <button type="button" onClick={() => setOpen(isOpen ? null : i)} aria-expanded={isOpen} aria-controls={`faq-${i}`}
+                    className="group w-full flex items-center gap-5 py-6 text-left">
+                    <span className={`font-mono text-sm w-8 shrink-0 transition-colors ${isOpen ? 'text-accent' : 'text-muted'}`}>{String(i + 1).padStart(2, '0')}</span>
+                    <span className={`flex-1 text-lg sm:text-xl font-semibold transition-colors ${isOpen ? 'text-ink' : 'text-soft group-hover:text-ink'}`}>{f.q}</span>
+                    <span className={`w-10 h-10 shrink-0 rounded-full border flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-accent border-accent text-on-accent rotate-45' : 'border-line-strong text-soft group-hover:border-accent group-hover:text-accent'}`}>
+                      <Icon name="plus" size={18} />
+                    </span>
+                  </button>
+                  {/* grid-rows 0fr -> 1fr animates the answer's height smoothly */}
+                  <div id={`faq-${i}`} role="region" className={`grid transition-[grid-template-rows,opacity] duration-400 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                    <div className="overflow-hidden">
+                      <p className="text-soft leading-relaxed pl-13 pr-14 pb-6">{f.a}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              </li>
+            )
+          })}
+        </ul>
       </div>
-    </Section>
+    </section>
   )
 }
 

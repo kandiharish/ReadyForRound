@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-const DEFAULT_TITLE = 'ReadyForRound · Free AI mock interviews for everyone'
+const DEFAULT_TITLE = 'ReadyForRound · 100% free AI mock interviews'
 
 // Sets the browser tab title (also what Google shows as the blue link in search results).
 export function usePageTitle(title?: string) {

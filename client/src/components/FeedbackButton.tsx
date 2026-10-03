@@ -12,6 +12,9 @@ const KINDS: { id: Kind; label: string; icon: IconName; tint: string; placeholde
   { id: 'question', label: 'Question', icon: 'book', tint: 'bg-sky text-sky-ink', placeholder: 'Ask us anything.' },
 ]
 
+const OPEN_EVENT = 'rfr-open-feedback'
+export const openFeedback = () => window.dispatchEvent(new Event(OPEN_EVENT))
+
 // Hidden on screens where a floating button would get in the way.
 const HIDE_ON = [/^\/interview\/[^/]+$/, /^\/onboarding$/]
 
@@ -19,6 +22,12 @@ const HIDE_ON = [/^\/interview\/[^/]+$/, /^\/onboarding$/]
 export function FeedbackButton() {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
+  // Other buttons (like "Ask us anything" in the FAQ) can open this form with openFeedback().
+  useEffect(() => {
+    const onOpen = () => setOpen(true)
+    window.addEventListener(OPEN_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_EVENT, onOpen)
+  }, [])
   if (HIDE_ON.some((r) => r.test(pathname))) return null
   const inShell = !['/', '/login', '/signup', '/privacy', '/terms', '/status'].includes(pathname)
 

@@ -28,6 +28,8 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     },
   })
 
+  // 204 = "done, nothing to send back" (e.g. feedback received).
+  if (res.status === 204) return undefined as T
   // If the backend can't be reached, the website host may answer with a web page instead of data.
   // Treat that as "server unavailable" rather than pretending it was an empty answer.
   if (!(res.headers.get('content-type') ?? '').includes('application/json')) {
