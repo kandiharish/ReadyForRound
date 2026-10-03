@@ -50,6 +50,7 @@ export function parseAiReply(text: string, defaultType: AiReply['type']): AiRepl
     .replace(/^\s*assistant\s*$/im, '')
     .replace(/^\s*(new_question|follow_up|done)\s*$/gim, '')
     .replace(/\*\*/g, '')
+    .replace(/"{3,}/g, '') // the AI sometimes echoes the triple quotes we wrap answers in
     .replace(/\n{2,}/g, '\n')
     .trim()
     .replace(/^["']|["']$/g, '')

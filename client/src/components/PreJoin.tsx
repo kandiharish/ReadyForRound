@@ -127,15 +127,15 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
   }
 
   return (
-    <main className="min-h-screen bg-stage text-stage-text p-4">
+    <main className="min-h-screen bg-stage text-stage-text px-4 pt-4">
       <div className="max-w-4xl mx-auto py-6">
         <h1 className="text-2xl font-bold">Get ready: {roundLabel}</h1>
         <p className="text-stage-muted mt-1">Check your camera, microphone and speakers before you join.</p>
 
-        <div className="grid md:grid-cols-2 gap-6 mt-6">
+        <div className="grid md:grid-cols-2 gap-6 mt-6 [&>*]:min-w-0">
           {/* Camera preview + mic level */}
           <div>
-            <div className="aspect-video bg-stage-card rounded-xl overflow-hidden flex items-center justify-center">
+            <div className="h-44 sm:h-auto sm:aspect-video bg-stage-card rounded-xl overflow-hidden flex items-center justify-center">
               {hasCam
                 ? <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mirror" />
                 : <p className="text-stage-muted text-sm p-4 text-center">Camera off</p>}
@@ -232,9 +232,12 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               </>
             )}
 
-            <button onClick={join} className="w-full bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-lg py-3 font-semibold">
-              Join interview
-            </button>
+            {/* Phones: pinned to the bottom of the screen so it's always in reach */}
+            <div className="sticky bottom-0 -mx-4 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-stage/90 backdrop-blur md:static md:mx-0 md:p-0 md:bg-transparent md:backdrop-blur-none">
+              <button onClick={join} className="w-full bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-xl py-3.5 font-semibold shadow-lg shadow-accent/25 inline-flex items-center justify-center gap-2">
+                <Icon name="play" size={16} /> Join interview
+              </button>
+            </div>
           </div>
         </div>
       </div>

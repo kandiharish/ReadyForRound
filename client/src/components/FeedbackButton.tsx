@@ -30,13 +30,14 @@ export function FeedbackButton() {
   }, [])
   if (HIDE_ON.some((r) => r.test(pathname))) return null
   const inShell = !['/', '/login', '/signup', '/privacy', '/terms', '/status'].includes(pathname)
+  // Phones: inside the app the top bar has a feedback icon, and on login/sign-up the button would cover the form.
+  const phoneHidden = inShell || ['/login', '/signup'].includes(pathname)
 
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} aria-label="Send feedback"
-        className={`fixed right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink text-paper pl-3.5 pr-4 h-11 text-sm font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all ${
-          pathname === '/practice' ? 'bottom-[calc(10.5rem+env(safe-area-inset-bottom))] sm:bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-6'
-            : inShell ? 'bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-6' : 'bottom-5'}`}>
+        className={`${phoneHidden ? 'max-lg:hidden' : ''} fixed right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink text-paper pl-3.5 pr-4 h-11 text-sm font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all ${
+          inShell ? 'bottom-6' : 'bottom-5'}`}>
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
         </svg>

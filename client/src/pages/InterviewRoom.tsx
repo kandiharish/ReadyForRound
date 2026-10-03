@@ -244,7 +244,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
   const clock = formatTime(seconds)
 
   return (
-    <main className="min-h-screen bg-stage text-stage-text flex flex-col">
+    <main className="h-[100dvh] sm:h-auto sm:min-h-screen bg-stage text-stage-text flex flex-col overflow-hidden sm:overflow-visible">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 text-sm">
         <Brand size="sm" collapse />
@@ -256,9 +256,9 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       </header>
 
       {/* Video area: interviewer big, student small */}
-      <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-stage-card to-stage overflow-hidden flex items-center justify-center min-h-75">
+      <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-stage-card to-stage overflow-hidden flex items-center justify-center min-h-36 sm:min-h-75">
         {/* overflow-hidden lets the circle trim the shoulders, so the portrait sits exactly in the middle */}
-        <div className={`relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden bg-[radial-gradient(circle_at_50%_35%,var(--avatar-from),var(--avatar-to))] ring-1 ring-stage-line transition-shadow ${
+        <div className={`relative w-[min(14rem,26dvh)] h-[min(14rem,26dvh)] sm:w-72 sm:h-72 rounded-full overflow-hidden bg-[radial-gradient(circle_at_50%_35%,var(--avatar-from),var(--avatar-to))] ring-1 ring-stage-line transition-shadow ${
           avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(var(--glow-rgb),0.45),0_0_60px_rgba(var(--glow-rgb),0.25)]' : 'shadow-[0_20px_60px_rgba(15,23,42,0.18)]'}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>
@@ -281,10 +281,10 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       </section>
 
       {/* Question caption + answer status */}
-      <section className="mx-4 mt-3 space-y-2">
+      <section className="mx-4 mt-3 space-y-2 shrink-0">
         <div className="bg-stage-card border border-stage-line rounded-xl px-4 py-3">
           <p className="text-xs text-info">{interviewerName}{current.is_follow_up ? ' · follow-up' : ''}</p>
-          <p className="font-display font-semibold text-xl sm:text-[1.7rem] leading-snug">{current.question}</p>
+          <p className="font-display font-semibold text-xl sm:text-[1.7rem] leading-snug max-h-[24dvh] sm:max-h-none overflow-y-auto">{current.question}</p>
         </div>
 
         {answerMode === 'voice' ? (
@@ -334,19 +334,19 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       </section>
 
       {/* Controls */}
-      <footer className="flex flex-wrap items-center justify-center gap-2 p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <footer className="shrink-0 flex flex-wrap items-center justify-center gap-2 px-4 pt-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {/* Main action: Start answering → Done answering */}
         {answerMode === 'voice' && (avatarState === 'listening' ? (
           <>
             <button onClick={finishAnswer} disabled={!heardVoice}
-              className="bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+              className="basis-full sm:basis-auto justify-center bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
               <Icon name="check" size={18} strokeWidth={2.4} /> Done answering
             </button>
-            <Control onClick={startAnswer}><Icon name="repeat" size={16} /> Start again</Control>
+            <Control onClick={startAnswer}><Icon name="repeat" size={16} /> <Label>Start again</Label></Control>
           </>
         ) : (
           <button onClick={startAnswer} disabled={avatarState !== 'idle'}
-            className="bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+            className="basis-full sm:basis-auto justify-center bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-full px-6 py-3 font-semibold disabled:opacity-40 inline-flex items-center gap-2">
             <Icon name="mic" size={18} /> Start answering
           </button>
         ))}

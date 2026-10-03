@@ -26,7 +26,7 @@ export function AuthBackground() {
       <div className="absolute top-1/3 -right-32 w-120 h-120 rounded-full bg-lavender opacity-80 blur-3xl motion-safe:animate-[blob-drift_24s_ease-in-out_infinite_reverse]" />
       <div className="absolute -bottom-40 left-1/4 w-112 h-112 rounded-full bg-blush opacity-60 blur-3xl motion-safe:animate-[blob-drift_28s_ease-in-out_infinite]" />
       {QUESTIONS.map((q, i) => (
-        <div key={q.text} className={`absolute bottom-0 opacity-0 motion-safe:animate-[rise_linear_infinite] ${q.hideOnPhone ? 'max-sm:hidden' : ''}`}
+        <div key={q.text} className="absolute bottom-0 opacity-0 motion-safe:animate-[rise_linear_infinite] max-sm:hidden"
           style={{ left: q.left, animationDuration: `${q.duration}s`, animationDelay: `${q.delay}s` }}>
           <div className="motion-safe:animate-[sway_6s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.7}s` }}>
             <span className={`inline-block whitespace-nowrap rounded-2xl rounded-bl-sm px-4 py-2.5 font-display font-semibold text-lg shadow-sm border border-line/60 ${TINTS[i % TINTS.length]}`}>
@@ -35,6 +35,23 @@ export function AuthBackground() {
           </div>
         </div>
       ))}
+    </div>
+  )
+}
+
+// Phones: two rows of questions that glide sideways, one above and one below the card, in opposite directions.
+export function QuestionRow({ reverse = false }: { reverse?: boolean }) {
+  const items = reverse ? [...QUESTIONS].reverse() : QUESTIONS
+  const row = [...items, ...items] // repeated twice so the loop is seamless
+  return (
+    <div aria-hidden="true" className="sm:hidden relative w-screen shrink-0 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
+      <div className={`flex w-max gap-2.5 motion-safe:animate-[marquee_38s_linear_infinite] ${reverse ? '[animation-direction:reverse]' : ''}`}>
+        {row.map((q, i) => (
+          <span key={i} className={`whitespace-nowrap rounded-2xl rounded-bl-sm px-3.5 py-2 font-display font-semibold text-base border border-line/60 shadow-sm ${TINTS[i % TINTS.length]}`}>
+            {q.text}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }

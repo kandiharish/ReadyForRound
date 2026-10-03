@@ -81,13 +81,25 @@ export function NotificationBell({ className = '' }: { className?: string }) {
       </button>
 
       {open && (
+        <>
+        {/* Phones: dim the page behind the sheet; tapping it closes the sheet */}
+        <button type="button" aria-label="Close notifications" onClick={() => setOpen(false)}
+          className="sm:hidden fixed inset-0 z-40 bg-[#0b1020]/40 backdrop-blur-[2px] animate-[toast-in_0.15s_ease-out]" />
         <div role="dialog" aria-label="Notifications"
-          className="absolute right-0 mt-2 w-[min(22rem,calc(100vw-2rem))] rounded-2xl bg-card border border-line shadow-2xl z-40 overflow-hidden animate-[toast-in_0.15s_ease-out]">
-          <p className="px-4 py-3 border-b border-line font-display font-semibold text-xl">Notifications</p>
+          className="fixed inset-x-0 bottom-0 z-50 max-h-[75vh] rounded-t-3xl pb-[env(safe-area-inset-bottom)] animate-[sheet-up_0.25s_cubic-bezier(0.22,1,0.36,1)]
+            sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:mt-2 sm:w-[22rem] sm:max-h-none sm:rounded-2xl sm:pb-0 sm:animate-[toast-in_0.15s_ease-out]
+            bg-card border border-line shadow-2xl overflow-hidden flex flex-col">
+          <span className="sm:hidden mx-auto mt-2.5 h-1.5 w-10 rounded-full bg-line-strong" aria-hidden="true" />
+          <div className="flex items-center justify-between px-4 py-3 border-b border-line">
+            <p className="font-display font-semibold text-xl">Notifications</p>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="sm:hidden w-9 h-9 rounded-full hover:bg-raised flex items-center justify-center text-muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+            </button>
+          </div>
           {items.length === 0 ? (
             <p className="px-4 py-8 text-sm text-muted text-center">You're all caught up.</p>
           ) : (
-            <ul className="max-h-96 overflow-auto">
+            <ul className="overflow-auto sm:max-h-96">
               {items.map((n) => (
                 <li key={n.id} className="border-t border-line first:border-t-0">
                   <Link to={n.link} className="flex gap-3 px-4 py-3 hover:bg-raised">
@@ -104,6 +116,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
             </ul>
           )}
         </div>
+        </>
       )}
     </div>
   )

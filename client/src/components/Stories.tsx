@@ -36,7 +36,7 @@ export function StoriesRow() {
         <h2 className="font-display font-semibold text-2xl">Interview guides</h2>
         <span className="text-xs text-muted hidden sm:inline">Tips interviewers commonly share. General guidance, not quotes from specific people.</span>
       </div>
-      <div className="flex gap-4 overflow-x-auto py-4 -my-3 px-3 -mx-3 snap-x">
+      <div className="flex gap-4 overflow-x-auto py-4 -my-3 px-3 -mx-3 snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {STORIES.map((s, i) => {
           const isSeen = seen.has(s.id)
           return (

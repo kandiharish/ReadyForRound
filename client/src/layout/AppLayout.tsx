@@ -6,6 +6,7 @@ import { Icon, Spinner, type IconName } from '../components/ui'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { NotificationBell } from '../components/NotificationBell'
 import { Brand } from '../components/Brand'
+import { openFeedback } from '../components/FeedbackButton'
 
 const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
   { to: '/home', label: 'Home', icon: 'home' },
@@ -142,9 +143,13 @@ function MobileTopBar() {
   return (
     <div className="lg:hidden flex items-center justify-between mb-4">
       <Link to="/home" aria-label="ReadyForRound home">
-        <Brand size="sm" />
+        <Brand size="sm" collapse />
       </Link>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1">
+        <button type="button" onClick={openFeedback} aria-label="Send feedback"
+          className="w-10 h-10 rounded-full bg-card border border-line-strong text-ink shadow-sm hover:border-accent flex items-center justify-center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
+        </button>
         <NotificationBell />
         <ThemeToggle />
         <Link to="/settings" aria-label="Settings" className="w-11 h-11 rounded-xl text-muted hover:text-ink flex items-center justify-center"><Icon name="settings" /></Link>

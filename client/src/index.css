@@ -278,3 +278,9 @@ body {
   0%, 100% { transform: translateX(0) rotate(-1.5deg); }
   50% { transform: translateX(14px) rotate(1.5deg); }
 }
+
+/* Phones: sheets slide up from the bottom */
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
