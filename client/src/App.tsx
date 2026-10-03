@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router'
 import { ThemeToggle } from './components/ThemeToggle'
 import { FeedbackProvider } from './components/Feedback'
+import { FeedbackButton } from './components/FeedbackButton'
 import { AuthProvider } from './auth/AuthProvider'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import AppLayout from './layout/AppLayout'
@@ -27,6 +28,7 @@ function App() {
       <FeedbackProvider>
       <BrowserRouter>
         <CornerThemeToggle />
+        <FeedbackButton />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />

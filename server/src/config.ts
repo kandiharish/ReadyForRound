@@ -1,4 +1,4 @@
-﻿import 'dotenv/config'
+import 'dotenv/config'
 import { z } from 'zod'
 
 // Every setting the server needs, read from the .env file.
@@ -34,6 +34,10 @@ const schema = z.object({
   GROQ_REPORT_MODEL: z.string().default('openai/gpt-oss-120b'), // grades answers and writes the report
   // Speech-to-text model on Groq (Whisper). Used for spoken answers even when the chat AI is Ollama.
   GROQ_STT_MODEL: z.string().default('whisper-large-v3-turbo'),
+
+  // Feedback button: messages are emailed here using Resend (free account at https://resend.com).
+  RESEND_API_KEY: z.string().optional(),
+  FEEDBACK_TO_EMAIL: z.string().optional(),
 
   OPENROUTER_API_KEY: z.string().optional(),
   OPENROUTER_MODEL: z.string().optional(),

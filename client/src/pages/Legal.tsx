@@ -41,6 +41,7 @@ export function PrivacyPage() {
         <li><b>Your profile and goals:</b> experience level, skills and how you rate them, the roles and companies you're preparing for, and target dates.</li>
         <li><b>Your interviews:</b> the questions you were asked and your answers as text, plus the feedback reports and study plans made from them.</li>
         <li><b>Usage:</b> how many interviews and drills you do each day (to apply fair-use limits), and technical error reports that help us fix problems.</li>
+        <li><b>Feedback you send:</b> your message, the page you were on, and your email only if you choose to give it, so we can reply.</li>
       </ul>
 
       <h2>What we do not keep</h2>
@@ -62,6 +63,7 @@ export function PrivacyPage() {
         <li><b>Supabase:</b> secure storage of your account and data, and sign-in.</li>
         <li><b>Groq:</b> the AI that asks questions, turns your voice into text, and grades your answers. Your answers are sent to it for this purpose only.</li>
         <li><b>Google:</b> only if you choose "Continue with Google" to sign in.</li>
+        <li><b>Resend:</b> delivers the messages you send with the Feedback button to our inbox.</li>
       </ul>
 
       <h2>AI feedback is an estimate</h2>
@@ -94,7 +96,7 @@ export function TermsPage() {
 
       <h2>Fair use</h2>
       <ul>
-        <li>Daily limits apply so the free service stays available to every student.</li>
+        <li>Daily limits apply so the free service stays available to everyone.</li>
         <li>Don't try to break, overload or misuse the service, or use someone else's account.</li>
         <li>Answer in your own words. Don't submit content that is illegal, hateful, or someone else's private information.</li>
       </ul>

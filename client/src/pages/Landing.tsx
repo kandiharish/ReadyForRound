@@ -8,8 +8,8 @@ import { ThemeToggle } from '../components/ThemeToggle'
 import { Icon, type IconName } from '../components/ui'
 import { usePageTitle } from '../lib/pageTitle'
 
-// The public front page. Students skim, so it's built from pictures, motion and short lines, not paragraphs.
-// Logged-in students skip straight to their Home.
+// The public front page. Visitors skim, so it's built from pictures, motion and short lines, not paragraphs.
+// Logged-in users skip straight to their Home.
 export default function Landing() {
   usePageTitle()
   const { session, loading } = useAuth()
@@ -23,6 +23,7 @@ export default function Landing() {
         <Hero />
         <TopicRibbon />
         <Problems />
+        <ForEveryone />
         <HowItWorks />
         <Features />
         <FreeBanner />
@@ -50,8 +51,8 @@ const GRADIENT_TEXT = 'bg-linear-to-r from-[#12a8f0] via-[#7b3cf0] to-[#12a8f0] 
 
 function Section({ id, eyebrow, title, children, className = '', center = false }: { id?: string; eyebrow: string; title: ReactNode; children: ReactNode; className?: string; center?: boolean }) {
   return (
-    <section id={id} className={`px-4 sm:px-6 py-20 sm:py-28 scroll-mt-16 ${className}`}>
-      <div className="max-w-6xl mx-auto">
+    <section id={id} className={`px-4 sm:px-6 lg:px-10 py-20 sm:py-28 scroll-mt-16 ${className}`}>
+      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto">
         <Reveal className={center ? 'text-center max-w-2xl mx-auto' : 'max-w-2xl'}>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>
           <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-3">{title}</h2>
@@ -92,7 +93,7 @@ function FreeBadge() {
         <span className="absolute inset-0 rounded-full bg-good opacity-60 motion-safe:animate-ping" />
         <span className="relative w-2 h-2 rounded-full bg-good" />
       </span>
-      100% free for students
+      100% free for everyone
     </span>
   )
 }
@@ -109,7 +110,7 @@ function TopNav() {
   }, [])
   return (
     <header className={`sticky top-0 z-40 transition-all duration-300 border-b ${scrolled ? 'bg-paper/80 backdrop-blur-md border-line shadow-sm' : 'bg-transparent border-transparent'}`}>
-      <div className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
+      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
         <Link to="/" aria-label="ReadyForRound home"><Brand /></Link>
         <nav aria-label="Sections" className="hidden md:flex items-center gap-7 text-sm text-soft">
           {[['#problems', 'Why'], ['#how', 'How it works'], ['#features', 'Features'], ['#faq', 'FAQ']].map(([href, label]) => (
@@ -147,12 +148,12 @@ function Hero() {
         <div className="absolute -bottom-32 left-1/3 w-96 h-96 rounded-full bg-blush opacity-60 blur-3xl motion-safe:animate-[blob-drift_26s_ease-in-out_infinite]" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto grid gap-14 lg:grid-cols-[1.05fr_1fr] items-center">
+      <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-14 lg:grid-cols-[1.05fr_1fr] items-center">
         <div>
           <Reveal><FreeBadge /></Reveal>
           <Reveal delay={100}>
             {/* Fixed line breaks, so the changing word never makes the headline jump around */}
-            <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] leading-[1.05] mt-6">
+            <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] xl:text-[4.3rem] 2xl:text-[5rem] leading-[1.05] mt-6">
               <span className="block">Walk into your</span>
               <span className="block sm:whitespace-nowrap"><RotatingWord /> <span className="block sm:inline">interview like</span></span>
               <span className="block">you've already <span className="block sm:inline">done it.</span></span>
@@ -186,7 +187,7 @@ const DEMO = [
 ]
 type Phase = 'asking' | 'answering' | 'feedback'
 
-// A tiny looping demo of the app: the question types itself out, the student answers, then feedback pops in.
+// A tiny looping demo of the app: the question types itself out, the candidate answers, then feedback pops in.
 function HeroDemo() {
   const [n, setN] = useState(0)
   const [phase, setPhase] = useState<Phase>('asking')
@@ -210,7 +211,7 @@ function HeroDemo() {
   const avatar: AvatarState = phase === 'asking' ? 'speaking' : phase === 'answering' ? 'listening' : 'idle'
 
   return (
-    <div className="relative mx-auto w-full max-w-lg mb-20 sm:mb-12" aria-label="A short animated example of an interview on ReadyForRound">
+    <div className="relative mx-auto w-full max-w-lg xl:max-w-xl 2xl:max-w-2xl mb-20 sm:mb-12" aria-label="A short animated example of an interview on ReadyForRound">
       <div className="rounded-3xl bg-stage-card border border-stage-line shadow-2xl shadow-accent/15 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-stage-line text-xs text-stage-muted">
           <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-bad animate-pulse" /> {item.round}</span>
@@ -283,9 +284,9 @@ function CountUp({ to, className = '', duration = 900 }: { to: number; className
   return <span className={className}>{v}</span>
 }
 
-const TOPICS = ['Tell me about yourself', 'DSA', 'SQL joins', 'OOP', 'React hooks', 'Java', 'Python', 'DBMS', 'Operating systems', 'Computer networks', 'Your final-year project', 'STAR answers', 'Strengths & weaknesses', 'System design basics', 'Why should we hire you?', 'Excel & Power BI']
+const TOPICS = ['Tell me about yourself', 'DSA', 'SQL joins', 'OOP', 'React hooks', 'Java', 'Python', 'DBMS', 'Operating systems', 'Computer networks', 'Your final-year project', 'STAR answers', 'Strengths & weaknesses', 'System design basics', 'Why should we hire you?', 'Excel & Power BI', 'Why are you switching jobs?', 'Your biggest project at work', 'Leading a team']
 
-// An endless, slowly scrolling ribbon of things students can practise.
+// An endless, slowly scrolling ribbon of things people can practise.
 function TopicRibbon() {
   const row = [...TOPICS, ...TOPICS]
   return (
@@ -309,6 +310,7 @@ const PAINS: { pain: string; fix: string; icon: IconName; tint: Tint }[] = [
   { pain: 'Rejected, and nobody told me why', fix: 'An honest report after every interview', icon: 'reports', tint: 'sage' },
   { pain: 'I study random topics', fix: 'A weekly plan built from your gaps', icon: 'map', tint: 'peach' },
   { pain: 'Mock interviews cost money', fix: 'Completely free, any time', icon: 'check', tint: 'blush' },
+  { pain: "It's been years since my last interview", fix: 'Warm up before your next job switch', icon: 'repeat', tint: 'sage' },
 ]
 
 // A card that shows the worry first, then turns over to show the fix.
@@ -343,11 +345,11 @@ function FlipCard({ p, index }: { p: (typeof PAINS)[number]; index: number }) {
 
 function Problems() {
   return (
-    <Section id="problems" eyebrow="Sound familiar?" title="Every student feels this before placements.">
+    <Section id="problems" eyebrow="Sound familiar?" title="Everyone feels this before an interview.">
       <div className="grid gap-4 sm:grid-cols-2">
         {[
-          { src: '/stressed-girl.webp', alt: 'A student worried about forgetting concepts, explaining her project and getting placed' },
-          { src: '/stressed-boy.webp', alt: 'A student stressed about coding problems, his resume and failing again' },
+          { src: '/stressed-girl.webp', alt: 'A candidate worried about forgetting concepts, explaining her project and getting placed' },
+          { src: '/stressed-boy.webp', alt: 'A candidate stressed about coding problems, his resume and failing again' },
         ].map((img, i) => (
           <Reveal key={img.src} from="zoom" delay={i * 150}>
             <figure className="rounded-3xl overflow-hidden border border-line shadow-sm group">
@@ -365,12 +367,40 @@ function Problems() {
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-line-strong" />
       </Reveal>
 
-      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
         {PAINS.map((p, i) => (
           <li key={p.pain}><Reveal delay={i * 80}><FlipCard p={p} index={i} /></Reveal></li>
         ))}
       </ul>
       <p className="text-xs text-muted text-center mt-4">Tap a card to flip it</p>
+    </Section>
+  )
+}
+
+const AUDIENCE: { icon: IconName; tint: Tint; title: string; body: string }[] = [
+  { icon: 'book', tint: 'sky', title: 'College students', body: 'Campus placements and internships.' },
+  { icon: 'profile', tint: 'lavender', title: 'Freshers', body: 'Your first job hunt, on or off campus.' },
+  { icon: 'up', tint: 'sage', title: 'Working professionals', body: 'Switching jobs with 1 to 5+ years of experience.' },
+  { icon: 'repeat', tint: 'peach', title: 'Anyone rusty', body: 'Back after a break? Warm up first.' },
+]
+
+function ForEveryone() {
+  return (
+    <Section eyebrow="Who it's for" title="Free for everyone with an interview ahead." className="bg-card border-y border-line" center>
+      <ul className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        {AUDIENCE.map((a, i) => (
+          <li key={a.title}>
+            <Reveal delay={i * 100} className="h-full">
+              <div className="group h-full rounded-3xl bg-paper border border-line p-6 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                <span className="inline-flex transition-transform duration-300 group-hover:scale-110"><Chip tint={a.tint} icon={a.icon} size="lg" /></span>
+                <h3 className="font-semibold text-lg mt-4">{a.title}</h3>
+                <p className="text-sm text-soft mt-1">{a.body}</p>
+              </div>
+            </Reveal>
+          </li>
+        ))}
+      </ul>
+      <Reveal className="text-center text-sm text-muted mt-6">Questions adjust to your experience level, from 2nd-year student to 5+ years at work.</Reveal>
     </Section>
   )
 }
@@ -384,15 +414,15 @@ const STEPS: { icon: IconName; tint: Tint; title: string; body: string }[] = [
 function HowItWorks() {
   const { ref, inView } = useInView<HTMLOListElement>(0.35)
   return (
-    <Section id="how" eyebrow="How it works" title="Three steps. Ten minutes." className="bg-card border-y border-line" center>
-      <ol ref={ref} className="grid gap-10 md:gap-6 md:grid-cols-3 relative">
+    <Section id="how" eyebrow="How it works" title="Three steps. Ten minutes." center>
+      <ol ref={ref} className="grid gap-10 md:gap-6 md:grid-cols-3 relative max-w-5xl mx-auto">
         {/* The line between the steps draws itself from left to right */}
         <span aria-hidden="true" className="hidden md:block absolute top-7 left-[16%] right-[16%] h-0.5 bg-line" />
         <span aria-hidden="true" className={`hidden md:block absolute top-7 left-[16%] h-0.5 bg-linear-to-r from-[#a99af0] via-[#7fbbf0] to-[#8fd1a6] transition-all duration-1500 ease-out ${inView ? 'right-[16%]' : 'right-[84%]'}`} />
         {STEPS.map((s, i) => (
           <li key={s.title} style={{ transitionDelay: `${300 + i * 450}ms` }}
             className={`relative flex flex-col items-center text-center transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <span className={`rounded-2xl ring-8 ring-card transition-transform duration-500 ${inView ? 'scale-100' : 'scale-50'}`} style={{ transitionDelay: `${300 + i * 450}ms` }}>
+            <span className={`rounded-2xl ring-8 ring-paper transition-transform duration-500 ${inView ? 'scale-100' : 'scale-50'}`} style={{ transitionDelay: `${300 + i * 450}ms` }}>
               <Chip tint={s.tint} icon={s.icon} size="lg" />
             </span>
             <span className="mt-4 text-xs font-semibold text-muted">STEP {i + 1}</span>
@@ -422,12 +452,12 @@ const FEATURES: { icon: IconName; tint: Tint; title: string }[] = [
 
 function Features() {
   return (
-    <Section id="features" eyebrow="Everything you get" title="One app. Your whole prep." center>
+    <Section id="features" eyebrow="Everything you get" title="One app. Your whole prep." className="bg-card border-y border-line" center>
       <ul className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
         {FEATURES.map((f, i) => (
           <li key={f.title}>
             <Reveal delay={(i % 4) * 90 + Math.floor(i / 4) * 60} className="h-full">
-              <div className="group h-full rounded-2xl bg-card border border-line p-5 flex flex-col items-center text-center gap-3 hover:border-accent/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+              <div className="group h-full rounded-2xl bg-paper border border-line p-5 flex flex-col items-center text-center gap-3 hover:border-accent/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                 <span className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"><Chip tint={f.tint} icon={f.icon} size="lg" /></span>
                 <span className="font-semibold leading-snug">{f.title}</span>
               </div>
@@ -449,11 +479,11 @@ function FreeBanner() {
   return (
     <section className="px-4 sm:px-6 py-16">
       <Reveal from="zoom">
-        <div className="relative max-w-6xl mx-auto overflow-hidden rounded-3xl bg-linear-to-br from-sage via-sky to-lavender border border-line px-6 py-14 sm:py-20 text-center">
+        <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto overflow-hidden rounded-3xl bg-linear-to-br from-sage via-sky to-lavender border border-line px-6 py-14 sm:py-20 text-center">
           <div aria-hidden="true" className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-card/40 blur-3xl motion-safe:animate-[blob-drift_16s_ease-in-out_infinite]" />
           <div aria-hidden="true" className="absolute -bottom-24 right-0 w-80 h-80 rounded-full bg-blush/60 blur-3xl motion-safe:animate-[blob-drift_20s_ease-in-out_infinite_reverse]" />
           <p className={`relative font-display font-semibold text-6xl sm:text-8xl leading-none ${GRADIENT_TEXT}`}>100% free</p>
-          <p className="relative text-xl sm:text-2xl font-semibold mt-4">For every student. No catch.</p>
+          <p className="relative text-xl sm:text-2xl font-semibold mt-4">For everyone. No catch.</p>
           <ul className="relative mt-8 flex flex-wrap justify-center gap-3">
             {['No credit card', 'No trial that runs out', 'No ads', 'We never sell your data'].map((t, i) => (
               <li key={t}>
@@ -532,7 +562,8 @@ function SampleReport() {
 }
 
 const FAQS = [
-  { q: 'Is it really free?', a: 'Yes, completely free for students. A small daily limit (5 interviews and 10 drills) keeps it free for everyone. It resets at midnight.' },
+  { q: 'Is it really free?', a: 'Yes, completely free for everyone. A small daily limit (5 interviews and 10 drills) keeps it free for all. It resets at midnight.' },
+  { q: 'Who is it for?', a: 'Anyone with an interview coming up: college students, freshers, working professionals and experienced people switching jobs. Questions adjust to your experience level.' },
   { q: 'Do I need a camera?', a: 'No. The camera is optional and never recorded. You can even type your answers instead of speaking.' },
   { q: 'Is it like a real interview?', a: 'The interviewer speaks every question, listens to your answer and asks follow-ups when you are vague, just like a real one.' },
   { q: 'How accurate is the feedback?', a: 'It is AI feedback: a very useful guide, but it can make mistakes. Use it to find gaps and double-check facts as you study.' },
@@ -542,7 +573,7 @@ const FAQS = [
 function Faq() {
   return (
     <Section id="faq" eyebrow="Questions" title="Quick answers">
-      <div className="grid gap-3 max-w-3xl">
+      <div className="grid gap-3 lg:grid-cols-2 items-start">
         {FAQS.map((f, i) => (
           <Reveal key={f.q} delay={i * 70}>
             <details className="group rounded-2xl bg-card border border-line px-5 py-4 open:shadow-md open:border-accent/30 transition-all">
@@ -563,7 +594,7 @@ function FinalCta() {
   return (
     <section className="px-4 sm:px-6 pb-24">
       <Reveal from="zoom">
-        <div className="relative max-w-6xl mx-auto overflow-hidden rounded-3xl bg-card border border-line px-6 py-16 sm:py-20 text-center shadow-sm">
+        <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto overflow-hidden rounded-3xl bg-card border border-line px-6 py-16 sm:py-20 text-center shadow-sm">
           <div aria-hidden="true" className="pointer-events-none absolute -top-20 left-1/4 w-80 h-80 rounded-full bg-sky blur-3xl opacity-70 motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]" />
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 right-1/4 w-80 h-80 rounded-full bg-lavender blur-3xl opacity-70 motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]" />
           <div className="relative">
@@ -582,7 +613,7 @@ function Footer() {
   const contact = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
   return (
     <footer className="border-t border-line px-4 sm:px-6 py-10">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         <Brand size="sm" tagline />
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-6 text-sm text-muted">
           <Link to="/privacy" className="hover:text-ink">Privacy</Link>

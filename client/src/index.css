@@ -266,3 +266,15 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .motion-reduce-static { animation: none !important; }
 }
+
+/* Login / sign-up background: interview moments float up the screen */
+@keyframes rise {
+  0% { transform: translateY(15vh); opacity: 0; }
+  10% { opacity: 0.85; }
+  85% { opacity: 0.85; }
+  100% { transform: translateY(-115vh); opacity: 0; }
+}
+@keyframes sway {
+  0%, 100% { transform: translateX(0) rotate(-1.5deg); }
+  50% { transform: translateX(14px) rotate(1.5deg); }
+}

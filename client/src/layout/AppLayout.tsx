@@ -49,7 +49,7 @@ function Shell() {
       </div>
       <main className="flex-1 min-w-0 px-4 sm:px-8 lg:px-10 pt-4 lg:pt-16 pb-28 lg:pb-10">
         <MobileTopBar />
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl 2xl:max-w-[96rem] mx-auto">
           <Outlet />
         </div>
       </main>

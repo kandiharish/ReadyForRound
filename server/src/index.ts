@@ -5,6 +5,7 @@ import { config } from './config.js'
 import { isLlmReachable } from './llm/client.js'
 import { isDbConnected, supabase } from './db/supabase.js'
 import { logError } from './errors.js'
+import { feedbackSchema, submitFeedback } from './feedback.js'
 import { profileRouter } from './routes/profile.js'
 import { interviewsRouter } from './routes/interviews.js'
 import { goalsRouter } from './routes/goals.js'
@@ -50,6 +51,23 @@ app.post('/api/client-errors', async (req, res) => {
   if (token && supabase) userId = (await supabase.auth.getUser(token)).data.user?.id
   logError('client', { message: body.message, stack: body.stack }, { path: body.path, userId, userAgent: req.headers['user-agent'] })
   res.status(204).end()
+})
+
+// Feedback button: ideas, problems and questions, logged in or not. A few per person every 10 minutes.
+const feedbackLimit = rateLimit({ windowMs: 10 * 60_000, limit: 5, keyGenerator: perUser, message: { error: "You've sent a few messages already. Please try again in a few minutes." }, standardHeaders: 'draft-8', legacyHeaders: false })
+app.post('/api/feedback', feedbackLimit, async (req, res, next) => {
+  const parsed = feedbackSchema.safeParse(req.body ?? {})
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Please check the form.' })
+  if (parsed.data.website) return res.status(204).end() // a bot filled the hidden field: pretend it worked
+  try {
+    let userId: string | undefined
+    const token = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null
+    if (token && supabase) userId = (await supabase.auth.getUser(token)).data.user?.id
+    await submitFeedback(parsed.data, { userId, userAgent: req.headers['user-agent'] })
+    res.status(204).end()
+  } catch (err) {
+    next(err)
+  }
 })
 
 // Your data (download / delete): /api/account
