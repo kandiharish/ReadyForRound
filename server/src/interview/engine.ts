@@ -6,6 +6,7 @@ import { COMPLETE_SEQUENCES, MAX_FOLLOW_UPS_PER_QUESTION, QUESTIONS_PER_ROUND, t
 import { isGenerating, startReport } from '../report/generate.js'
 import { getActiveGoal } from '../goals.js'
 import { limitReached } from '../usage.js'
+import { getResume, resumeForPrompt } from '../resume.js'
 
 export class InterviewError extends Error {
   constructor(public status: number, message: string) {
@@ -67,6 +68,9 @@ async function loadContext(userId: string): Promise<{ ctx: InterviewContext; com
     skills: p.user_skills,
     speakingPace: p.speaking_pace,
   }
+  // If they uploaded a resume, the interviewer asks about their own projects and experience.
+  const resume = await getResume(userId)
+  if (resume) ctx.resume = resumeForPrompt(resume.summary)
   return { ctx, companyType: goal.company_type, goalId: goal.id }
 }
 

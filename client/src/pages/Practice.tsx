@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { Button, ButtonLink, EmptyState, Icon, PageHeader, Spinner, type IconName } from '../components/ui'
 import type { Interview, RoundId } from '../types'
+import type { Resume } from '../components/ResumeCard'
 
 type Choice = { mode: 'complete' } | { mode: 'single'; round: RoundId }
 
@@ -24,6 +25,8 @@ export default function Practice() {
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [topic, setTopic] = useState('')
+  const [resume, setResume] = useState<Resume | null | undefined>(undefined)
+  useEffect(() => { apiFetch<Resume | null>('/resume').then(setResume).catch(() => setResume(null)) }, [])
 
   if (!me || !catalog) return <Spinner />
   const goal = me.active_goal
@@ -73,6 +76,21 @@ export default function Practice() {
     <div className="space-y-6">
       <PageHeader eyebrow="Practice" title="Start a mock interview"
         subtitle={`Questions are shaped for ${label('roles', goal.target_role)} at a ${label('companyTypes', goal.company_type).toLowerCase()}, at your level: ${label('experienceLevels', goal.experience_level).toLowerCase()}.`} />
+
+      {/* Resume status: with a resume, questions are about their own projects and experience */}
+      {resume !== undefined && (resume ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-sage text-sage-ink px-4 py-3 text-sm">
+          <Icon name="file" size={18} />
+          <span className="flex-1 min-w-0"><b>Using your resume.</b> Expect questions about {resume.summary.projects.length ? `your projects like "${resume.summary.projects[0].name}"` : 'your experience and skills'}.</span>
+          <Link to="/profile" className="font-semibold underline underline-offset-2">Manage</Link>
+        </div>
+      ) : (
+        <Link to="/profile" className="group flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line-strong bg-card px-4 py-3 text-sm hover:border-accent">
+          <span className="w-9 h-9 rounded-xl bg-peach text-peach-ink flex items-center justify-center shrink-0"><Icon name="file" size={17} /></span>
+          <span className="flex-1 min-w-0 text-soft"><b className="text-ink">Add your resume</b> and the interviewer will ask about your own projects, like a real interview.</span>
+          <span className="font-semibold text-accent inline-flex items-center gap-1">Upload <Icon name="arrow" size={15} className="group-hover:translate-x-0.5 transition-transform" /></span>
+        </Link>
+      ))}
 
       <button type="button" onClick={() => setChoice({ mode: 'complete' })} aria-pressed={isSelected({ mode: 'complete' })} className={`${cardClass({ mode: 'complete' })} w-full`}>
         <div className="flex flex-wrap items-center justify-between gap-3">

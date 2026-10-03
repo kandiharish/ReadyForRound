@@ -11,7 +11,7 @@ accountRouter.use(requireAuth)
 accountRouter.get('/export', async (req, res) => {
   const id = req.user!.id
   const db = supabase!
-  const [profile, skills, goals, sessions, feedback] = await Promise.all([
+  const [profile, skills, goals, sessions, feedback, resume] = await Promise.all([
     db.from('profiles').select('full_name, role, experience_level, speaking_pace, practice_without_score, plan, created_at').eq('id', id).single(),
     db.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', id),
     db.from('goals').select('id, target_role, company_type, experience_level, target_date, weekly_hours, status, created_at, finished_at, roadmap_tasks (week, kind, title, done)').eq('user_id', id),
@@ -20,6 +20,7 @@ accountRouter.get('/export', async (req, res) => {
       .eq('user_id', id)
       .order('created_at'),
     db.from('feedback').select('kind, message, email, page, created_at').eq('user_id', id).order('created_at'),
+    db.from('resumes').select('file_name, text, summary, updated_at').eq('user_id', id).maybeSingle(),
   ])
 
   res.setHeader('Content-Disposition', 'attachment; filename="readyforround-my-data.json"')
@@ -30,7 +31,8 @@ accountRouter.get('/export', async (req, res) => {
     goals: goals.data ?? [],
     interviews: sessions.data ?? [],
     feedback: feedback.data ?? [],
-    note: 'Video is never recorded and voice recordings are not stored, so they are not included.',
+    resume: resume.data ?? null,
+    note: 'Video is never recorded, voice recordings are not stored, and uploaded resume files are deleted after reading (only the text is kept), so those files are not included.',
   })
 })
 

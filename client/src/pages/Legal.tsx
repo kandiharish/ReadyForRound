@@ -41,6 +41,7 @@ export function PrivacyPage() {
         <li><b>Your profile and goals:</b> experience level, skills and how you rate them, the roles and companies you're preparing for, and target dates.</li>
         <li><b>Your interviews:</b> the questions you were asked and your answers as text, plus the feedback reports and study plans made from them.</li>
         <li><b>Usage:</b> how many interviews and drills you do each day (to apply fair-use limits), and technical error reports that help us fix problems.</li>
+        <li><b>Your resume, if you add one:</b> we read the PDF, keep only its text and a short summary of your projects, skills and experience, and delete the file itself straight away. Remove it any time from your Profile.</li>
         <li><b>Feedback you send:</b> your message, the page you were on, and your email only if you choose to give it, so we can reply.</li>
       </ul>
 

@@ -10,6 +10,7 @@ import { profileRouter } from './routes/profile.js'
 import { interviewsRouter } from './routes/interviews.js'
 import { goalsRouter } from './routes/goals.js'
 import { accountRouter } from './routes/account.js'
+import { resumeRouter } from './routes/resume.js'
 
 const app = express()
 
@@ -70,6 +71,9 @@ app.post('/api/feedback', feedbackLimit, async (req, res, next) => {
   }
 })
 
+// Resume upload for resume-based interviews: /api/resume
+app.use('/api/resume', resumeRouter)
+
 // Your data (download / delete): /api/account
 app.use('/api/account', accountRouter)
 // Goals, Home stats and the Reports list: /api/goals, /api/home, /api/reports
@@ -79,7 +83,8 @@ app.use('/api', goalsRouter)
 app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   // 4xx = the request itself was bad (e.g. broken JSON, too large). That's not our bug, so don't log it.
   if (err.status && err.status < 500) {
-    if (!res.headersSent) res.status(err.status).json({ error: 'That request could not be read. Please try again.' })
+    const message = err.status === 413 ? 'That file is too large. Please upload a PDF under 2 MB.' : 'That request could not be read. Please try again.'
+    if (!res.headersSent) res.status(err.status).json({ error: message })
     return
   }
   logError('server', err, { path: `${req.method} ${req.originalUrl}`, userId: req.user?.id, userAgent: req.headers['user-agent'] })

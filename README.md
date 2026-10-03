@@ -63,6 +63,8 @@ ReadyForRound is a full-stack web app that runs a realistic interview round and 
 - **Skills: claimed vs proven**, comparing self-ratings against what interviews actually showed
 - **AI study roadmap**: weekly tasks sized to the hours you have before your interview date
 - **5-minute drills** on any topic, streaks, score trends and a readiness score
+- **Resume-based interviews**: upload a PDF and the interviewer asks about your own projects, skills and experience (only the text is kept)
+- **13 roles**: SDE, Frontend, Backend, Full-Stack, Forward Deployed Engineer, AI / ML, Data Science, Data Engineering, Data Analytics, DevOps, Mobile, QA and Cybersecurity
 - **Goals that grow with your career**: placements today, a job switch later, each with its own history
 - **Comfort options**: slower speech, repeat question, type instead of speak, a no-scores practice mode, light and dark themes
 - **In-app notifications**, interview guides, and a **feedback button** that emails the team
@@ -154,7 +156,7 @@ Deployment steps are in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 - An experienced-hire track: work deep-dives, system design and salary conversations
 - More roles beyond software development and data analysis
-- Downloadable PDF reports and resume-based questions
+- Downloadable PDF reports
 - A dashboard for colleges to support their students' placement preparation
 
 ## Author

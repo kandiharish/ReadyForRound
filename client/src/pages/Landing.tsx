@@ -285,7 +285,7 @@ function CountUp({ to, className = '', duration = 900 }: { to: number; className
   return <span className={className}>{v}</span>
 }
 
-const TOPICS = ['Tell me about yourself', 'DSA', 'SQL joins', 'OOP', 'React hooks', 'Java', 'Python', 'DBMS', 'Operating systems', 'Computer networks', 'Your final-year project', 'STAR answers', 'Strengths & weaknesses', 'System design basics', 'Why should we hire you?', 'Excel & Power BI', 'Why are you switching jobs?', 'Your biggest project at work', 'Leading a team']
+const TOPICS = ['Tell me about yourself', 'DSA', 'SQL joins', 'OOP', 'React hooks', 'Java', 'Python', 'DBMS', 'Operating systems', 'Computer networks', 'Your final-year project', 'STAR answers', 'Strengths & weaknesses', 'System design basics', 'Why should we hire you?', 'Machine learning', 'Docker & Kubernetes', 'Data pipelines', 'Excel & Power BI', 'Why are you switching jobs?', 'Your biggest project at work', 'Leading a team']
 
 // An endless, slowly scrolling ribbon of things people can practise.
 function TopicRibbon() {
@@ -446,7 +446,7 @@ const FEATURES: { icon: IconName; tint: Tint; title: string }[] = [
   { icon: 'bolt', tint: 'peach', title: '5-minute drills' },
   { icon: 'flame', tint: 'blush', title: 'Streaks & progress' },
   { icon: 'book', tint: 'sky', title: 'Interview guides' },
-  { icon: 'goals', tint: 'sage', title: 'Grows with your career' },
+  { icon: 'file', tint: 'sage', title: 'Questions from your resume' },
   { icon: 'keyboard', tint: 'lavender', title: 'Type or speak' },
   { icon: 'shield', tint: 'sky', title: 'Video never recorded' },
 ]
@@ -565,6 +565,7 @@ function SampleReport() {
 const FAQS = [
   { q: 'Is it really free?', a: 'Yes, 100% free. A small daily limit (5 interviews and 10 drills) keeps it running smoothly, and it resets at midnight.' },
   { q: 'Who is it for?', a: 'Anyone with an interview coming up: college students, freshers, working professionals and experienced people switching jobs. Questions adjust to your experience level.' },
+  { q: 'Which roles can I practise for?', a: 'SDE, Frontend, Backend, Full-Stack, Forward Deployed Engineer (FDE), AI / ML Engineer, Data Scientist, Data Engineer, Data Analyst, DevOps / Cloud, Mobile, QA / Test Automation and Cybersecurity. Upload your resume and the interviewer will also ask about your own projects.' },
   { q: 'Do I need a camera?', a: 'No. The camera is optional and never recorded. You can even type your answers instead of speaking.' },
   { q: 'Is it like a real interview?', a: 'The interviewer speaks every question, listens to your answer and asks follow-ups when you are vague, just like a real one.' },
   { q: 'How accurate is the feedback?', a: 'It is AI feedback: a very useful guide, but it can make mistakes. Use it to find gaps and double-check facts as you study.' },

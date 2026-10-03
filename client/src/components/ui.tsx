@@ -37,6 +37,8 @@ const ICONS = {
   target: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01',
   shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
   download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
+  file: 'M14 3H6v18h12V7zM14 3v4h4M9 13h6M9 17h6',
+  upload: 'M12 16V4M7 9l5-5 5 5M5 20h14',
 } as const
 
 export type IconName = keyof typeof ICONS

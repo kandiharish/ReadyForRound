@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from 'react'
+import { useCallback, useState, type FormEvent } from 'react'
 import { Select } from '../components/Select'
 import { SkillPicker } from '../components/SkillPicker'
 import { useMe } from '../auth/MeProvider'
 import { useFeedback } from '../components/Feedback'
 import { saveProfile } from '../lib/profile'
 import { Button, Card, PageHeader, Spinner } from '../components/ui'
+import { ResumeCard, type Resume } from '../components/ResumeCard'
 
 // Who you are: name, experience and skills. (What you're preparing for lives on the Goals page.)
 export default function ProfilePage() {
@@ -15,6 +16,8 @@ export default function ProfilePage() {
   const [skills, setSkills] = useState<Record<string, number>>(Object.fromEntries((me?.user_skills ?? []).map((s) => [s.skill, s.self_rating])))
   const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
+  const [resumeSkills, setResumeSkills] = useState<string[]>([])
+  const onResume = useCallback((r: Resume | null) => setResumeSkills(r?.summary.skills ?? []), [])
 
   if (!me || !catalog) return <Spinner />
 
@@ -55,6 +58,8 @@ export default function ProfilePage() {
         </div>
       </Card>
 
+      <ResumeCard onChange={onResume} />
+
       <Card className="space-y-5">
         <div>
           <h2 className="font-semibold">Skills</h2>
@@ -62,7 +67,7 @@ export default function ProfilePage() {
             Search and add the skills you know{me.active_goal ? ` (with suggestions for ${label('roles', me.active_goal.target_role)})` : ''}. You'll rate each one as you add it. Interviews fill in what you can prove.
           </p>
         </div>
-        <SkillPicker skills={skills} onChange={setSkills} suggested={roleSkills}
+        <SkillPicker skills={skills} onChange={setSkills} suggested={roleSkills} fromResume={resumeSkills}
           extra={(skill) => (
             <span className="text-xs text-muted">
               {proven[skill] == null ? 'Not tested yet' : me.practice_without_score ? 'Tested' : <>Proven <b className="font-mono text-ink">{proven[skill]}</b>/100</>}

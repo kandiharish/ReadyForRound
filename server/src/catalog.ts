@@ -6,6 +6,12 @@ import { COMPLETE_SEQUENCES, ROUNDS } from './interview/rounds.js'
 
 export const ROLES = [
   {
+    id: 'sde',
+    label: 'Software Development Engineer (SDE)',
+    description: 'Solves problems with code: data structures, algorithms and clean, scalable software.',
+    skills: ['DSA', 'Java', 'C++', 'Python', 'Object-Oriented Programming', 'System Design', 'SQL', 'Git'],
+  },
+  {
     id: 'frontend',
     label: 'Frontend Developer',
     description: 'Builds the parts of websites and apps that people see and click.',
@@ -24,10 +30,58 @@ export const ROLES = [
     skills: ['JavaScript', 'React', 'Node.js', 'SQL', 'MongoDB', 'REST APIs', 'Git', 'DSA'],
   },
   {
+    id: 'fde',
+    label: 'Forward Deployed Engineer (FDE)',
+    description: 'Works directly with customers to build, integrate and deploy software that solves their real problems.',
+    skills: ['Python', 'SQL', 'REST APIs', 'JavaScript', 'Amazon Web Services', 'Problem Solving', 'Communication', 'Git'],
+  },
+  {
+    id: 'ai_engineer',
+    label: 'AI / ML Engineer',
+    description: 'Builds products with machine learning and large language models, from training to deployment.',
+    skills: ['Python', 'Machine Learning', 'Deep Learning', 'PyTorch', 'Large Language Models', 'Retrieval-Augmented Generation', 'NumPy', 'MLOps'],
+  },
+  {
+    id: 'data_scientist',
+    label: 'Data Scientist',
+    description: 'Uses statistics and machine learning to find insights and make predictions from data.',
+    skills: ['Python', 'Statistics', 'Machine Learning', 'Pandas', 'SQL', 'Scikit-learn', 'Data Visualization', 'Probability'],
+  },
+  {
+    id: 'data_engineer',
+    label: 'Data Engineer',
+    description: 'Builds the pipelines and warehouses that move and prepare data at scale.',
+    skills: ['SQL', 'Python', 'Apache Spark', 'Apache Airflow', 'ETL', 'Data Warehousing', 'Apache Kafka', 'Amazon Web Services'],
+  },
+  {
     id: 'data_analyst',
     label: 'Data Analyst',
     description: 'Finds useful answers in data using spreadsheets, SQL and charts.',
-    skills: ['Excel', 'SQL', 'Python', 'Statistics', 'Power BI', 'Tableau', 'Pandas'],
+    skills: ['Microsoft Excel', 'SQL', 'Python', 'Statistics', 'Power BI', 'Tableau', 'Pandas'],
+  },
+  {
+    id: 'devops',
+    label: 'DevOps / Cloud Engineer',
+    description: 'Automates how software is built, deployed and kept running in the cloud.',
+    skills: ['Linux', 'Docker', 'Kubernetes', 'Amazon Web Services', 'CI/CD', 'Terraform', 'Bash', 'Git'],
+  },
+  {
+    id: 'mobile',
+    label: 'Mobile App Developer',
+    description: 'Builds Android and iOS apps people use every day.',
+    skills: ['Kotlin', 'Swift', 'Flutter', 'React Native', 'Android Development', 'Firebase', 'REST APIs', 'Git'],
+  },
+  {
+    id: 'qa',
+    label: 'QA / Test Automation Engineer',
+    description: 'Makes sure software works, by designing tests and automating them.',
+    skills: ['Software Testing', 'Selenium', 'Java', 'Python', 'API Testing', 'Postman', 'SQL', 'Automation Testing'],
+  },
+  {
+    id: 'cybersecurity',
+    label: 'Cybersecurity Analyst',
+    description: 'Protects systems and data by finding weaknesses and responding to threats.',
+    skills: ['Network Security', 'Linux', 'Computer Networks', 'Ethical Hacking', 'Wireshark', 'OWASP Top 10', 'Python', 'Cryptography'],
   },
 ] as const
 

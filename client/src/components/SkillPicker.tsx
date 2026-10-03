@@ -11,10 +11,11 @@ export const RATING_LEVELS = [
 
 // Search the skill dictionary, pick a skill, rate it in a pop-up, then add the next one.
 // Only dictionary skills can be added, so typos and random words never reach the profile.
-export function SkillPicker({ skills, onChange, suggested = [], extra }: {
+export function SkillPicker({ skills, onChange, suggested = [], fromResume = [], extra }: {
   skills: Record<string, number> // skill name -> self rating 1..5
   onChange: (next: Record<string, number>) => void
   suggested?: string[] // e.g. the usual skills for the student's target role
+  fromResume?: string[] // skills found on their resume (matched to the dictionary below)
   extra?: (skill: string) => ReactNode // something to show on each row (e.g. proven score)
 }) {
   const [query, setQuery] = useState('')
@@ -28,6 +29,9 @@ export function SkillPicker({ skills, onChange, suggested = [], extra }: {
   const added = Object.keys(skills)
   const matches = searchSkills(query, added)
   const suggestions = suggested.filter((s) => !skills[s])
+  const resumeSuggestions = [...new Set(fromResume.map((s) => canonicalSkill(s)).filter((s): s is string => !!s))]
+    .filter((s) => !skills[s] && !suggestions.includes(s))
+    .slice(0, 12)
 
   useEffect(() => {
     if (!open) return
@@ -101,6 +105,20 @@ export function SkillPicker({ skills, onChange, suggested = [], extra }: {
             {suggestions.map((s) => (
               <button key={s} type="button" onClick={() => pick(s)}
                 className="px-3 py-1.5 rounded-full border border-dashed border-line-strong text-sm text-soft hover:border-accent hover:text-accent">
+                + {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {resumeSuggestions.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-muted mb-2">From your resume</p>
+          <div className="flex flex-wrap gap-2">
+            {resumeSuggestions.map((s) => (
+              <button key={s} type="button" onClick={() => pick(s)}
+                className="px-3 py-1.5 rounded-full border border-dashed border-peach-ink/40 bg-peach/50 text-sm text-peach-ink hover:border-peach-ink">
                 + {s}
               </button>
             ))}
