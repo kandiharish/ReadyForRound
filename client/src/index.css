@@ -236,3 +236,33 @@ body {
   0%, 100% { height: 30%; }
   50% { height: 100%; }
 }
+
+/* ---------- Landing page motion ---------- */
+/* Big soft colour blobs that slowly drift behind the hero */
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.08); }
+  66% { transform: translate(-30px, 25px) scale(0.95); }
+}
+/* A shine that moves across gradient text */
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+/* An endless horizontal ribbon (the content is repeated twice, so -50% loops seamlessly) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+/* Small cards popping in */
+@keyframes pop-in {
+  0% { opacity: 0; transform: translateY(12px) scale(0.96); }
+  100% { opacity: 1; transform: none; }
+}
+/* Blinking text cursor */
+@keyframes caret {
+  50% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-reduce-static { animation: none !important; }
+}
