@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { Brand } from '../components/Brand'
 
 // Who students can contact about their data. Set VITE_CONTACT_EMAIL in client/.env.
 const CONTACT = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
@@ -13,7 +14,7 @@ function LegalLayout({ title, children }: { title: string; children: ReactNode }
   return (
     <main className="min-h-screen px-4 py-12 sm:py-16">
       <article className="max-w-2xl mx-auto bg-card border border-line rounded-3xl p-6 sm:p-10">
-        <Link to="/home" className="text-sm font-semibold text-accent-deep">← ReadyForRound</Link>
+        <Link to="/" aria-label="ReadyForRound home"><Brand size="sm" /></Link>
         <h1 className="font-display font-semibold text-4xl sm:text-5xl mt-4">{title}</h1>
         <p className="text-sm text-muted mt-2">Last updated {UPDATED}</p>
         <div className="mt-8 space-y-6 text-soft leading-relaxed [&_h2]:font-display [&_h2]:font-semibold [&_h2]:text-2xl [&_h2]:text-ink [&_h2]:mt-8 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">

@@ -35,6 +35,8 @@ const ICONS = {
   phoneOff: 'M5 12c4-4 10-4 14 0l-2 3-3-1v-2a8 8 0 0 0-4 0v2l-3 1z',
   volume: 'M4 9h4l5-4v14l-5-4H4zM17 9a4 4 0 0 1 0 6M19.5 6.5a8 8 0 0 1 0 11',
   target: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+  download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
 } as const
 
 export type IconName = keyof typeof ICONS

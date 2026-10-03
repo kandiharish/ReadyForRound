@@ -5,6 +5,7 @@ import { MeProvider, useMe } from '../auth/MeProvider'
 import { Icon, Spinner, type IconName } from '../components/ui'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { NotificationBell } from '../components/NotificationBell'
+import { Brand } from '../components/Brand'
 
 const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
   { to: '/home', label: 'Home', icon: 'home' },
@@ -64,9 +65,8 @@ function Sidebar() {
 
   return (
     <nav aria-label="Main" className="hidden lg:flex flex-col gap-5 w-62 shrink-0 h-screen sticky top-0 bg-card border-r border-line px-3.5 py-5">
-      <Link to="/home" className="flex items-center gap-2.5 px-2 text-ink">
-        <span className="w-8 h-8 rounded-lg bg-accent text-on-accent flex items-center justify-center"><Icon name="logo" size={18} strokeWidth={2.4} /></span>
-        <span className="font-semibold tracking-tight">ReadyForRound</span>
+      <Link to="/home" className="px-2" aria-label="ReadyForRound home">
+        <Brand />
       </Link>
 
       <Link to="/goals" className="flex items-center gap-2.5 min-h-14 px-3 rounded-xl bg-raised border border-line-strong hover:border-muted">
@@ -141,9 +141,8 @@ function MobileTopBar() {
   const initials = (me?.full_name ?? '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
   return (
     <div className="lg:hidden flex items-center justify-between mb-4">
-      <Link to="/home" className="flex items-center gap-2 font-semibold">
-        <span className="w-7 h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center"><Icon name="logo" size={16} strokeWidth={2.4} /></span>
-        ReadyForRound
+      <Link to="/home" aria-label="ReadyForRound home">
+        <Brand size="sm" />
       </Link>
       <div className="flex items-center gap-1.5">
         <NotificationBell />

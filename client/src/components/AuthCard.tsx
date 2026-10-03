@@ -1,17 +1,14 @@
 import type { ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import { Link } from 'react-router'
+import { Brand } from './Brand'
 
 // Shared layout for the login and signup pages.
 export function AuthCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-card border border-line rounded-3xl p-8 max-w-sm w-full">
-        <p className="flex items-center gap-2 text-sm font-semibold">
-          <span className="w-7 h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 17l5-5 4 4 7-8M15 8h5v5" /></svg>
-          </span>
-          ReadyForRound
-        </p>
+        <Link to="/" aria-label="ReadyForRound home"><Brand tagline /></Link>
         <h1 className="font-display font-semibold text-4xl text-ink mt-5">{title}</h1>
         <div className="mt-6">{children}</div>
       </div>

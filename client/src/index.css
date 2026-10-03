@@ -220,3 +220,9 @@ body {
   0%, 100% { box-shadow: 0 0 4px 0 rgba(var(--ring-glow, var(--glow-rgb)), 0.25); }
   50% { box-shadow: 0 0 22px 5px rgba(var(--ring-glow, var(--glow-rgb)), 0.6); }
 }
+
+/* Landing page: cards that gently float up and down */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}

@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/api'
 import { RoleQuiz } from '../components/RoleQuiz'
 import { SkillPicker } from '../components/SkillPicker'
 import type { Catalog, Option, Profile } from '../types'
+import { Brand } from '../components/Brand'
 
 type Answers = {
   target_role: string | null
@@ -196,7 +197,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen flex items-start sm:items-center justify-center p-4">
       <div className="bg-card border border-line rounded-2xl p-6 sm:p-8 max-w-lg w-full">
-        <p className="text-sm font-semibold text-accent-deep mb-4">ReadyForRound</p>
+        <Brand size="sm" className="mb-5" />
         {children}
       </div>
     </main>

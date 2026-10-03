@@ -9,6 +9,7 @@ import { PreJoin, type RoomSettings } from '../components/PreJoin'
 import { speak, stopSpeaking } from '../lib/speech'
 import { isRecordingSupported, startRecording, type Recording } from '../lib/recorder'
 import type { Catalog, Interview, Profile, RoundId } from '../types'
+import { Brand } from '../components/Brand'
 
 export default function InterviewRoom() {
   const { id } = useParams()
@@ -246,7 +247,7 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
     <main className="min-h-screen bg-stage text-stage-text flex flex-col">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 text-sm">
-        <span className="font-semibold text-accent-bright">ReadyForRound</span>
+        <Brand size="sm" />
         <span className="text-stage-soft">
           {interview.mode === 'drill' ? `Drill · ${interview.focus_topic}` : `${roundLabel(currentRound)} round`} · Q{mainInRound} of {interview.questionsPerRound}
           {interview.rounds.length > 1 && ` · Round ${interview.current_round_index + 1}/${interview.rounds.length}`}

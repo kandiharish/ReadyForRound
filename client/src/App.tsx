@@ -18,6 +18,7 @@ import ProfilePage from './pages/ProfilePage'
 import Settings from './pages/Settings'
 import InterviewRoom from './pages/InterviewRoom'
 import { PrivacyPage, TermsPage } from './pages/Legal'
+import Landing from './pages/Landing'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -27,6 +28,7 @@ function App() {
       <BrowserRouter>
         <CornerThemeToggle />
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/status" element={<Status />} />
@@ -50,10 +52,9 @@ function App() {
           </Route>
 
           {/* Old addresses still work */}
-          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/dashboard" element={<Navigate to="/home" replace />} />
           <Route path="/interview/new" element={<Navigate to="/practice" replace />} />
-          <Route path="*" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
       </FeedbackProvider>
