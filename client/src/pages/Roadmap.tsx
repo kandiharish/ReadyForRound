@@ -4,8 +4,9 @@ import { apiFetch } from '../lib/api'
 import { startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { useFeedback } from '../components/Feedback'
-import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, Spinner } from '../components/ui'
+import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader } from '../components/ui'
 import type { Goal, RoadmapTask } from '../types'
+import { ListSkeleton } from '../components/Skeleton'
 
 const KIND = {
   learn: { label: 'Learn', cls: 'bg-info-soft text-info' },
@@ -26,7 +27,7 @@ export default function Roadmap() {
 
   useEffect(() => { apiFetch<typeof data>('/roadmap').then(setData).catch((e) => setError(e.message)) }, [])
 
-  if (!data || !me) return error ? <p className="text-bad">{error}</p> : <Spinner />
+  if (!data || !me) return error ? <p className="text-bad">{error}</p> : <ListSkeleton label="Loading your study plan" />
   if (!data.goal) return <EmptyState title="First, choose a goal" body="Your roadmap is planned around a goal and its target date." action={<ButtonLink to="/goals">Create a goal</ButtonLink>} />
 
   async function build() {

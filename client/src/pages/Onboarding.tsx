@@ -5,6 +5,7 @@ import { RoleQuiz } from '../components/RoleQuiz'
 import { SkillPicker } from '../components/SkillPicker'
 import type { Catalog, Option, Profile } from '../types'
 import { Brand } from '../components/Brand'
+import { Bone } from '../components/Skeleton'
 
 type Answers = {
   target_role: string | null
@@ -63,7 +64,12 @@ export default function Onboarding() {
   }, [])
 
   if (!catalog) {
-    return <Shell>{error ? <p className="text-bad">{error}</p> : <p className="text-muted">Loading…</p>}</Shell>
+    return <Shell>{error ? <p className="text-bad">{error}</p> : (
+      <div role="status" className="space-y-3">
+        <span className="sr-only">Loading</span>
+        {[0, 1, 2, 3].map((i) => <Bone key={i} className="h-16 w-full rounded-xl" />)}
+      </div>
+    )}</Shell>
   }
 
   const set = <K extends keyof Answers>(key: K, value: Answers[K]) => setAnswers((a) => ({ ...a, [key]: value }))

@@ -4,8 +4,9 @@ import { Link } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { sessionTitle } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
-import { ButtonLink, Card, EmptyState, PageHeader, ScoreChip, Spinner } from '../components/ui'
+import { ButtonLink, Card, EmptyState, PageHeader, ScoreChip } from '../components/ui'
 import type { GoalWithStats, RoundId, SessionSummary } from '../types'
+import { ListSkeleton } from '../components/Skeleton'
 
 // Every finished interview, newest first, filterable by goal.
 export default function Reports() {
@@ -22,7 +23,7 @@ export default function Reports() {
   }, [])
 
   if (error) return <p className="text-bad">{error}</p>
-  if (!reports || !catalog || !me) return <Spinner />
+  if (!reports || !catalog || !me) return <ListSkeleton label="Loading your reports" />
 
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
   const goalName = (id: string | null) => {

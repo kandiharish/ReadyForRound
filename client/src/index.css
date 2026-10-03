@@ -284,3 +284,25 @@ body {
   from { transform: translateY(100%); }
   to { transform: none; }
 }
+
+/* Skeleton loading: placeholder shapes with a soft light sweeping across (works in light and dark themes) */
+.skeleton {
+  background-color: var(--raised);
+  background-image: linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 45%,
+    color-mix(in srgb, var(--accent) 18%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 55%,
+    transparent 100%);
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-shine 1.6s ease-in-out infinite;
+}
+.skeleton-stage { background-color: var(--stage-raised); }
+@keyframes skeleton-shine {
+  from { background-position: 160% 0; }
+  to { background-position: -60% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}

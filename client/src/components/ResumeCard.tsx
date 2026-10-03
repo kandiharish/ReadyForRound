@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../lib/api'
 import { useFeedback } from './Feedback'
 import { Button, Card, Icon } from './ui'
+import { Bone, Lines } from './Skeleton'
 
 export type ResumeSummary = {
   headline: string
@@ -81,13 +82,17 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
       </div>
       {picker}
 
-      {resume === undefined ? null : busy ? (
-        <div className="rounded-2xl border border-line bg-raised p-6 flex items-center gap-4">
-          <span className="w-10 h-10 rounded-full border-2 border-accent border-t-transparent animate-spin" aria-hidden="true" />
-          <div>
-            <p className="font-semibold">Reading your resume…</p>
-            <p className="text-sm text-muted">Finding your projects, skills and experience. This takes about 20 seconds.</p>
+      {resume === undefined ? <Lines count={3} /> : busy ? (
+        <div className="rounded-2xl border border-line p-5 space-y-4" role="status">
+          <p className="text-sm text-muted"><b className="text-ink">Reading your resume…</b> Finding your projects, skills and experience. This takes about 20 seconds.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {[0, 1].map((i) => (
+              <div key={i} className="rounded-xl bg-card border border-line p-3 space-y-2.5">
+                <Bone className="h-3.5 w-32" /><Bone className="h-3 w-24" /><Lines count={2} />
+              </div>
+            ))}
           </div>
+          <div className="flex flex-wrap gap-1.5">{[56, 72, 48, 88, 64].map((w, i) => <Bone key={i} className="h-6" style={{ width: w }} />)}</div>
         </div>
       ) : !resume ? (
         <button type="button" onClick={() => fileRef.current?.click()}

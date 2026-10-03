@@ -6,6 +6,7 @@ import { Button, ButtonLink, Card, Icon, PageHeader, type IconName } from '../co
 import { apiFetch } from '../lib/api'
 import { sessionTitle } from '../lib/sessions'
 import type { Interview, QuestionFeedback, Report, ReportResponse, RoundId } from '../types'
+import { ReportSkeleton } from '../components/Skeleton'
 
 // The feedback report for one interview. Shows feedback and scores only, never the student's answer text.
 export default function ReportPage() {
@@ -53,12 +54,17 @@ export default function ReportPage() {
         {error && <p className="text-bad">{error}</p>}
 
         {(!res || res.status === 'generating') && !error && (
-          <Card className="text-center py-10">
-            <div className="w-10 h-10 mx-auto rounded-full border-4 border-accent/30 border-t-accent animate-spin" />
-            <p className="font-semibold mt-4">Preparing your report…</p>
+          <div className="space-y-5">
+          <Card className="text-center py-8">
+            <span className="inline-flex items-center gap-2 rounded-full bg-accent-soft text-accent-deep px-3 py-1 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" /> Grading your answers
+            </span>
+            <p className="font-semibold mt-3">Preparing your report…</p>
             <p className="text-sm text-muted mt-1">Our AI coach is reviewing each of your answers. This usually takes under a minute.</p>
             <p className="font-display text-xl text-blush-ink bg-blush rounded-xl px-4 py-3 mt-6 max-w-md mx-auto">“{thoughtOfTheDay()}”</p>
           </Card>
+          <ReportSkeleton />
+          </div>
         )}
 
         {res?.status === 'failed' && (

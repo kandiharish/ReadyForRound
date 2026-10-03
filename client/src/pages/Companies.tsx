@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useMe } from '../auth/MeProvider'
-import { Icon, PageHeader, Spinner } from '../components/ui'
+import { Icon, PageHeader } from '../components/ui'
 import type { Company } from '../types'
+import { TilesSkeleton } from '../components/Skeleton'
 
 const TINT: Record<Company['tint'], string> = {
   sky: 'bg-sky text-sky-ink',
@@ -34,7 +35,7 @@ export function NotAffiliated({ className = '' }: { className?: string }) {
 export default function Companies() {
   const { catalog, label } = useMe()
   const [filter, setFilter] = useState<'all' | Company['type']>('all')
-  if (!catalog) return <Spinner />
+  if (!catalog) return <TilesSkeleton count={9} label="Loading companies" />
   const list = catalog.companies.filter((c) => filter === 'all' || c.type === filter)
 
   return (

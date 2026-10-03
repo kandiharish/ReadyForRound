@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { PageSkeleton } from './Skeleton'
 
 // Shared building blocks, so every page looks and behaves the same.
 
@@ -138,13 +139,9 @@ export function ScoreChip({ score, outOf = 100 }: { score: number; outOf?: numbe
   return <span className={`inline-block font-mono text-sm font-semibold rounded-full px-3 py-0.5 ${cls}`}>{score}{outOf === 10 ? '/10' : ''}</span>
 }
 
-export function Spinner({ label = 'Loading…' }: { label?: string }) {
-  return (
-    <div className="flex items-center gap-3 text-muted text-sm" role="status">
-      <span className="w-5 h-5 rounded-full border-2 border-line-strong border-t-accent animate-spin" />
-      {label}
-    </div>
-  )
+// Loading state for a page: a skeleton of the page instead of a spinner and text.
+export function Spinner({ label = 'Loading' }: { label?: string }) {
+  return <PageSkeleton label={label} />
 }
 
 export function EmptyState({ title, body, action }: { title: string; body: string; action?: ReactNode }) {

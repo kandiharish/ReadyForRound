@@ -2,11 +2,12 @@ import { useEffect } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { MeProvider, useMe } from '../auth/MeProvider'
-import { Icon, Spinner, type IconName } from '../components/ui'
+import { Icon, type IconName } from '../components/ui'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { NotificationBell } from '../components/NotificationBell'
 import { Brand } from '../components/Brand'
 import { openFeedback } from '../components/FeedbackButton'
+import { ShellSkeleton } from '../components/Skeleton'
 
 const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
   { to: '/home', label: 'Home', icon: 'home' },
@@ -38,7 +39,7 @@ function Shell() {
   useEffect(() => { refreshUsage() }, [pathname, refreshUsage])
 
   if (error) return <main className="min-h-screen p-8 text-bad">{error}</main>
-  if (!me) return <main className="min-h-screen p-8"><Spinner /></main>
+  if (!me) return <ShellSkeleton />
   if (!me.onboarding_completed) return <Navigate to="/onboarding" replace />
 
   return (

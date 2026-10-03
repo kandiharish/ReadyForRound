@@ -6,6 +6,7 @@ import { startDrill } from '../lib/sessions'
 import { Button, Card, EmptyState, Icon, Spinner } from '../components/ui'
 import { CompanyMark, NotAffiliated } from './Companies'
 import type { Interview, RoundId } from '../types'
+import { Bone, Lines } from '../components/Skeleton'
 
 type PracticeQuestion = { round: RoundId; question: string; topic: string; tip: string; answer: string }
 
@@ -152,13 +153,22 @@ export default function CompanyPage() {
         {bankError ? (
           <Card><p className="text-sm text-bad">{bankError}</p></Card>
         ) : !bank ? (
-          <Card className="flex items-center gap-4">
-            <span className="w-9 h-9 rounded-full border-2 border-accent border-t-transparent animate-spin shrink-0" aria-hidden="true" />
-            <div>
-              <p className="font-semibold">Preparing practice questions…</p>
-              <p className="text-sm text-muted">The first time for each company and role takes about 20 seconds. After that it's instant.</p>
+          <div className="space-y-4" role="status">
+            <p className="text-sm text-muted"><b className="text-ink">Preparing practice questions…</b> The first time for each company and role takes about 20 seconds. After that it's instant.</p>
+            <div className="grid gap-5 lg:grid-cols-2">
+              {[0, 1].map((c) => (
+                <Card key={c} className="space-y-5">
+                  <Bone className="h-4 w-40" />
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="space-y-2.5">
+                      <Lines count={2} />
+                      <div className="flex gap-2"><Bone className="h-7 w-36 rounded-lg" /><Bone className="h-7 w-28 rounded-lg" /></div>
+                    </div>
+                  ))}
+                </Card>
+              ))}
             </div>
-          </Card>
+          </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-2">
             {company.rounds.map((r) => {

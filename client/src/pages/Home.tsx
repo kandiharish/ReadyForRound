@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { sessionTitle, startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
-import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, ScoreChip, ScoreRing, Spinner } from '../components/ui'
+import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader, ScoreChip, ScoreRing } from '../components/ui'
 import type { HomeStats, Interview, RoundId } from '../types'
 import { StoriesRow } from '../components/Stories'
 import { thoughtOfTheDay } from '../lib/inspiration'
+import { HomeSkeleton } from '../components/Skeleton'
 
 const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
@@ -23,7 +24,7 @@ export default function Home() {
   }, [])
 
   if (error) return <p className="text-bad">{error}</p>
-  if (!stats || !catalog || !me) return <Spinner />
+  if (!stats || !catalog || !me) return <HomeSkeleton />
 
   const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
   const hideScores = me.practice_without_score

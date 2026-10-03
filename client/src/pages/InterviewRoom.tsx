@@ -10,6 +10,7 @@ import { speak, stopSpeaking } from '../lib/speech'
 import { isRecordingSupported, startRecording, type Recording } from '../lib/recorder'
 import type { Catalog, Interview, Profile, RoundId } from '../types'
 import { Brand } from '../components/Brand'
+import { RoomSkeleton } from '../components/Skeleton'
 
 export default function InterviewRoom() {
   const { id } = useParams()
@@ -43,7 +44,7 @@ export default function InterviewRoom() {
   }, [id])
 
   if (!interview || !catalog) {
-    return <main className="min-h-screen bg-stage text-stage-soft p-8">{loadError ?? 'Loading interview…'}</main>
+    return loadError ? <main className="min-h-screen bg-stage text-stage-soft p-8">{loadError}</main> : <RoomSkeleton />
   }
 
   // Company-style interviews use that company's round names (e.g. Amazon's "Leadership Principles")
