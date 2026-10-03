@@ -162,7 +162,7 @@ function Hero() {
           </Reveal>
           <Reveal delay={200}>
             <p className="text-lg sm:text-xl text-soft mt-6 max-w-lg">
-              Real mock interviews by voice. Honest feedback. A plan for what to study next.
+              The AI mock interview platform: practise by voice, get honest feedback, and know exactly what to study next.
             </p>
           </Reveal>
           <Reveal delay={300} className="mt-8"><CtaButtons /></Reveal>
@@ -664,7 +664,13 @@ function Footer() {
   return (
     <footer className="border-t border-line px-4 sm:px-6 pt-10 pb-24">
       <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-        <Brand size="sm" tagline />
+        <div className="max-w-md text-center sm:text-left">
+          <Brand size="sm" tagline />
+          <p className="text-xs text-muted mt-3 leading-relaxed">
+            ReadyForRound (Ready For Round) is a 100% free AI mock interview platform for interview practice:
+            technical, HR, project and behavioural rounds with instant feedback.
+          </p>
+        </div>
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-6 text-sm text-muted">
           <Link to="/privacy" className="hover:text-ink">Privacy</Link>
           <Link to="/terms" className="hover:text-ink">Terms</Link>
