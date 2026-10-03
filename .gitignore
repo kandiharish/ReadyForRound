@@ -4,3 +4,14 @@ dist/
 *.log
 .DS_Store
 .playwright-mcp/
+
+# Original, full-size design files (the website uses the optimized copies in client/public)
+brand/
+
+# Editor, test and build leftovers
+.vscode/
+.idea/
+coverage/
+*.tsbuildinfo
+*.local
+supabase/.temp/

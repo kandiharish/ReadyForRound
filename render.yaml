@@ -27,3 +27,7 @@ services:
         sync: false
       - key: SUPABASE_SECRET_KEY
         sync: false
+      - key: RESEND_API_KEY # Feedback button: emails messages to you (free key at resend.com)
+        sync: false
+      - key: FEEDBACK_TO_EMAIL # your inbox (the email you signed up to Resend with)
+        sync: false

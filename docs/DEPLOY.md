@@ -31,6 +31,8 @@ Update your laptop's `server/.env` with the new Supabase and Groq keys too.
    - `SUPABASE_SECRET_KEY`: the **new** secret key from step 2
    - `GROQ_API_KEY`: the **new** Groq key from step 2
    - `CLIENT_URL`: leave as `https://example.com` for now (fixed in step 5)
+   - `RESEND_API_KEY` and `FEEDBACK_TO_EMAIL`: for the Feedback button (step 6b). Optional: without them,
+     feedback is still saved in the `feedback` table, just not emailed.
 3. Wait for "Live", then open `https://<your-service>.onrender.com/api/health`.
    You should see `"status":"ok"` and `"dbConnected":true`.
 
@@ -62,11 +64,24 @@ Pick one:
 - **Resend:** needs your own domain (e.g. `readyforround.in`), but gives the most professional emails.
 - **Simplest for a first pilot:** ask students to use **Continue with Google**, which needs no confirmation emails at all.
 
+## 6b. Feedback emails
+1. resend.com → sign up **with the email you want feedback sent to** (free: 3,000 emails/month).
+2. **API Keys → Create API Key** → copy it (starts with `re_`).
+3. Render → Environment: `RESEND_API_KEY` = the key, `FEEDBACK_TO_EMAIL` = your email → Save.
+   Without your own domain, Resend can only send to your own account's email, which is exactly what we need.
+
+## 6c. Google search
+1. search.google.com/search-console → **Add property → URL prefix** → your Vercel address.
+2. Choose **HTML tag**, put the `google-site-verification` meta tag in `client/index.html`, push, wait for Vercel, then **Verify**.
+3. **Sitemaps** → submit `sitemap.xml`. Then **URL inspection** → your address → **Request indexing**.
+4. If your address changes (e.g. your own domain), update it in `client/index.html`, `client/public/robots.txt` and `client/public/sitemap.xml`.
+
 ## 7. Final checks
 - [ ] Sign up with a new email (or Google) on the live site → onboarding → Home
 - [ ] Do a short interview by voice and get a report
 - [ ] Toggle light/dark, open Privacy and Terms
-- [ ] Supabase → Table Editor → `app_errors`: check it now and then to see problems students hit
+- [ ] Send a message with the Feedback button and check it arrives in your inbox
+- [ ] Supabase → Table Editor → `app_errors` and `feedback`: check them now and then
 
 ## Updating later
 Push to GitHub: Vercel and Render redeploy automatically. Database changes still go through `npm run db:push` from your laptop.
