@@ -7,6 +7,7 @@ import { isGenerating, startReport } from '../report/generate.js'
 import { getActiveGoal } from '../goals.js'
 import { limitReached } from '../usage.js'
 import { getResume, resumeForPrompt } from '../resume.js'
+import { companyById } from '../companies.js'
 
 export class InterviewError extends Error {
   constructor(public status: number, message: string) {
@@ -49,7 +50,7 @@ async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step:
 // Build the snapshot of the student used for every question in this interview.
 // Build the snapshot of the student used for every question in this interview:
 // what they're preparing for comes from their active goal, who they are from their profile.
-async function loadContext(userId: string): Promise<{ ctx: InterviewContext; companyType: string; goalId: string }> {
+async function loadContext(userId: string): Promise<{ ctx: InterviewContext; companyType: string; goalId: string; goalRole: string }> {
   const { data: p } = await db()
     .from('profiles')
     .select('full_name, speaking_pace, onboarding_completed, user_skills (skill, self_rating)')
@@ -71,19 +72,33 @@ async function loadContext(userId: string): Promise<{ ctx: InterviewContext; com
   // If they uploaded a resume, the interviewer asks about their own projects and experience.
   const resume = await getResume(userId)
   if (resume) ctx.resume = resumeForPrompt(resume.summary)
-  return { ctx, companyType: goal.company_type, goalId: goal.id }
+  return { ctx, companyType: goal.company_type, goalId: goal.id, goalRole: goal.target_role }
 }
 
 export type Mode = 'single' | 'complete' | 'drill'
 
-export async function startInterview(userId: string, mode: Mode, round?: RoundId, topic?: string) {
+export async function startInterview(userId: string, mode: Mode, round?: RoundId, topic?: string, companyId?: string, roleId?: string) {
   // Daily limits protect the free AI quota for everyone.
   const limitMessage = await limitReached(userId, mode === 'drill' ? 'drill' : 'interview')
   if (limitMessage) throw new InterviewError(429, limitMessage)
 
-  const { ctx, companyType, goalId } = await loadContext(userId)
+  const { ctx, companyType, goalId, goalRole } = await loadContext(userId)
   if (mode === 'drill') ctx.focusTopic = topic
-  const rounds: RoundId[] = mode === 'complete' ? COMPLETE_SEQUENCES[companyType] : mode === 'drill' ? ['technical'] : [round!]
+
+  // Company-style interview: their round sequence, their style, and a role they hire for.
+  const company = companyId ? companyById(companyId) : undefined
+  if (companyId && !company) throw new InterviewError(400, 'Unknown company')
+  if (company) {
+    const role = roleId ?? (company.roles.includes(goalRole) ? goalRole : company.roles[0])
+    if (!company.roles.includes(role)) throw new InterviewError(400, `Choose a role that ${company.name} hires for`)
+    ctx.roleLabel = catalog.roles.find((r) => r.id === role)?.label ?? ctx.roleLabel
+    ctx.companyTypeLabel = catalog.companyTypes.find((t) => t.id === company.type)?.label ?? ctx.companyTypeLabel
+    ctx.company = { id: company.id, name: company.name, style: company.style, lookFor: company.lookFor, rounds: company.rounds }
+    if (mode === 'single' && !company.rounds.some((r) => r.id === round)) throw new InterviewError(400, `${company.name} interviews don't include that round`)
+  }
+  const rounds: RoundId[] = mode === 'complete'
+    ? (company ? company.rounds.map((r) => r.id) : COMPLETE_SEQUENCES[companyType])
+    : mode === 'drill' ? ['technical'] : [round!]
 
   // Get the first question BEFORE saving anything, so an AI failure leaves no half-created interview.
   const first = await askAi(ctx, rounds[0], [], { kind: 'start_round', isFirstRound: true })
@@ -93,7 +108,7 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
 
   const { data: session, error } = await db()
     .from('interview_sessions')
-    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx, focus_topic: mode === 'drill' ? topic : null })
+    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx, focus_topic: mode === 'drill' ? topic : null, company_id: company?.id ?? null })
     .select('id')
     .single()
   if (error) throw new InterviewError(500, error.message)
@@ -105,7 +120,7 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
 export async function getInterview(userId: string, sessionId: string) {
   const { data, error } = await db()
     .from('interview_sessions')
-    .select('id, mode, rounds, current_round_index, status, context, focus_topic, created_at, completed_at, ' +
+    .select('id, mode, rounds, current_round_index, status, context, focus_topic, company_id, created_at, completed_at, ' +
       'interview_turns (seq, round, question, is_follow_up, answer, skipped)')
     .eq('id', sessionId)
     .eq('user_id', userId) // a student can only open their own interviews
@@ -136,7 +151,7 @@ type SessionRow = {
 export async function listInterviews(userId: string) {
   const { data } = await db()
     .from('interview_sessions')
-    .select('id, mode, rounds, status, created_at, completed_at')
+    .select('id, mode, rounds, status, company_id, created_at, completed_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(20)

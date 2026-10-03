@@ -102,6 +102,14 @@ export function TermsPage() {
         <li>Answer in your own words. Don't submit content that is illegal, hateful, or someone else's private information.</li>
       </ul>
 
+      <h2>Company names</h2>
+      <p>
+        Company-style interviews are practice interviews modelled on each company's publicly reported hiring process. ReadyForRound is not
+        affiliated with, endorsed by or sponsored by any of these companies. Their names are trademarks of their owners and are used only to
+        describe the style of practice. We don't use their logos, we don't share real or leaked interview questions, and practice results
+        don't predict real hiring decisions.
+      </p>
+
       <h2>AI feedback</h2>
       <p>Feedback and scores are produced by AI and may contain mistakes. Use them as guidance, and check important facts with trusted sources.</p>
 

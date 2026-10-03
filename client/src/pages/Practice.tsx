@@ -77,6 +77,13 @@ export default function Practice() {
       <PageHeader eyebrow="Practice" title="Start a mock interview"
         subtitle={`Questions are shaped for ${label('roles', goal.target_role)} at a ${label('companyTypes', goal.company_type).toLowerCase()}, at your level: ${label('experienceLevels', goal.experience_level).toLowerCase()}.`} />
 
+      {/* Company-style interviews */}
+      <Link to="/companies" className="group flex items-center gap-3 rounded-2xl bg-linear-to-r from-lavender to-sky px-4 py-3 text-sm hover:shadow-md transition-shadow">
+        <span className="w-9 h-9 rounded-xl bg-card text-accent flex items-center justify-center shrink-0"><Icon name="building" size={17} /></span>
+        <span className="flex-1 min-w-0"><b className="text-ink">Preparing for a specific company?</b> <span className="text-soft">TCS, Infosys, Zoho, Amazon, Google and more, in their interview style.</span></span>
+        <Icon name="arrow" size={16} className="text-accent group-hover:translate-x-0.5 transition-transform" />
+      </Link>
+
       {/* Resume status: with a resume, questions are about their own projects and experience */}
       {resume !== undefined && (resume ? (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-sage text-sage-ink px-4 py-3 text-sm">

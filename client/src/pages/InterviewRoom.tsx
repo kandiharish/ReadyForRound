@@ -46,8 +46,10 @@ export default function InterviewRoom() {
     return <main className="min-h-screen bg-stage text-stage-soft p-8">{loadError ?? 'Loading interview…'}</main>
   }
 
-  const roundLabel = (r: RoundId) => catalog.rounds.find((x) => x.id === r)?.label ?? r
-  const title = sessionTitle(interview, roundLabel)
+  // Company-style interviews use that company's round names (e.g. Amazon's "Leadership Principles")
+  const company = catalog.companies.find((c) => c.id === interview.company_id)
+  const roundLabel = (r: RoundId) => company?.rounds.find((x) => x.id === r)?.label ?? catalog.rounds.find((x) => x.id === r)?.label ?? r
+  const title = sessionTitle(interview, roundLabel, catalog.companies)
 
   // A finished interview goes straight to its feedback report.
   if (interview.status !== 'in_progress') return <Navigate to={`/interview/${interview.id}/report`} replace />

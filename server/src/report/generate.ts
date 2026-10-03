@@ -56,9 +56,10 @@ async function generate(sessionId: string) {
   }
 
   // 2. One summary built from the grades (not from the raw answers).
-  const summary = questions.length
-    ? parseSummary((await chat(summaryMessages(ctx, questions), { temperature: 0.3, maxTokens: 500, task: 'report' })).text)
-    : { summary: 'No questions were answered in this interview.', strengths: [], improvements: [], studyNext: [] }
+  const parsed = questions.length
+    ? parseSummary((await chat(summaryMessages(ctx, questions), { temperature: 0.3, maxTokens: ctx.company ? 750 : 500, task: 'report' })).text)
+    : { summary: 'No questions were answered in this interview.', strengths: [], improvements: [], studyNext: [], companyFit: '', companyTips: [] }
+  const { companyFit, companyTips, ...summary } = parsed
 
   const scored = questions.filter((q) => q.score !== null)
   const report: Report = {
@@ -68,6 +69,7 @@ async function generate(sessionId: string) {
     answeredCount: questions.filter((q) => !q.skipped).length,
     skippedCount: questions.filter((q) => q.skipped).length,
     generatedWith: model,
+    ...(ctx.company && companyFit ? { companyFit: { company: ctx.company.name, verdict: companyFit, tips: companyTips } } : {}),
   }
 
   await db.from('interview_reports')

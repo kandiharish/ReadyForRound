@@ -25,6 +25,7 @@ export type Report = {
   answeredCount: number
   skippedCount: number
   generatedWith: string // which AI model graded it
+  companyFit?: { company: string; verdict: string; tips: string[] } // for company-style interviews
 }
 
 // The scoring guide (rubric). Written out so every answer is judged the same way.
@@ -87,6 +88,15 @@ export function summaryMessages(ctx: InterviewContext, graded: QuestionFeedback[
     'STUDY_NEXT:',
     '- <topic>: <why, in one short sentence>',
     'Give 2 or 3 items in each list.',
+    ...(ctx.company ? [
+      '',
+      `This was a practice interview in the style of ${ctx.company.name}. Their publicly reported bar looks for: ${ctx.company.lookFor}.`,
+      'Also add, after STUDY_NEXT:',
+      `COMPANY_FIT: <two honest sentences, written to the candidate as "you", on how these answers compare with that bar; never promise or predict a real hiring outcome>`,
+      'COMPANY_TIPS:',
+      `- <a specific tip to meet ${ctx.company.name}'s bar>`,
+      '- <another>',
+    ] : []),
   ].join('\n')
 
   return [{ role: 'system', content: system }, { role: 'user', content: `Graded questions:\n${lines.join('\n')}` }]
@@ -94,7 +104,7 @@ export function summaryMessages(ctx: InterviewContext, graded: QuestionFeedback[
 
 // ---- Parsing the labelled replies (forgiving, like the interview engine) ----
 
-const LABELS = ['SCORE', 'SKILL', 'WENT_WELL', 'MISSING', 'BETTER_ANSWER', 'CONFIDENCE', 'SUMMARY', 'STRENGTHS', 'IMPROVE', 'STUDY_NEXT']
+const LABELS = ['SCORE', 'SKILL', 'WENT_WELL', 'MISSING', 'BETTER_ANSWER', 'CONFIDENCE', 'SUMMARY', 'STRENGTHS', 'IMPROVE', 'STUDY_NEXT', 'COMPANY_FIT', 'COMPANY_TIPS']
 
 // Splits "LABEL: text" blocks into { LABEL: "text" }.
 function sections(text: string): Record<string, string> {
@@ -137,6 +147,8 @@ export function parseSummary(text: string) {
     summary: clean(s.SUMMARY),
     strengths: bullets(s.STRENGTHS).map(clean).slice(0, 4),
     improvements: bullets(s.IMPROVE).map(clean).slice(0, 4),
+    companyFit: clean(s.COMPANY_FIT),
+    companyTips: bullets(s.COMPANY_TIPS).map(clean).slice(0, 3),
     studyNext: bullets(s.STUDY_NEXT).slice(0, 4).map((line) => {
       const [topic, ...why] = clean(line).split(/:\s*/)
       return { topic: topic.trim(), why: why.join(': ').trim() }

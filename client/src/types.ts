@@ -5,6 +5,19 @@ export type RoleOption = Option & { description: string; skills: string[] }
 
 export type RoundId = 'technical' | 'project' | 'behavioural' | 'hr'
 
+export type Company = {
+  id: string
+  name: string
+  monogram: string
+  tint: 'sky' | 'lavender' | 'peach' | 'sage' | 'blush'
+  type: 'service' | 'product'
+  tagline: string
+  hiring: string[]
+  rounds: { id: RoundId; label: string; focus: string }[]
+  lookFor: string
+  roles: string[]
+}
+
 export type Catalog = {
   roles: RoleOption[]
   experienceLevels: Option[]
@@ -12,6 +25,7 @@ export type Catalog = {
   placementTimelines: Option[]
   rounds: (Option & { id: RoundId; description: string })[]
   completeSequences: Record<string, RoundId[]>
+  companies: Company[]
 }
 
 export type InterviewTurn = {
@@ -29,6 +43,7 @@ export type Interview = {
   id: string
   mode: 'single' | 'complete' | 'drill'
   focus_topic: string | null
+  company_id?: string | null
   rounds: RoundId[]
   current_round_index: number
   status: InterviewStatus
@@ -60,6 +75,7 @@ export type Report = {
   questions: QuestionFeedback[]
   answeredCount: number
   skippedCount: number
+  companyFit?: { company: string; verdict: string; tips: string[] }
 }
 
 export type ReportResponse =
@@ -89,6 +105,7 @@ export type Goal = {
 export type GoalWithStats = Goal & { interviews: number; readiness: number | null; startedAt: number | null }
 
 export type SessionSummary = {
+  company_id?: string | null
   id: string
   goal_id: string | null
   mode: 'single' | 'complete' | 'drill'

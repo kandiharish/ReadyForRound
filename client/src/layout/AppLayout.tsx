@@ -11,6 +11,7 @@ import { openFeedback } from '../components/FeedbackButton'
 const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
   { to: '/home', label: 'Home', icon: 'home' },
   { to: '/practice', label: 'Practice', icon: 'practice' },
+  { to: '/companies', label: 'Companies', icon: 'building' },
   { to: '/roadmap', label: 'Roadmap', icon: 'map' },
   { to: '/reports', label: 'Reports', icon: 'reports' },
 ]
@@ -162,10 +163,10 @@ function MobileTopBar() {
 function MobileNav() {
   const tabs = [...WORKSPACE, CAREER[0]]
   return (
-    <nav aria-label="Main" className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-card/95 backdrop-blur border-t border-line grid grid-cols-5 px-1 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+    <nav aria-label="Main" className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-card/95 backdrop-blur border-t border-line grid grid-cols-6 px-0.5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {tabs.map((t) => (
         <NavLink key={t.to} to={t.to}
-          className={({ isActive }) => `flex flex-col items-center justify-center gap-1 min-h-12 text-[11px] ${isActive ? 'text-accent-deep font-semibold' : 'text-muted'}`}>
+          className={({ isActive }) => `flex flex-col items-center justify-center gap-1 min-h-12 text-[10px] tracking-tight ${isActive ? 'text-accent-deep font-semibold' : 'text-muted'}`}>
           <Icon name={t.icon} size={20} />
           {t.label}
         </NavLink>

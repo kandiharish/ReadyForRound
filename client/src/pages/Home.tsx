@@ -230,7 +230,7 @@ export default function Home() {
                 <li key={s.id} className="border-t border-line first:border-t-0">
                   <Link to={`/interview/${s.id}/report`} className="flex items-center gap-3 min-h-12 hover:text-accent-deep">
                     <span className="flex-1 min-w-0">
-                      <span className="block text-sm font-medium truncate">{sessionTitle(s, roundLabel)}</span>
+                      <span className="block text-sm font-medium truncate">{sessionTitle(s, roundLabel, catalog.companies)}</span>
                       <span className="block text-xs text-muted">{new Date(s.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}{s.status === 'ended_early' ? ' · ended early' : ''}</span>
                     </span>
                     {s.score !== null && !hideScores ? <ScoreChip score={s.score} /> : <span className="text-xs text-muted">{s.reportStatus === 'generating' ? 'Preparing…' : 'View'}</span>}

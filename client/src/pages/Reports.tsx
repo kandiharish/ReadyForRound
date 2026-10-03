@@ -60,7 +60,7 @@ export default function Reports() {
                 <li key={r.id} className="border-t border-line first:border-t-0">
                   <Link to={`/interview/${r.id}/report`} className="flex items-center gap-4 px-5 sm:px-6 min-h-16 hover:bg-raised">
                     <span className="flex-1 min-w-0">
-                      <span className="block font-medium truncate">{r.mode === 'complete' ? `Complete interview · ${r.rounds.map(roundLabel).join(' → ')}` : sessionTitle(r, roundLabel)}</span>
+                      <span className="block font-medium truncate">{r.mode === 'complete' && !r.company_id ? `Complete interview · ${r.rounds.map(roundLabel).join(' → ')}` : sessionTitle(r, roundLabel, catalog.companies)}</span>
                       <span className="block text-xs text-muted mt-0.5">
                         {new Date(r.created_at).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                         {r.status === 'ended_early' ? ' · ended early' : ''}

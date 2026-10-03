@@ -1,4 +1,5 @@
 import { COMPLETE_SEQUENCES, ROUNDS } from './interview/rounds.js'
+import { publicCompanies } from './companies.js'
 
 // The fixed lists students choose from during onboarding.
 // Kept on the server as the single source of truth: the frontend fetches it,
@@ -123,6 +124,7 @@ export const catalog = {
   placementTimelines: PLACEMENT_TIMELINES,
   rounds: ROUNDS.map(({ id, label, description }) => ({ id, label, description })),
   completeSequences: COMPLETE_SEQUENCES,
+  companies: publicCompanies,
 }
 
 const ids = <T extends readonly { id: string }[]>(list: T) =>

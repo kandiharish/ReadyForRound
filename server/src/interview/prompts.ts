@@ -11,6 +11,7 @@ export type InterviewContext = {
   speakingPace: 'slow' | 'normal'
   focusTopic?: string // set for drills: every question is about this one topic
   resume?: string // short summary of the uploaded resume (projects, skills, experience), if any
+  company?: { id: string; name: string; style: string; lookFor: string; rounds: { id: RoundId; label: string; focus: string }[] }
 }
 
 export type Turn = {
@@ -75,6 +76,7 @@ function systemPrompt(ctx: InterviewContext, round: RoundId, earlierQuestions: s
     ctx.focusTopic
       ? `This is a quick 5-minute drill. Every question must be about: ${ctx.focusTopic}. Keep questions short and focused.`
       : `Goal of this round: ${r.goal}`,
+    ...(ctx.company && !ctx.focusTopic ? companyLines(ctx.company, round) : []),
     ...(ctx.resume && !ctx.focusTopic
       ? [
           '',
@@ -104,6 +106,17 @@ function systemPrompt(ctx: InterviewContext, round: RoundId, earlierQuestions: s
     .join('\n')
 }
 
+// A mock interview in the style of a company's publicly reported process. The AI never claims to work there.
+function companyLines(c: NonNullable<InterviewContext['company']>, round: RoundId) {
+  const r = c.rounds.find((x) => x.id === round)
+  return [
+    '',
+    `This is a practice interview in the style of ${c.name}'s publicly reported hiring process. ${c.style}`,
+    r ? `This round simulates their "${r.label}" round. Focus: ${r.focus}` : '',
+    `Never claim to work for ${c.name} or to represent them; you are a practice interviewer using their known style.`,
+  ]
+}
+
 // How each round should use the resume. Real interviewers always ask about what is on your resume.
 const RESUME_GUIDANCE: Record<RoundId, string> = {
   technical: 'Use the resume: about half of your questions should test skills and technologies listed there, asking how they USED them in their projects, not just definitions.',
@@ -117,8 +130,8 @@ function instruction(step: NextStep, ctx: InterviewContext, round: RoundId) {
   switch (step.kind) {
     case 'start_round':
       return step.isFirstRound
-        ? `Greet ${ctx.firstName} in one short sentence, then ask your first question. Use type "new_question".`
-        : `Say in one short sentence that we are moving to the ${label} round, then ask your first question. Use type "new_question".`
+        ? `Greet ${ctx.firstName} in one short sentence${ctx.company ? ` and welcome them to their ${ctx.company.name}-style practice interview` : ''}, then ask your first question. Use type "new_question".`
+        : `Say in one short sentence that we are moving to the ${ctx.company?.rounds.find((x) => x.id === round)?.label ?? label} round, then ask your first question. Use type "new_question".`
     case 'follow_up_or_new':
       return 'If the last answer was vague, incomplete or worth probing, ask ONE follow-up about it (type "follow_up"). ' +
         'Otherwise ask a new question on a different topic (type "new_question").'

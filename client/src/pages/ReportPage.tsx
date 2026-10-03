@@ -35,8 +35,9 @@ export default function ReportPage() {
     await apiFetch(`/interviews/${id}/report/retry`, { method: 'POST' }).catch((e) => setError(e.message))
   }
 
-  const roundLabel = (r: RoundId) => catalog?.rounds.find((x) => x.id === r)?.label ?? r
-  const title = !interview ? 'Interview' : sessionTitle(interview, roundLabel)
+  const company = catalog?.companies.find((c) => c.id === interview?.company_id)
+  const roundLabel = (r: RoundId) => company?.rounds.find((x) => x.id === r)?.label ?? catalog?.rounds.find((x) => x.id === r)?.label ?? r
+  const title = !interview ? 'Interview' : sessionTitle(interview, roundLabel, catalog?.companies)
   const when = interview
     ? `${new Date(interview.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}${interview.status === 'ended_early' ? ' · ended early' : ''}`
     : ''
@@ -99,6 +100,24 @@ function ReportView({ report, hideScores, roundLabel }: { report: Report; hideSc
         <ListCard title="What went well" icon="check" items={report.strengths} tone="good" />
         <ListCard title="What to work on" icon="target" items={report.improvements} tone="warn" />
       </div>
+
+      {/* Company-style interviews: how the answers compare with that company's publicly reported bar */}
+      {report.companyFit && (
+        <section className="rounded-2xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lavender-ink">The {report.companyFit.company} bar</p>
+          <p className="text-ink mt-2 leading-relaxed"><Rich text={report.companyFit.verdict} /></p>
+          {report.companyFit.tips.length > 0 && (
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {report.companyFit.tips.map((t, i) => (
+                <li key={i} className="rounded-xl bg-card/80 p-3 text-sm flex gap-2">
+                  <Icon name="target" size={16} className="text-accent shrink-0 mt-0.5" /><span><Rich text={t} /></span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="text-xs text-muted mt-4">Practice feedback only. It doesn't predict a real hiring decision, and ReadyForRound isn't affiliated with {report.companyFit.company}.</p>
+        </section>
+      )}
 
       {/* Study next */}
       {report.studyNext.length > 0 && (

@@ -20,6 +20,8 @@ import Settings from './pages/Settings'
 import InterviewRoom from './pages/InterviewRoom'
 import { PrivacyPage, TermsPage } from './pages/Legal'
 import Landing from './pages/Landing'
+import Companies from './pages/Companies'
+import CompanyPage from './pages/CompanyPage'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -45,6 +47,8 @@ function App() {
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/home" element={<Home />} />
             <Route path="/practice" element={<Practice />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/companies/:id" element={<CompanyPage />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/interview/:id/report" element={<ReportPage />} />
             <Route path="/roadmap" element={<Roadmap />} />

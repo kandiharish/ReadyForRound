@@ -11,6 +11,7 @@ import { interviewsRouter } from './routes/interviews.js'
 import { goalsRouter } from './routes/goals.js'
 import { accountRouter } from './routes/account.js'
 import { resumeRouter } from './routes/resume.js'
+import { companiesRouter } from './routes/companies.js'
 
 const app = express()
 
@@ -70,6 +71,9 @@ app.post('/api/feedback', feedbackLimit, async (req, res, next) => {
     next(err)
   }
 })
+
+// Company practice question banks: /api/companies
+app.use('/api/companies', companiesRouter)
 
 // Resume upload for resume-based interviews: /api/resume
 app.use('/api/resume', resumeRouter)
