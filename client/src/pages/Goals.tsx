@@ -1,9 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router'
 import { Select } from '../components/Select'
 import { apiFetch } from '../lib/api'
 import { useMe } from '../auth/MeProvider'
 import { useFeedback } from '../components/Feedback'
-import { Bar, Button, Card, ChoiceCards, Icon, PageHeader, ScoreRing, Spinner } from '../components/ui'
+import { Bar, Button, ButtonLink, Card, ChoiceCards, Icon, PageHeader, ScoreRing, Spinner } from '../components/ui'
 import type { GoalWithStats } from '../types'
 
 const STATUS = {
@@ -17,7 +18,10 @@ export default function Goals() {
   const { me, catalog, label, refresh } = useMe()
   const { toast, confirm } = useFeedback()
   const [goals, setGoals] = useState<GoalWithStats[] | null>(null)
-  const [creating, setCreating] = useState(false)
+  // ?role=xyz (e.g. from Career Compass) opens the new-goal form with that role chosen
+  const [params] = useSearchParams()
+  const presetRole = params.get('role')
+  const [creating, setCreating] = useState(!!presetRole)
   const [error, setError] = useState<string | null>(null)
 
   const load = () => apiFetch<GoalWithStats[]>('/goals').then(setGoals).catch((e) => setError(e.message))
@@ -43,10 +47,10 @@ export default function Goals() {
     <div className="space-y-6">
       <PageHeader eyebrow="Goals" title="Your career, one goal at a time"
         subtitle="Every interview, report and score belongs to a goal. When you move on, from placement to your first job to your next switch, start a new goal and your history stays here."
-        actions={!creating && <Button onClick={() => setCreating(true)}><Icon name="plus" size={16} strokeWidth={2.4} /> New goal</Button>} />
+        actions={!creating && <div className="flex flex-wrap gap-2"><ButtonLink to="/compass" variant="secondary"><Icon name="target" size={16} /> Find my role</ButtonLink><Button onClick={() => setCreating(true)}><Icon name="plus" size={16} strokeWidth={2.4} /> New goal</Button></div>} />
 
       {creating && (
-        <NewGoalForm defaultLevel={me.experience_level} onCancel={() => setCreating(false)}
+        <NewGoalForm defaultLevel={me.experience_level} defaultRole={presetRole} onCancel={() => setCreating(false)}
           onCreated={async () => { setCreating(false); await Promise.all([load(), refresh()]); toast('New goal started') }} />
       )}
 
@@ -137,9 +141,9 @@ export default function Goals() {
   )
 }
 
-function NewGoalForm({ defaultLevel, onCancel, onCreated }: { defaultLevel: string | null; onCancel: () => void; onCreated: () => void }) {
+function NewGoalForm({ defaultLevel, defaultRole, onCancel, onCreated }: { defaultLevel: string | null; defaultRole?: string | null; onCancel: () => void; onCreated: () => void }) {
   const { catalog } = useMe()
-  const [role, setRole] = useState<string | null>(null)
+  const [role, setRole] = useState<string | null>(defaultRole ?? null)
   const [company, setCompany] = useState<string | null>(null)
   const [level, setLevel] = useState(defaultLevel ?? 'final_year')
   const [date, setDate] = useState('')

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
-import { RoleQuiz } from '../components/RoleQuiz'
+import { CareerCompass } from '../components/CareerCompass'
 import { SkillPicker } from '../components/SkillPicker'
 import type { Catalog, Option, Profile } from '../types'
 import { Brand } from '../components/Brand'
@@ -103,7 +103,7 @@ export default function Onboarding() {
   }
 
   return (
-    <Shell>
+    <Shell wide={step === 0 && showQuiz}>
       {/* Progress bar */}
       <div className="flex gap-1 mb-6">
         {STEP_TITLES.map((_, i) => (
@@ -114,16 +114,16 @@ export default function Onboarding() {
       <h1 className="text-xl font-bold text-ink mt-1 mb-5">{STEP_TITLES[step]}</h1>
 
       {step === 0 && (showQuiz ? (
-        <RoleQuiz
+        <CareerCompass
           roles={catalog.roles}
           onPick={(id) => { set('target_role', id); setShowQuiz(false) }}
-          onCancel={() => setShowQuiz(false)}
+          onClose={() => setShowQuiz(false)}
         />
       ) : (
         <>
           <Choices options={catalog.roles} value={answers.target_role} onChange={(v) => set('target_role', v)} />
           <button onClick={() => setShowQuiz(true)} className="mt-4 text-accent-deep font-medium text-sm">
-            Not sure? Take a 1-minute quiz
+            Not sure? Find your fit with Career Compass (about 10 min)
           </button>
         </>
       ))}
@@ -199,10 +199,10 @@ export default function Onboarding() {
   )
 }
 
-function Shell({ children }: { children: ReactNode }) {
+function Shell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
     <main className="min-h-screen flex items-start sm:items-center justify-center p-4">
-      <div className="bg-card border border-line rounded-2xl p-6 sm:p-8 max-w-lg w-full">
+      <div className={`bg-card border border-line rounded-2xl p-6 sm:p-8 w-full transition-[max-width] duration-300 ${wide ? 'max-w-5xl' : 'max-w-lg'}`}>
         <Brand size="sm" className="mb-5" />
         {children}
       </div>

@@ -12,6 +12,7 @@ import { goalsRouter } from './routes/goals.js'
 import { accountRouter } from './routes/account.js'
 import { resumeRouter } from './routes/resume.js'
 import { companiesRouter } from './routes/companies.js'
+import { compassRouter } from './routes/compass.js'
 
 const app = express()
 
@@ -71,6 +72,9 @@ app.post('/api/feedback', feedbackLimit, async (req, res, next) => {
     next(err)
   }
 })
+
+// Career Compass results: /api/compass
+app.use('/api/compass', compassRouter)
 
 // Company practice question banks: /api/companies
 app.use('/api/companies', companiesRouter)

@@ -22,6 +22,7 @@ import { PrivacyPage, TermsPage } from './pages/Legal'
 import Landing from './pages/Landing'
 import Companies from './pages/Companies'
 import CompanyPage from './pages/CompanyPage'
+import Compass from './pages/Compass'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -53,6 +54,7 @@ function App() {
             <Route path="/interview/:id/report" element={<ReportPage />} />
             <Route path="/roadmap" element={<Roadmap />} />
             <Route path="/goals" element={<Goals />} />
+            <Route path="/compass" element={<Compass />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
