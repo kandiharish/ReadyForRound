@@ -1,7 +1,7 @@
 import { supabase } from '../db/supabase.js'
 import { chat, LlmUnavailableError } from '../llm/client.js'
 import { catalog } from '../catalog.js'
-import { buildMessages, parseAiReply, type AiReply, type InterviewContext, type NextStep, type Turn } from './prompts.js'
+import { offRound, buildMessages, parseAiReply, type AiReply, type InterviewContext, type NextStep, type Turn } from './prompts.js'
 import { COMPLETE_SEQUENCES, MAX_FOLLOW_UPS_PER_QUESTION, QUESTIONS_PER_ROUND, type RoundId } from './rounds.js'
 import { isGenerating, startReport } from '../report/generate.js'
 import { getActiveGoal } from '../goals.js'
@@ -22,21 +22,27 @@ const db = () => {
 
 // Ask the AI for the next step, and check its reply is usable. One retry if it isn't.
 async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step: NextStep, progress?: { next: number; total: number }): Promise<AiReply> {
-  let firm = false
+  let nudge = ''
   const defaultType = step.kind === 'follow_up_or_done' ? 'follow_up' : 'new_question'
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const reply = await chat(buildMessages(ctx, round, turns, step, progress, firm), { temperature: 0.7, maxTokens: 200 })
+      const reply = await chat(buildMessages(ctx, round, turns, step, progress, nudge), { temperature: 0.7, maxTokens: 200 })
       const parsed = parseAiReply(reply.text, defaultType)
       // The backend, not the AI, decides what's allowed: a follow-up is only a follow-up if we permitted one.
       if (step.kind === 'new_only' || step.kind === 'start_round') parsed.type = 'new_question'
       if (parsed.type === 'done' && step.kind !== 'follow_up_or_done') {
-        firm = true // retry with a firmer instruction to keep going
+        nudge = 'Your last reply tried to end the interview. Do not end it. Ask the next interview question now.'
         throw new Error('"done" not allowed here')
       }
       // Every interviewer turn must actually be a question (this also catches replies like "You scored 6/10.").
       if (parsed.type !== 'done' && (!parsed.question.includes('?') || parsed.question.length > 600)) {
         throw new Error(`unusable question: ${reply.text.slice(0, 100)}`)
+      }
+      // Keep each round to its own kind of question (no technical questions in Behavioural or HR, and vice versa).
+      const wrongRound = parsed.type === 'done' ? null : offRound(parsed.question, round, ctx)
+      if (wrongRound && attempt < 3) {
+        nudge = wrongRound
+        throw new Error(`off-round question in ${round}: ${parsed.question.slice(0, 100)}`)
       }
       return parsed
     } catch (err) {
@@ -47,6 +53,8 @@ async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step:
       }
     }
   }
+  // It kept trying to wrap up this round: let it, rather than show the student an error.
+  if (nudge.startsWith('Your last reply tried to end')) return { type: 'done', question: '' }
   throw new InterviewError(502, 'The AI interviewer did not respond properly. Please try again.')
 }
 
@@ -188,7 +196,7 @@ export async function answerQuestion(userId: string, sessionId: string, answer: 
   let next: { round: RoundId; reply: AiReply } | null = null
   if (mainLeft > 0) {
     const reply = await askAi(ctx, round, updatedTurns, { kind: followUpAllowed ? 'follow_up_or_new' : 'new_only' }, { next: mainAsked + 1, total: session.questionsPerRound })
-    next = { round, reply: reply.type === 'done' ? { ...reply, type: 'new_question' } : reply }
+    if (reply.type !== 'done') next = { round, reply } // "done" here means the AI insisted the round is over: move on
   } else if (followUpAllowed) {
     const reply = await askAi(ctx, round, updatedTurns, { kind: 'follow_up_or_done' })
     if (reply.type !== 'done') next = { round, reply: { ...reply, type: 'follow_up' } }
