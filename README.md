@@ -57,13 +57,14 @@ ReadyForRound is a full-stack web app that runs a realistic interview round and 
 ## Features
 
 - **Voice interviews**: the interviewer speaks (browser speech synthesis); answers are recorded and transcribed with Whisper
-- **Every round of a hiring drive**: Technical, Project deep-dive, Behavioural and HR, or a complete drive whose sequence depends on the company type
+- **Every round of a hiring drive**: Technical, Project deep-dive, Behavioural, HR and Resume deep-dive, or a complete drive whose sequence depends on the company type
 - **Adaptive follow-ups** when an answer is vague, with server-enforced limits so interviews stay on track
 - **Honest feedback reports** graded question by question, with a model answer to learn from
 - **Skills: claimed vs proven**, comparing self-ratings against what interviews actually showed
 - **AI study roadmap**: weekly tasks sized to the hours you have before your interview date
 - **5-minute drills** on any topic, streaks, score trends and a readiness score
 - **Resume-based interviews**: upload a PDF and the interviewer asks about your own projects, skills and experience (only the text is kept)
+- **Career Compass**: a 10-minute role-discovery assessment (work interests, forced choices, real experience, comfort check and optional taste tests) matched to 13 roles with explainable, rule-based scoring; role names stay hidden until the result to avoid hype bias. On simulated students, 97% get their true role first and 100% in the top 3
 - **Resume deep-dive round**: a whole round that goes through your resume line by line, checking claimed skills and asking for the evidence behind your results
 - **Company-style interviews**: 12 companies (TCS, Infosys, Wipro, Accenture, Cognizant, HCLTech, Capgemini, Zoho, Amazon, Microsoft, Google, Flipkart) with their publicly reported round sequence, a "company bar" section in the report, and an AI-generated practice question bank per company and role (not affiliated with these companies; no logos)
 - **13 roles**: SDE, Frontend, Backend, Full-Stack, Forward Deployed Engineer, AI / ML, Data Science, Data Engineering, Data Analytics, DevOps, Mobile, QA and Cybersecurity

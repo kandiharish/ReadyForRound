@@ -439,13 +439,13 @@ function HowItWorks() {
 const FEATURES: { icon: IconName; tint: Tint; title: string }[] = [
   { icon: 'mic', tint: 'sky', title: 'Voice interviews' },
   { icon: 'repeat', tint: 'lavender', title: 'Real follow-ups' },
-  { icon: 'swap', tint: 'peach', title: 'All 4 rounds' },
+  { icon: 'swap', tint: 'peach', title: '5 interview rounds' },
   { icon: 'reports', tint: 'sage', title: 'Feedback reports' },
   { icon: 'target', tint: 'blush', title: 'Claimed vs proven skills' },
   { icon: 'map', tint: 'lavender', title: 'Study roadmap' },
   { icon: 'bolt', tint: 'peach', title: '5-minute drills' },
   { icon: 'building', tint: 'blush', title: 'Company-style interviews' },
-  { icon: 'book', tint: 'sky', title: 'Interview guides' },
+  { icon: 'target', tint: 'sky', title: 'Career Compass: find your role' },
   { icon: 'file', tint: 'sage', title: 'Questions from your resume' },
   { icon: 'keyboard', tint: 'lavender', title: 'Type or speak' },
   { icon: 'shield', tint: 'sky', title: 'Video never recorded' },
@@ -468,7 +468,7 @@ function Features() {
       </ul>
       <Reveal className="mt-8 flex flex-wrap justify-center gap-2 text-sm">
         <span className="text-muted mr-1">Rounds:</span>
-        {['Technical', 'Project deep-dive', 'Behavioural', 'HR'].map((r) => (
+        {['Technical', 'Project deep-dive', 'Behavioural', 'HR', 'Resume deep-dive'].map((r) => (
           <span key={r} className="rounded-full bg-accent-soft text-accent-deep px-3 py-1 font-medium">{r}</span>
         ))}
       </Reveal>
@@ -566,6 +566,7 @@ const FAQS = [
   { q: 'Is it really free?', a: 'Yes, 100% free. A small daily limit (5 interviews and 10 drills) keeps it running smoothly, and it resets at midnight.' },
   { q: 'Who is it for?', a: 'Anyone with an interview coming up: college students, freshers, working professionals and experienced people switching jobs. Questions adjust to your experience level.' },
   { q: 'Which roles can I practise for?', a: 'SDE, Frontend, Backend, Full-Stack, Forward Deployed Engineer (FDE), AI / ML Engineer, Data Scientist, Data Engineer, Data Analyst, DevOps / Cloud, Mobile, QA / Test Automation and Cybersecurity. Upload your resume and the interviewer will also ask about your own projects.' },
+  { q: "I don't know which role suits me. Can it help?", a: 'Yes. Career Compass is a 10-minute assessment of the work you enjoy, what you have actually tried and what you are comfortable with. Role names stay hidden until the end, so the result reflects you, not hype. You get your top 3 roles with reasons, and honest notes on roles that may not fit.' },
   { q: 'Can I practise for a specific company?', a: 'Yes. Pick from 12 companies like TCS, Infosys, Accenture, Zoho, Amazon, Microsoft, Google and Flipkart, and practise in the style of their publicly reported interviews, with practice questions for each role. ReadyForRound is not affiliated with these companies.' },
   { q: 'Do I need a camera?', a: 'No. The camera is optional and never recorded. You can even type your answers instead of speaking.' },
   { q: 'Is it like a real interview?', a: 'The interviewer speaks every question, listens to your answer and asks follow-ups when you are vague, just like a real one.' },
