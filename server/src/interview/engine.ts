@@ -107,6 +107,7 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
     ctx.company = { id: company.id, name: company.name, style: company.style, lookFor: company.lookFor, rounds: company.rounds }
     if (mode === 'single' && !company.rounds.some((r) => r.id === round)) throw new InterviewError(400, `${company.name} interviews don't include that round`)
   }
+  if (round === 'resume' && !ctx.resume) throw new InterviewError(400, 'Add your resume on your Profile first, so the interviewer has something to ask about.')
   const rounds: RoundId[] = mode === 'complete'
     ? (company ? company.rounds.map((r) => r.id) : COMPLETE_SEQUENCES[companyType])
     : mode === 'drill' ? ['technical'] : [round!]

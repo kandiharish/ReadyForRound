@@ -34,6 +34,15 @@ export const ROUNDS = [
       'Ask typical HR questions: introduce yourself, strengths and weaknesses, why this role, ' +
       'career goals, relocation and flexibility. Keep it friendly and professional.',
   },
+  {
+    id: 'resume',
+    label: 'Resume deep-dive',
+    description: 'Every line of your resume, questioned: projects, internships, skills and achievements.',
+    goal:
+      'Walk through the candidate\'s resume like a real interviewer holding it: go section by section (education, each project, ' +
+      'internships or jobs, listed skills, achievements and certifications). Verify claims ("you listed Docker, where did you use it?"), ' +
+      'ask for numbers behind results, their exact contribution in team work, and any gaps or choices that stand out.',
+  },
 ] as const
 
 export type RoundId = (typeof ROUNDS)[number]['id']

@@ -87,6 +87,13 @@ function Sidebar() {
 
       <div className="flex-1" />
 
+      {/* Feedback lives here inside the app, so a floating button never covers page buttons */}
+      <button type="button" onClick={openFeedback}
+        className="flex items-center gap-3 min-h-11 px-3 rounded-xl text-sm font-medium text-soft hover:bg-raised hover:text-ink">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
+        Send feedback
+      </button>
+
       <UsageCard />
 
       <div className="flex items-center gap-2.5 px-1.5">

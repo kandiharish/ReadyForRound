@@ -8,7 +8,7 @@ import { gradeMessages, parseGrade, parseSummary, summaryMessages, type Question
 const running = new Set<string>() // interviews whose report is being made right now (in this server process)
 
 // Rounds where a question really tests a technical skill, so it counts towards "proven" skill scores.
-const SKILL_ROUNDS: RoundId[] = ['technical', 'project']
+const SKILL_ROUNDS: RoundId[] = ['technical', 'project', 'resume']
 
 // Start making the report in the background. Safe to call more than once.
 export function startReport(sessionId: string) {

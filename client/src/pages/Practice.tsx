@@ -15,6 +15,7 @@ const ROUND_STYLE: Record<RoundId, { tint: string; icon: IconName }> = {
   project: { tint: 'bg-peach text-peach-ink', icon: 'book' },
   behavioural: { tint: 'bg-sage text-sage-ink', icon: 'target' },
   hr: { tint: 'bg-blush text-blush-ink', icon: 'profile' },
+  resume: { tint: 'bg-lavender text-lavender-ink', icon: 'file' },
 }
 
 // Choose an interview: a complete one (rounds depend on the goal's company type) or a single round.
@@ -117,7 +118,19 @@ export default function Practice() {
       <div>
         <h2 className="text-sm font-medium text-muted mb-3">Or practise one round</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          {catalog.rounds.map((r) => (
+          {catalog.rounds.map((r) => r.id === 'resume' && resume === null ? (
+            // No resume yet: this round needs one, so the card leads to the Profile page instead
+            <Link key={r.id} to="/profile" className="rounded-2xl border border-dashed border-line-strong bg-card p-5 text-left hover:border-accent">
+              <span className="flex items-center gap-3">
+                <span className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center ${ROUND_STYLE[r.id].tint}`}>
+                  <Icon name={ROUND_STYLE[r.id].icon} size={17} />
+                </span>
+                <span className="font-semibold">{r.label}</span>
+                <span className="ml-auto text-[11px] font-semibold rounded-full bg-peach text-peach-ink px-2 py-0.5">Needs your resume</span>
+              </span>
+              <span className="block text-sm text-muted mt-2">{r.description} <b className="text-accent-deep">Upload it on your Profile →</b></span>
+            </Link>
+          ) : (
             <button key={r.id} type="button" onClick={() => setChoice({ mode: 'single', round: r.id })}
               aria-pressed={isSelected({ mode: 'single', round: r.id })} className={cardClass({ mode: 'single', round: r.id })}>
               <span className="flex items-center gap-3">

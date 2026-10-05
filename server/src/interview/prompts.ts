@@ -57,8 +57,18 @@ export function parseAiReply(text: string, defaultType: AiReply['type']): AiRepl
     .replace(/^["']|["']$/g, '')
     .trim()
   if (type === 'done') question = ''
+  question = dropJudgement(question)
 
   return { type, question }
+}
+
+// Interviewers don't grade answers mid-interview. Remove an opening sentence that judges the last answer
+// ("This seems incomplete.", "Your answer was vague."), keeping the actual question.
+const JUDGEMENT = /^(this (seems|is|was|sounds) (a bit |somewhat )?(incomplete|vague|unclear|brief|short)|that('s| is| was) (not|a bit|somewhat) (clear|complete|enough)|your (answer|response) (was|is|seems|lacks|didn'?t|did not)|it seems (like )?you (didn'?t|did not|haven'?t|have not))[^.?!]*[.!]\s+/i
+
+export function dropJudgement(question: string) {
+  const trimmed = question.replace(JUDGEMENT, '')
+  return trimmed !== question && trimmed.includes('?') ? trimmed.charAt(0).toUpperCase() + trimmed.slice(1) : question
 }
 
 function formatReply(r: AiReply) {
@@ -69,7 +79,7 @@ function systemPrompt(ctx: InterviewContext, round: RoundId, earlierQuestions: s
   const r = roundById(round)
   const skills = ctx.skills.map((s) => `${s.skill} (${s.self_rating}/5)`).join(', ')
   // Skills only matter in technical and project rounds; listing them elsewhere pulls the interviewer off-topic.
-  const technicalRound = round === 'technical' || round === 'project' || !!ctx.focusTopic
+  const technicalRound = round === 'technical' || round === 'project' || round === 'resume' || !!ctx.focusTopic
   const rules = ctx.focusTopic ? null : roundRules(round, ctx)
 
   return [
@@ -148,6 +158,10 @@ const ROUND_RULES: Record<RoundId, { ask: string; never: string }> = {
     ask: '"Tell me about a time when..." or "Describe a situation where..." questions about teamwork, conflict, deadlines, failure, mistakes, leadership, learning something new, and handling feedback. Look for situation, action, result.',
     never: 'technical or coding questions, definitions, "explain how X works", "what is the difference between", algorithms, data structures, databases, system design, or questions about code.',
   },
+  resume: {
+    ask: 'questions about specific lines on the candidate\'s resume: name the project, internship, skill or achievement you are asking about, verify what they really did, and ask for evidence (numbers, tools, their own part).',
+    never: 'questions unrelated to something written on the resume, or generic theory with no link to it.',
+  },
   hr: {
     ask: 'questions about the candidate as a person: introduce yourself, strengths and weaknesses, why this role and company, career goals, motivation, relocation, shifts, expectations and fit.',
     never: 'technical or coding questions, definitions, "explain how X works", algorithms, databases, system design, or deep project technical details.',
@@ -181,6 +195,7 @@ const NEW_TOPIC: Record<RoundId, string> = {
   technical: 'Move to a different concept or skill than the earlier questions.',
   project: 'Move to a different aspect of their project (or a different project) than the earlier questions.',
   behavioural: 'Ask for a NEW situation on a theme not yet covered (teamwork, conflict, deadline pressure, failure or mistake, leadership, learning something new, feedback, initiative, helping others, handling ambiguity). Do not ask more about a story they already told.',
+  resume: 'Move to a different line or section of the resume (another project, the internship, a listed skill, an achievement, education). Over the round, cover the whole resume.',
   hr: 'Move to an HR topic not yet covered (introduction, strengths, weaknesses, motivation for the role, why this company, career goals, handling pressure, relocation or shifts, expectations).',
 }
 
@@ -190,6 +205,7 @@ const FOLLOW_UP: Record<RoundId, string> = {
   project: 'dig into the same project (their own decision, a trade-off, a problem they faced, what they would change).',
   behavioural: 'probe the same story: their own actions, the result (ideally measurable), or what they learned. Never turn it into a technical question.',
   hr: 'clarify their answer about themselves (an example, their reasons, or their plans). Never turn it into a technical question.',
+  resume: 'test the same resume claim deeper (how exactly, which tools, what numbers, what was their own part, what went wrong).',
 }
 
 // How each round should use the resume. Real interviewers always ask about what is on your resume.
@@ -197,6 +213,7 @@ const RESUME_GUIDANCE: Record<RoundId, string> = {
   technical: 'Use the resume: about half of your questions should test skills and technologies listed there, asking how they USED them in their projects, not just definitions.',
   project: 'Base this round on the resume: pick ONE project or job from it, call it by name, and go deep: what it does, their own part, key decisions and trade-offs, problems they hit, and what they would improve.',
   behavioural: 'You may set a situation in a project, internship or job from the resume (teamwork, deadlines, conflict, mistakes, leadership), but ask only about what the candidate DID and LEARNED, never about technical details.',
+  resume: 'This whole round is about the resume above. Quote or name the exact item you ask about (for example "Your resume says you built CampusEats with Node.js...").',
   hr: 'You may ask about their background, choices and goals as shown on the resume (for example, why this role after their degree or last job). Never ask technical questions about it.',
 }
 

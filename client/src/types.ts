@@ -3,7 +3,7 @@
 export type Option = { id: string; label: string; description?: string }
 export type RoleOption = Option & { description: string; skills: string[] }
 
-export type RoundId = 'technical' | 'project' | 'behavioural' | 'hr'
+export type RoundId = 'technical' | 'project' | 'behavioural' | 'hr' | 'resume'
 
 export type Company = {
   id: string

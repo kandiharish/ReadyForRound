@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
 import { useFeedback } from './Feedback'
 import { Button, Card, Icon } from './ui'
@@ -22,6 +23,8 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
   const [resume, setResume] = useState<Resume | null | undefined>(undefined) // undefined = still loading
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [starting, setStarting] = useState(false)
+  const navigate = useNavigate()
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -44,6 +47,19 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
     } finally {
       setBusy(false)
       if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  // Start a "Resume deep-dive" round straight away.
+  async function practise() {
+    setStarting(true)
+    setError(null)
+    try {
+      const iv = await apiFetch<{ id: string }>('/interviews', { method: 'POST', body: JSON.stringify({ mode: 'single', round: 'resume' }) })
+      navigate(`/interview/${iv.id}`)
+    } catch (err) {
+      setError((err as Error).message)
+      setStarting(false)
     }
   }
 
@@ -74,7 +90,10 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
           </p>
         </div>
         {resume && !busy && (
-          <div className="flex gap-2 shrink-0">
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <Button type="button" onClick={practise} disabled={starting}>
+              <Icon name="play" size={15} /> {starting ? 'Starting…' : 'Practise my resume'}
+            </Button>
             <Button type="button" variant="secondary" onClick={() => fileRef.current?.click()}>Replace</Button>
             <Button type="button" variant="ghost" onClick={remove}>Remove</Button>
           </div>
