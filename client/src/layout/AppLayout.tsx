@@ -25,7 +25,7 @@ const TONES = {
   grey: { tile: 'bg-raised text-soft', row: 'bg-raised', solid: 'bg-soft text-card' },
 } satisfies Record<string, Tone>
 
-type NavItem = { to: string; label: string; icon: IconName; tone: Tone }
+type NavItem = { to: string; label: string; icon: IconName; tone: Tone; shine?: boolean } // shine: a highlighted, "live" page
 const WORKSPACE: NavItem[] = [
   { to: '/home', label: 'Home', icon: 'home', tone: TONES.sky },
   { to: '/practice', label: 'Practice', icon: 'practice', tone: TONES.blush },
@@ -37,11 +37,10 @@ const WORKSPACE: NavItem[] = [
 const CAREER: NavItem[] = [
   { to: '/goals', label: 'Goals', icon: 'goals', tone: TONES.amber },
   { to: '/compass', label: 'Career compass', icon: 'compass', tone: TONES.teal },
-  { to: '/market', label: 'Job market', icon: 'trend', tone: TONES.green },
+  { to: '/market', label: 'Job market', icon: 'trend', tone: TONES.green, shine: true },
   { to: '/jobs', label: 'Job match', icon: 'file', tone: TONES.lavender },
-  { to: '/profile', label: 'Profile', icon: 'profile', tone: TONES.blue },
-  { to: '/settings', label: 'Settings', icon: 'settings', tone: TONES.grey },
 ]
+// Profile and Settings live in the account row at the bottom of the sidebar (and the top bar on phones).
 
 // The frame around every signed-in page: sidebar on desktop, tab bar on phones, the page in the middle.
 export default function AppLayout() {
@@ -88,7 +87,7 @@ function Sidebar() {
   const initials = (me?.full_name ?? '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 
   return (
-    <nav aria-label="Main" className="hidden lg:flex flex-col gap-5 w-62 shrink-0 h-screen sticky top-0 bg-card border-r border-line px-3.5 py-5">
+    <nav aria-label="Main" className="hidden lg:flex flex-col gap-4 w-62 shrink-0 h-screen sticky top-0 bg-card border-r border-line px-3.5 py-5">
       <Link to="/home" className="px-2" aria-label="ReadyForRound home">
         <Brand />
       </Link>
@@ -106,28 +105,29 @@ function Sidebar() {
         <Icon name="swap" size={16} className="text-lavender-ink/70 group-hover:text-lavender-ink" />
       </Link>
 
-      <NavGroup title="Workspace" items={WORKSPACE} />
-      <NavGroup title="Career" items={CAREER} />
-
-      <div className="flex-1" />
-
-      {/* Feedback lives here inside the app, so a floating button never covers page buttons */}
-      <button type="button" onClick={openFeedback}
-        className="flex items-center gap-3 min-h-10 px-2 rounded-xl text-sm font-medium text-soft hover:bg-raised hover:text-ink">
-        <span className="w-7 h-7 rounded-lg grid place-items-center bg-raised text-soft"><Icon name="chat" size={16} /></span>
-        Send feedback
-      </button>
+      {/* The page list scrolls on short screens, so the usage card and profile below always stay visible */}
+      <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] -mx-1 px-1 flex flex-col gap-4">
+        <NavGroup title="Workspace" items={WORKSPACE} />
+        <NavGroup title="Career" items={CAREER} />
+      </div>
 
       <UsageCard />
 
-      <div className="flex items-center gap-2.5 px-1.5">
-        <span className="w-9 h-9 rounded-full bg-linear-to-br from-peach to-blush text-blush-ink text-sm font-bold flex items-center justify-center ring-2 ring-card shadow-sm">{initials}</span>
-        <span className="flex-1 min-w-0">
-          <span className="block text-sm font-semibold truncate">{me?.full_name}</span>
-          <span className="block text-xs text-muted">{label('experienceLevels', me?.experience_level)}</span>
-        </span>
+      <div className="flex items-center gap-1 px-0.5">
+        <NavLink to="/profile" title="Your profile"
+          className={({ isActive }) => `flex-1 min-w-0 flex items-center gap-2.5 rounded-xl p-1 transition-colors ${isActive ? 'bg-accent-soft' : 'hover:bg-raised'}`}>
+          <span className="w-9 h-9 shrink-0 rounded-full bg-linear-to-br from-peach to-blush text-blush-ink text-sm font-bold flex items-center justify-center ring-2 ring-card shadow-sm">{initials}</span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold truncate">{me?.full_name}</span>
+            <span className="block text-xs text-muted truncate">{label('experienceLevels', me?.experience_level)}</span>
+          </span>
+        </NavLink>
+        <NavLink to="/settings" aria-label="Settings" title="Settings"
+          className={({ isActive }) => `w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${isActive ? 'bg-raised text-ink' : 'text-muted hover:text-ink hover:bg-raised'}`}>
+          <Icon name="settings" size={17} />
+        </NavLink>
         <button type="button" onClick={() => supabase.auth.signOut()} aria-label="Log out"
-          className="w-9 h-9 rounded-lg text-muted hover:text-ink hover:bg-raised flex items-center justify-center">
+          className="w-9 h-9 shrink-0 rounded-lg text-muted hover:text-ink hover:bg-raised flex items-center justify-center">
           <Icon name="logout" size={17} />
         </button>
       </div>
@@ -141,15 +141,24 @@ function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
       <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-subtle px-2.5 pb-1.5">{title}</span>
       {items.map((it) => (
         <NavLink key={it.to} to={it.to}
-          className={({ isActive }) => `group flex items-center gap-3 min-h-10 px-2 rounded-xl text-sm transition-colors ${isActive
+          className={({ isActive }) => `group relative overflow-hidden flex items-center gap-3 min-h-9 px-2 rounded-xl text-sm transition-colors ${isActive
             ? `${it.tone.row} text-ink font-semibold`
-            : 'text-soft hover:text-ink hover:bg-raised'}`}>
+            : it.shine ? 'text-ink font-medium bg-linear-to-r from-good-soft via-card to-good-soft/40 ring-1 ring-good/25 hover:ring-good/50'
+              : 'text-soft hover:text-ink hover:bg-raised'}`}>
           {({ isActive }) => (
             <>
-              <span className={`w-7 h-7 rounded-lg grid place-items-center shrink-0 transition-all ${isActive ? `${it.tone.solid} shadow-sm` : `${it.tone.tile} group-hover:scale-105`}`}>
+              {/* A light sweep across the row draws the eye to a live page */}
+              {it.shine && !isActive && <span aria-hidden="true" className="nav-shine pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 motion-reduce:hidden" />}
+              <span className={`relative w-7 h-7 rounded-lg grid place-items-center shrink-0 transition-all ${isActive ? `${it.tone.solid} shadow-sm` : `${it.tone.tile} group-hover:scale-105`}`}>
                 <Icon name={it.icon} size={16} strokeWidth={isActive ? 2.1 : 1.9} />
               </span>
-              {it.label}
+              <span className="relative">{it.label}</span>
+              {it.shine && (
+                <span className="relative ml-auto inline-flex items-center gap-1 rounded-full bg-good text-white px-1.5 py-0.5 text-[9px] font-bold tracking-wider">
+                  <span className="relative flex w-1.5 h-1.5"><span className="absolute inset-0 rounded-full bg-white/80 animate-ping motion-reduce:hidden" /><span className="relative w-1.5 h-1.5 rounded-full bg-white" /></span>
+                  LIVE
+                </span>
+              )}
             </>
           )}
         </NavLink>
@@ -164,13 +173,12 @@ function UsageCard() {
   if (!usage) return null
   const pct = Math.min(100, (usage.interviews.used / usage.interviews.limit) * 100)
   return (
-    <div className="rounded-xl bg-raised border border-line p-3.5 space-y-2.5">
+    <div className="rounded-xl bg-raised border border-line px-3 py-2.5 space-y-1.5" title={`Drills ${usage.drills.used} / ${usage.drills.limit} · resets at midnight`}>
       <div className="flex justify-between text-xs">
         <span className="text-muted">Today's interviews</span>
         <span className="font-mono">{usage.interviews.used} / {usage.interviews.limit}</span>
       </div>
       <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className={`h-full rounded-full ${pct >= 100 ? 'bg-warn' : 'bg-linear-to-r from-[#12a8f0] to-[#7b3cf0]'}`} style={{ width: `${pct}%` }} /></div>
-      <p className="text-[11px] text-muted">Drills {usage.drills.used} / {usage.drills.limit} · resets at midnight</p>
     </div>
   )
 }

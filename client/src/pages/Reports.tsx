@@ -32,7 +32,13 @@ export default function Reports() {
   }
   const activeId = me.active_goal?.id ?? null
   const shown = reports.filter((r) => goalFilter === 'all' || r.goal_id === (goalFilter === 'active' ? activeId : goalFilter))
-  const scores = shown.filter((r) => r.score !== null).map((r) => r.score!).reverse() // oldest first, for the trend
+  // Oldest first, for the trend
+  const graded = shown.filter((r) => r.score !== null).reverse().map((r) => ({
+    id: r.id,
+    score: r.score!,
+    label: r.mode === 'complete' ? 'Complete' : r.job_title ? 'Job ad' : roundLabel(r.rounds[0]),
+    date: new Date(r.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }),
+  }))
 
   return (
     <div className="space-y-6">
@@ -54,7 +60,7 @@ export default function Reports() {
           action={<ButtonLink to="/practice">Start an interview</ButtonLink>} />
       ) : (
         <>
-          {scores.length >= 2 && !me.practice_without_score && <Trend scores={scores} />}
+          {graded.length >= 2 && !me.practice_without_score && <Trend items={graded} />}
           <Card className="p-0 sm:p-0 overflow-hidden">
             <ul>
               {shown.map((r) => (
@@ -82,24 +88,70 @@ export default function Reports() {
   )
 }
 
-// A small line chart of scores over time.
-function Trend({ scores }: { scores: number[] }) {
-  const w = 600
-  const h = 120
-  const step = w / (scores.length - 1)
-  const points = scores.map((s, i) => `${i * step},${h - (s / 100) * h}`).join(' ')
-  const change = scores[scores.length - 1] - scores[0]
+// Scores over time as columns: one per interview, coloured by how it went, with the score on top.
+type TrendItem = { id: string; score: number; label: string; date: string }
+const tone = (s: number) => (s >= 70 ? { bar: 'from-[#34d399] to-[#059669]', text: 'text-good' } : s >= 40 ? { bar: 'from-[#fbbf24] to-[#d97706]', text: 'text-warn' } : { bar: 'from-[#fb7185] to-[#e11d48]', text: 'text-bad' })
+
+function Trend({ items: all }: { items: TrendItem[] }) {
+  const [grown, setGrown] = useState(false)
+  useEffect(() => { const id = requestAnimationFrame(() => requestAnimationFrame(() => setGrown(true))); return () => cancelAnimationFrame(id) }, [])
+  const items = all.slice(-12) // the latest 12 fit nicely
+  const scores = all.map((i) => i.score)
+  const latest = scores[scores.length - 1]
+  const best = Math.max(...scores)
+  const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+  const change = latest - scores[0]
+  const stats: [string, string, string][] = [
+    ['Latest', `${latest}`, tone(latest).text],
+    ['Best', `${best}`, 'text-good'],
+    ['Average', `${avg}`, 'text-ink'],
+    ['Since first', `${change >= 0 ? '+' : ''}${change}`, change >= 0 ? 'text-good' : 'text-warn'],
+  ]
   return (
-    <Card>
-      <div className="flex justify-between items-baseline">
-        <h2 className="font-semibold">Score trend</h2>
-        <span className={`text-sm ${change >= 0 ? 'text-accent-deep' : 'text-warn'}`}>{change >= 0 ? '+' : ''}{change} since your first interview here</span>
+    <Card className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="font-semibold">Your scores</h2>
+          <p className="text-sm text-muted mt-0.5">Each column is one interview, oldest on the left. Tap one to open its report.</p>
+        </div>
+        <div className="flex gap-2">
+          {stats.map(([k, v, c]) => (
+            <div key={k} className="rounded-xl bg-raised px-3.5 py-2 text-center min-w-18">
+              <p className={`text-lg font-bold tabular-nums leading-tight ${c}`}>{v}</p>
+              <p className="text-[11px] text-muted">{k}</p>
+            </div>
+          ))}
+        </div>
       </div>
-      <svg viewBox={`-6 -6 ${w + 12} ${h + 12}`} className="w-full h-32 mt-4" role="img" aria-label={`Scores over time, from ${scores[0]} to ${scores[scores.length - 1]}`}>
-        {[0, 50, 100].map((v) => <line key={v} x1="0" x2={w} y1={h - (v / 100) * h} y2={h - (v / 100) * h} className="stroke-line" />)}
-        <polyline points={points} fill="none" className="stroke-accent" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        {scores.map((s, i) => <circle key={i} cx={i * step} cy={h - (s / 100) * h} r="4" className="fill-card stroke-accent" strokeWidth="2" />)}
-      </svg>
+
+      <div className="relative overflow-x-auto [scrollbar-width:thin]">
+        <div className="relative h-60 min-w-fit" style={{ minWidth: items.length * 64 }}>
+          {/* guide lines at 0, 50 and 100, and the average */}
+          {[100, 50].map((v) => (
+            <div key={v} className="absolute inset-x-0 border-t border-line" style={{ bottom: `${(v / 100) * 168 + 44}px` }}>
+              <span className="absolute -top-2.5 left-0 text-[10px] text-subtle bg-card pr-1">{v}</span>
+            </div>
+          ))}
+          <div className="absolute inset-x-0 border-t-2 border-dashed border-accent/40 transition-all duration-700" style={{ bottom: `${(avg / 100) * 168 + 44}px` }}>
+            <span className="absolute -top-5 right-0 text-[10px] font-semibold text-accent-deep bg-card px-1">avg {avg}</span>
+          </div>
+          <ol className="absolute inset-0 flex items-end gap-2 sm:gap-3 pl-7 pb-0">
+            {items.map((it, i) => (
+              <li key={it.id} className="flex-1 min-w-12 h-full">
+                <Link to={`/interview/${it.id}/report`} className="group h-full flex flex-col justify-end items-center" title={`${it.label} · ${it.date}: ${it.score}/100`}>
+                  <span className={`text-xs font-bold tabular-nums mb-1 transition-opacity duration-500 ${tone(it.score).text} ${grown ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${300 + i * 50}ms` }}>{it.score}</span>
+                  <span className={`w-full max-w-11 rounded-t-lg bg-linear-to-t ${tone(it.score).bar} shadow-sm group-hover:brightness-110 group-hover:-translate-y-0.5 transition-all duration-700 ease-out motion-reduce:transition-none`}
+                    style={{ height: grown ? `${Math.max(3, (it.score / 100) * 168)}px` : 0, transitionDelay: `${i * 50}ms` }} />
+                  <span className="h-11 pt-1.5 flex flex-col items-center text-center leading-tight">
+                    <span className="text-[11px] font-medium text-soft truncate max-w-16">{it.label}</span>
+                    <span className="text-[10px] text-muted">{it.date}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </Card>
   )
 }

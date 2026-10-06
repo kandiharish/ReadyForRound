@@ -306,3 +306,15 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none; }
 }
+
+/* Sidebar: a soft light sweep across a highlighted page (e.g. the live Job market) */
+@keyframes nav-shine {
+  0% { transform: translateX(0) skewX(-20deg); }
+  55%, 100% { transform: translateX(450%) skewX(-20deg); }
+}
+.nav-shine {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.75), transparent);
+  animation: nav-shine 3.2s ease-in-out infinite;
+}
+:root[data-theme="dark"] .nav-shine { background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav-shine { background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent); } }
