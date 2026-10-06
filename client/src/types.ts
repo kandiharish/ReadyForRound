@@ -54,6 +54,7 @@ export type Interview = {
   mode: 'single' | 'complete' | 'drill'
   focus_topic: string | null
   company_id?: string | null
+  job_title?: string | null // set when practising for a pasted job ad
   rounds: RoundId[]
   current_round_index: number
   status: InterviewStatus
@@ -117,6 +118,7 @@ export type GoalWithStats = Goal & { interviews: number; readiness: number | nul
 
 export type SessionSummary = {
   company_id?: string | null
+  job_title?: string | null // set when practising for a pasted job ad
   id: string
   goal_id: string | null
   mode: 'single' | 'complete' | 'drill'

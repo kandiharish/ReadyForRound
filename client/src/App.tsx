@@ -24,6 +24,7 @@ import Companies from './pages/Companies'
 import CompanyPage from './pages/CompanyPage'
 import Compass from './pages/Compass'
 import Market, { MarketRolePage } from './pages/Market'
+import Jobs, { JobPage } from './pages/Jobs'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -58,6 +59,8 @@ function App() {
             <Route path="/compass" element={<Compass />} />
             <Route path="/market" element={<Market />} />
             <Route path="/market/:role" element={<MarketRolePage />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/:id" element={<JobPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

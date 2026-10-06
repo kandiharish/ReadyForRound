@@ -8,6 +8,7 @@ import { getActiveGoal } from '../goals.js'
 import { limitReached } from '../usage.js'
 import { getResume, resumeForPrompt } from '../resume.js'
 import { companyById } from '../companies.js'
+import { getJob, JobError, jobForPrompt } from '../jobs.js'
 import type { SpeechStats } from '../stt/speech.js'
 
 export class InterviewError extends Error {
@@ -89,7 +90,7 @@ async function loadContext(userId: string): Promise<{ ctx: InterviewContext; com
 
 export type Mode = 'single' | 'complete' | 'drill'
 
-export async function startInterview(userId: string, mode: Mode, round?: RoundId, topic?: string, companyId?: string, roleId?: string) {
+export async function startInterview(userId: string, mode: Mode, round?: RoundId, topic?: string, companyId?: string, roleId?: string, jobId?: string) {
   // Daily limits protect the free AI quota for everyone.
   const limitMessage = await limitReached(userId, mode === 'drill' ? 'drill' : 'interview')
   if (limitMessage) throw new InterviewError(429, limitMessage)
@@ -108,6 +109,14 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
     ctx.company = { id: company.id, name: company.name, style: company.style, lookFor: company.lookFor, rounds: company.rounds }
     if (mode === 'single' && !company.rounds.some((r) => r.id === round)) throw new InterviewError(400, `${company.name} interviews don't include that round`)
   }
+  // Practising for a pasted job ad: the interviewer aims at that job's skills and duties.
+  let jobTitle: string | null = null
+  if (jobId) {
+    if (company) throw new InterviewError(400, 'Choose either a company-style interview or a job ad, not both')
+    const job = await getJob(userId, jobId).catch((err) => { throw err instanceof JobError ? new InterviewError(err.status, err.message) : err })
+    ctx.job = jobForPrompt(job)
+    jobTitle = job.company ? `${job.title} · ${job.company}` : job.title
+  }
   if (round === 'resume' && !ctx.resume) throw new InterviewError(400, 'Add your resume on your Profile first, so the interviewer has something to ask about.')
   const rounds: RoundId[] = mode === 'complete'
     ? (company ? company.rounds.map((r) => r.id) : COMPLETE_SEQUENCES[companyType])
@@ -121,7 +130,7 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
 
   const { data: session, error } = await db()
     .from('interview_sessions')
-    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx, focus_topic: mode === 'drill' ? topic : null, company_id: company?.id ?? null })
+    .insert({ user_id: userId, goal_id: goalId, mode, rounds, context: ctx, focus_topic: mode === 'drill' ? topic : null, company_id: company?.id ?? null, job_id: jobId ?? null, job_title: jobTitle })
     .select('id')
     .single()
   if (error) throw new InterviewError(500, error.message)
@@ -133,7 +142,7 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
 export async function getInterview(userId: string, sessionId: string) {
   const { data, error } = await db()
     .from('interview_sessions')
-    .select('id, mode, rounds, current_round_index, status, context, focus_topic, company_id, created_at, completed_at, ' +
+    .select('id, mode, rounds, current_round_index, status, context, focus_topic, company_id, job_title, created_at, completed_at, ' +
       'interview_turns (seq, round, question, is_follow_up, answer, skipped, speech)')
     .eq('id', sessionId)
     .eq('user_id', userId) // a student can only open their own interviews
@@ -164,7 +173,7 @@ type SessionRow = {
 export async function listInterviews(userId: string) {
   const { data } = await db()
     .from('interview_sessions')
-    .select('id, mode, rounds, status, company_id, created_at, completed_at')
+    .select('id, mode, rounds, status, company_id, job_title, created_at, completed_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(20)

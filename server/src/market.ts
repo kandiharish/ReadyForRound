@@ -48,7 +48,7 @@ export type Snapshot = {
 
 // ---------- Skill matching ----------
 // Words that are skills but also everyday English, so we only count them in safer forms.
-const AMBIGUOUS = new Set(['c', 'r', 'go', 'swift', 'rust', 'dart', 'ada', 'move', 'elm', 'hack', 'sed', 'scheme', 'nim', 'crystal', 'julia',
+const AMBIGUOUS = new Set(['c', 'r', 'go', 'render', 'swift', 'rust', 'dart', 'ada', 'move', 'elm', 'hack', 'sed', 'scheme', 'nim', 'crystal', 'julia',
   'foundation', 'communication', 'teamwork', 'leadership', 'creativity', 'adaptability', 'negotiation', 'mentoring', 'debugging', 'agile', 'scrum'])
 const SAFE_FORMS: Record<string, RegExp> = {
   go: /\b(golang|go lang|go developer|go\/)\b/i,
@@ -60,7 +60,7 @@ const SAFE_FORMS: Record<string, RegExp> = {
   'microsoft excel': /\b(ms[- ]?excel|microsoft excel|advanced excel|excel(?!\s+(at|in|as|on|with)\b))\b/i,
 }
 // Aliases that are everyday words in job ads ("next-gen", "the backbone of", "agents")
-const NOISY_ALIASES = new Set(['next', 'backbone', 'agents', 'excel'])
+const NOISY_ALIASES = new Set(['next', 'backbone', 'agents', 'excel', 'express'])
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 type Matcher = { name: string; test: (text: string) => boolean }
@@ -85,7 +85,7 @@ export const SKILL_MATCHERS: Matcher[] = (() => {
 })()
 
 // Soft skills and generic practices aren't useful "skills to learn" for a role
-const NOT_TECH = new Set(['Problem Solving', 'Critical Thinking', 'Time Management', 'Presentation Skills', 'Public Speaking', 'Attention to Detail',
+export const NOT_TECH = new Set(['Problem Solving', 'Critical Thinking', 'Time Management', 'Presentation Skills', 'Public Speaking', 'Attention to Detail',
   'Analytical Thinking', 'Decision Making', 'Conflict Resolution', 'Stakeholder Management', 'Customer Handling', 'English Proficiency',
   'Aptitude', 'Logical Reasoning', 'Software Engineering', 'Verbal Ability', 'Code Review', 'Pair Programming', 'Technical Documentation', 'Clean Code', 'Troubleshooting'])
 

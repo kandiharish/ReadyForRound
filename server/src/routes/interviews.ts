@@ -12,7 +12,8 @@ export const interviewsRouter = Router()
 interviewsRouter.use(requireAuth) // every interview route needs a logged-in student
 
 // companyId + roleId (optional): an interview in the style of that company's hiring process
-const companyFields = { companyId: z.enum(companyIds).optional(), roleId: z.enum(roleIds).optional() }
+// jobId (optional): an interview aimed at a job ad the student pasted
+const companyFields = { companyId: z.enum(companyIds).optional(), roleId: z.enum(roleIds).optional(), jobId: z.string().uuid().optional() }
 const startSchema = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('complete'), ...companyFields }),
   z.object({ mode: z.literal('single'), round: z.enum(roundIds), ...companyFields }),
@@ -44,7 +45,7 @@ interviewsRouter.post('/', async (req, res) => {
   try {
     const body = parsed.data
     res.status(201).json(await startInterview(req.user!.id, body.mode, body.mode === 'single' ? body.round : undefined, body.mode === 'drill' ? body.topic : undefined,
-      body.mode === 'drill' ? undefined : body.companyId, body.mode === 'drill' ? undefined : body.roleId))
+      body.mode === 'drill' ? undefined : body.companyId, body.mode === 'drill' ? undefined : body.roleId, body.mode === 'drill' ? undefined : body.jobId))
   } catch (err) {
     handleError(res, err)
   }

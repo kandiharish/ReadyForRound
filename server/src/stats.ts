@@ -24,7 +24,7 @@ export type SessionSummary = {
 export async function listSessions(userId: string): Promise<SessionSummary[]> {
   const { data } = await supabase!
     .from('interview_sessions')
-    .select('id, goal_id, mode, rounds, focus_topic, company_id, status, created_at, completed_at, interview_reports (status, score:report->overallScore, questions:report->questions)')
+    .select('id, goal_id, mode, rounds, focus_topic, company_id, job_title, status, created_at, completed_at, interview_reports (status, score:report->overallScore, questions:report->questions)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(200)

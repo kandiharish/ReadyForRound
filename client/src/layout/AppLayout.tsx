@@ -37,6 +37,7 @@ const CAREER: NavItem[] = [
   { to: '/goals', label: 'Goals', icon: 'goals', tone: TONES.amber },
   { to: '/compass', label: 'Career compass', icon: 'compass', tone: TONES.teal },
   { to: '/market', label: 'Job market', icon: 'trend', tone: TONES.green },
+  { to: '/jobs', label: 'Job match', icon: 'file', tone: TONES.lavender },
   { to: '/profile', label: 'Profile', icon: 'profile', tone: TONES.blue },
   { to: '/settings', label: 'Settings', icon: 'settings', tone: TONES.grey },
 ]

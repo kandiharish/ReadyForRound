@@ -2,9 +2,10 @@ import { apiFetch } from './api'
 import type { Company, Interview, RoundId } from '../types'
 
 // A readable name for an interview or drill, e.g. "Technical round" or "Drill · JavaScript closures".
-export function sessionTitle(s: { mode: 'single' | 'complete' | 'drill'; rounds: RoundId[]; focus_topic?: string | null; company_id?: string | null },
+export function sessionTitle(s: { mode: 'single' | 'complete' | 'drill'; rounds: RoundId[]; focus_topic?: string | null; company_id?: string | null; job_title?: string | null },
   roundLabel: (r: RoundId) => string, companies: Company[] = []) {
   if (s.mode === 'drill') return `5-minute drill · ${s.focus_topic ?? 'practice'}`
+  if (s.job_title) return `${s.job_title} · ${s.mode === 'complete' ? 'Complete interview' : `${roundLabel(s.rounds[0])} round`}`
   const company = companies.find((c) => c.id === s.company_id)
   if (company) {
     return s.mode === 'complete'

@@ -67,7 +67,8 @@ export default function Market() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Job market" title="What employers want right now"
-        subtitle="Openings, pay and the skills asked for in real job ads across India. Pick a role to see exactly what to learn." />
+        subtitle="Openings, pay and the skills asked for in real job ads across India. Pick a role to see exactly what to learn."
+        actions={<Link to="/jobs" className="inline-flex items-center gap-2 min-h-10 px-4 rounded-xl border border-line-strong bg-card text-sm font-medium hover:border-accent hover:text-accent-deep"><Icon name="file" size={16} /> Match me to a job ad</Link>} />
       {data.roles.length === 0 ? <NotReady m={data} /> : (
         <>
           <ChartToppers roles={data.roles} name={name} />
