@@ -111,8 +111,10 @@ export const GROUPS: Record<string, string[]> = {
   ],
   'Security and networking': [
     'Cybersecurity|cyber security', 'Network Security', 'Ethical Hacking', 'Penetration Testing|pentest', 'OWASP Top 10|owasp',
-    'Burp Suite', 'Wireshark', 'Nmap', 'Metasploit', 'Kali Linux', 'Cryptography', 'Firewalls', 'SIEM', 'Incident Response',
+    'Burp Suite', 'Wireshark', 'Nmap', 'Metasploit', 'Kali Linux', 'Cryptography', 'Firewalls|firewall', 'SIEM', 'Incident Response',
     'Vulnerability Assessment', 'Identity and Access Management', 'Cloud Security', 'Application Security|appsec',
+    'Security Operations Center|soc analyst,security operations', 'Splunk', 'VAPT', 'ISO 27001', 'GRC|governance risk', 'Threat Intelligence|threat hunting',
+    'Malware Analysis', 'Digital Forensics|forensics', 'Endpoint Security|edr', 'Vulnerability Management',
     'Cisco Networking|ccna', 'CCNA', 'Routing and Switching', 'Network Administration', 'System Administration|sysadmin',
     'Active Directory', 'IT Support', 'Troubleshooting',
   ],

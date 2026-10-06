@@ -86,7 +86,8 @@ export default function Market() {
       {data.roles.length === 0 ? <NotReady m={data} /> : (
         <>
           <div role="tablist" aria-label="Sort roles" className="flex flex-wrap gap-1 rounded-xl bg-raised p-1 w-fit">
-            {SORTS.map((s) => (
+            {/* "Fastest growing" needs about a month of daily snapshots, so it appears once trends exist */}
+            {SORTS.filter((s) => s.id !== 'growth' || data.roles.some((r) => r.trend !== null)).map((s) => (
               <button key={s.id} type="button" role="tab" aria-selected={sort === s.id} onClick={() => setSort(s.id)}
                 className={`min-h-10 px-3.5 rounded-lg text-sm font-medium transition-colors ${sort === s.id ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}>
                 {s.label}
@@ -177,7 +178,7 @@ export function MarketRolePage() {
         {[
           ['Openings · 30 days', num(r.total_openings), r.trend !== null ? `${r.trend >= 0 ? '↑' : '↓'} ${Math.abs(r.trend)}% vs last month` : 'Trend after a few weeks of data'],
           ['Typical pay', r.salary ? `${lakhs(r.salary.p25)}–${lakhs(r.salary.p75)}` : '—', r.salary ? `Middle: ${lakhs(r.salary.p50)} a year · ${r.salary.count} ads` : 'Too few ads list a salary'],
-          ['Open to freshers', r.fresher_share !== null ? `${Math.round(r.fresher_share * 100)}%` : '—', 'Ads mentioning freshers or 0–1 years'],
+          ['Open to freshers', r.fresher_share !== null ? `${Math.round(r.fresher_share * 100)}%` : '—', 'Ads mentioning freshers, graduates or trainees'],
           ['Your skill match', `${have}/${r.skills.length}`, 'Top skills employers ask for'],
         ].map(([k, v, sub]) => (
           <Card key={k}>
@@ -207,7 +208,7 @@ export function MarketRolePage() {
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="font-semibold">Skills employers ask for</h2>
-            <p className="text-sm text-muted mt-1">How often each skill appears in the ads, and where you stand.</p>
+            <p className="text-sm text-muted mt-1">How often each skill is named in the ads, and where you stand. Ads often list more skills than they need, so focus on the top few.</p>
           </div>
           <div className="flex gap-3 text-xs">
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-good" /> Proven</span>
