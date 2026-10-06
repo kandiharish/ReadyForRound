@@ -5,8 +5,9 @@ import { useMe } from '../auth/MeProvider'
 import { Button, ButtonLink, Card, Icon, PageHeader, type IconName } from '../components/ui'
 import { apiFetch } from '../lib/api'
 import { sessionTitle } from '../lib/sessions'
-import type { Interview, QuestionFeedback, Report, ReportResponse, RoundId } from '../types'
+import type { Interview, InterviewTurn, QuestionFeedback, Report, ReportResponse, RoundId, SpeechStats } from '../types'
 import { ReportSkeleton } from '../components/Skeleton'
+import { SpeakingCoach, SpeechLine } from '../components/SpeakingCoach'
 
 // The feedback report for one interview. Shows feedback and scores only, never the student's answer text.
 export default function ReportPage() {
@@ -82,12 +83,13 @@ export default function ReportPage() {
           </Card>
         )}
 
-        {res?.status === 'ready' && <ReportView report={res.report} hideScores={hideScores} roundLabel={roundLabel} />}
+        {res?.status === 'ready' && <ReportView report={res.report} hideScores={hideScores} roundLabel={roundLabel} turns={interview?.turns ?? []} />}
     </div>
   )
 }
 
-function ReportView({ report, hideScores, roundLabel }: { report: Report; hideScores: boolean; roundLabel: (r: RoundId) => string }) {
+function ReportView({ report, hideScores, roundLabel, turns }: { report: Report; hideScores: boolean; roundLabel: (r: RoundId) => string; turns: InterviewTurn[] }) {
+  const speechBySeq = new Map(turns.map((t) => [t.seq, t.speech]))
   return (
     <div className="space-y-4 mt-6 pb-10">
       {/* Overall */}
@@ -106,6 +108,8 @@ function ReportView({ report, hideScores, roundLabel }: { report: Report; hideSc
         <ListCard title="What went well" icon="check" items={report.strengths} tone="good" />
         <ListCard title="What to work on" icon="target" items={report.improvements} tone="warn" />
       </div>
+
+      <SpeakingCoach turns={turns} />
 
       {/* Company-style interviews: how the answers compare with that company's publicly reported bar */}
       {report.companyFit && (
@@ -142,7 +146,7 @@ function ReportView({ report, hideScores, roundLabel }: { report: Report; hideSc
 
       {/* Question by question */}
       <h2 className="font-bold text-ink pt-2">Question by question</h2>
-      {report.questions.map((q) => <QuestionCard key={q.seq} q={q} hideScores={hideScores} roundLabel={roundLabel} />)}
+      {report.questions.map((q) => <QuestionCard key={q.seq} q={q} hideScores={hideScores} roundLabel={roundLabel} speech={speechBySeq.get(q.seq)} />)}
 
       <p className="text-xs text-muted leading-relaxed">
         This feedback was written by AI against a fixed scoring guide. Scores are estimates to help you practise.
@@ -152,7 +156,7 @@ function ReportView({ report, hideScores, roundLabel }: { report: Report; hideSc
   )
 }
 
-function QuestionCard({ q, hideScores, roundLabel }: { q: QuestionFeedback; hideScores: boolean; roundLabel: (r: RoundId) => string }) {
+function QuestionCard({ q, hideScores, roundLabel, speech }: { q: QuestionFeedback; hideScores: boolean; roundLabel: (r: RoundId) => string; speech?: SpeechStats | null }) {
   const [showAnswer, setShowAnswer] = useState(false)
   return (
     <section className="bg-card border border-line rounded-2xl p-6">
@@ -162,6 +166,7 @@ function QuestionCard({ q, hideScores, roundLabel }: { q: QuestionFeedback; hide
             {roundLabel(q.round)}{q.skill ? ` · ${q.skill}` : ''}
           </p>
           <p className="font-semibold text-ink mt-1"><Rich text={q.question} /></p>
+          {speech && !q.skipped && <SpeechLine speech={speech} />}
         </div>
         {q.skipped
           ? <span className="shrink-0 text-xs bg-raised text-soft rounded-full px-2 py-1">Skipped</span>

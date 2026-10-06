@@ -92,10 +92,10 @@ interviewsRouter.post(
         return res.status(409).json({ error: 'This question was already answered' })
       }
 
-      const text = await transcribe(req.body, req.headers['content-type'] ?? 'audio/webm', current.question)
+      const { text, speech } = await transcribe(req.body, req.headers['content-type'] ?? 'audio/webm', current.question)
       if (text.length < 2) return res.status(422).json({ error: "We couldn't hear anything. Please try answering again." })
 
-      res.json(await answerQuestion(req.user!.id, req.params.id, text))
+      res.json(await answerQuestion(req.user!.id, req.params.id, text, speech))
     } catch (err) {
       if (err instanceof SttUnavailableError) {
         console.warn('Speech-to-text unavailable:', err.message)

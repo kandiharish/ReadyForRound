@@ -16,7 +16,7 @@ accountRouter.get('/export', async (req, res) => {
     db.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', id),
     db.from('goals').select('id, target_role, company_type, experience_level, target_date, weekly_hours, status, created_at, finished_at, roadmap_tasks (week, kind, title, done)').eq('user_id', id),
     db.from('interview_sessions')
-      .select('id, goal_id, mode, rounds, focus_topic, status, created_at, completed_at, interview_turns (seq, round, question, answer, skipped), interview_reports (report)')
+      .select('id, goal_id, mode, rounds, focus_topic, status, created_at, completed_at, interview_turns (seq, round, question, answer, skipped, speech), interview_reports (report)')
       .eq('user_id', id)
       .order('created_at'),
     db.from('feedback').select('kind, message, email, page, created_at').eq('user_id', id).order('created_at'),

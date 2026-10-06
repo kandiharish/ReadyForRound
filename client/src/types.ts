@@ -35,6 +35,16 @@ export type InterviewTurn = {
   is_follow_up: boolean
   answer: string | null
   skipped: boolean
+  speech?: SpeechStats | null // spoken answers only (speaking coach)
+}
+
+// Delivery numbers for one spoken answer
+export type SpeechStats = {
+  seconds: number
+  words: number
+  wpm: number // 0 when the answer was too short to measure
+  pauses: number
+  fillers: Record<string, number>
 }
 
 export type InterviewStatus = 'in_progress' | 'completed' | 'ended_early'

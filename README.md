@@ -60,6 +60,7 @@ ReadyForRound is a full-stack web app that runs a realistic interview round and 
 - **Every round of a hiring drive**: Technical, Project deep-dive, Behavioural, HR and Resume deep-dive, or a complete drive whose sequence depends on the company type
 - **Adaptive follow-ups** when an answer is vague, with server-enforced limits so interviews stay on track
 - **Honest feedback reports** graded question by question, with a model answer to learn from
+- **Speaking coach**: speaking speed, filler words ("basically", "um"), answer length and long pauses for every spoken answer, measured from Whisper's word timings with no extra AI call. Only the numbers are kept, never the audio
 - **Skills: claimed vs proven**, comparing self-ratings against what interviews actually showed
 - **AI study roadmap**: weekly tasks sized to the hours you have before your interview date
 - **5-minute drills** on any topic, streaks, score trends and a readiness score

@@ -8,6 +8,7 @@ import { getActiveGoal } from '../goals.js'
 import { limitReached } from '../usage.js'
 import { getResume, resumeForPrompt } from '../resume.js'
 import { companyById } from '../companies.js'
+import type { SpeechStats } from '../stt/speech.js'
 
 export class InterviewError extends Error {
   constructor(public status: number, message: string) {
@@ -133,7 +134,7 @@ export async function getInterview(userId: string, sessionId: string) {
   const { data, error } = await db()
     .from('interview_sessions')
     .select('id, mode, rounds, current_round_index, status, context, focus_topic, company_id, created_at, completed_at, ' +
-      'interview_turns (seq, round, question, is_follow_up, answer, skipped)')
+      'interview_turns (seq, round, question, is_follow_up, answer, skipped, speech)')
     .eq('id', sessionId)
     .eq('user_id', userId) // a student can only open their own interviews
     .order('seq', { referencedTable: 'interview_turns' })
@@ -170,7 +171,8 @@ export async function listInterviews(userId: string) {
   return data ?? []
 }
 
-export async function answerQuestion(userId: string, sessionId: string, answer: string | null) {
+// speech: delivery numbers for a spoken answer (speaking coach); typed answers have none.
+export async function answerQuestion(userId: string, sessionId: string, answer: string | null, speech?: SpeechStats) {
   const session = await getInterview(userId, sessionId)
   if (session.status !== 'in_progress') throw new InterviewError(409, 'This interview has already finished')
 
@@ -214,7 +216,7 @@ export async function answerQuestion(userId: string, sessionId: string, answer: 
   // Save the answer. The "answer is null" condition stops a double-click from saving twice.
   const { data: saved } = await db()
     .from('interview_turns')
-    .update({ answer: answered.answer, skipped, answered_at: new Date().toISOString() })
+    .update({ answer: answered.answer, skipped, answered_at: new Date().toISOString(), speech: skipped ? null : speech ?? null })
     .eq('session_id', sessionId)
     .eq('seq', current.seq)
     .is('answer', null)
