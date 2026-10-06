@@ -8,6 +8,7 @@ import { sessionTitle } from '../lib/sessions'
 import type { Interview, InterviewTurn, QuestionFeedback, Report, ReportResponse, RoundId, SpeechStats } from '../types'
 import { ReportSkeleton } from '../components/Skeleton'
 import { SpeakingCoach, SpeechLine } from '../components/SpeakingCoach'
+import { ShareButton, type ShareData } from '../components/ShareCard'
 
 // The feedback report for one interview. Shows feedback and scores only, never the student's answer text.
 export default function ReportPage() {
@@ -83,12 +84,13 @@ export default function ReportPage() {
           </Card>
         )}
 
-        {res?.status === 'ready' && <ReportView report={res.report} hideScores={hideScores} roundLabel={roundLabel} turns={interview?.turns ?? []} />}
+        {res?.status === 'ready' && <ReportView report={res.report} hideScores={hideScores} roundLabel={roundLabel} turns={interview?.turns ?? []}
+          share={interview ? resultShare(res.report, title, interview.context?.roleLabel ?? null, me?.full_name ?? null, interview.context?.experienceLabel ?? null, roundLabel) : null} />}
     </div>
   )
 }
 
-function ReportView({ report, hideScores, roundLabel, turns }: { report: Report; hideScores: boolean; roundLabel: (r: RoundId) => string; turns: InterviewTurn[] }) {
+function ReportView({ report, hideScores, roundLabel, turns, share }: { report: Report; hideScores: boolean; roundLabel: (r: RoundId) => string; turns: InterviewTurn[]; share: ShareData | null }) {
   const speechBySeq = new Map(turns.map((t) => [t.seq, t.speech]))
   return (
     <div className="space-y-4 mt-6 pb-10">
@@ -97,9 +99,10 @@ function ReportView({ report, hideScores, roundLabel, turns }: { report: Report;
         {!hideScores && report.overallScore !== null && <ScoreRing value={report.overallScore} />}
         <div className="flex-1">
           <p className="text-ink leading-relaxed"><Rich text={report.summary} /></p>
-          <p className="text-xs text-muted mt-3">
-            {report.answeredCount} answered · {report.skippedCount} skipped
-          </p>
+          <div className="flex flex-wrap items-center gap-3 mt-3">
+            <p className="text-xs text-muted">{report.answeredCount} answered · {report.skippedCount} skipped</p>
+            {!hideScores && share && <ShareButton data={share} />}
+          </div>
         </div>
       </section>
 
@@ -247,4 +250,26 @@ function Rich({ text }: { text: string }) {
   return <>{parts.map((part, i) => i % 2 === 1
     ? <code key={i} className="font-mono text-[0.88em] bg-raised border border-line rounded px-1 py-px">{part}</code>
     : part)}</>
+}
+
+// The share card for one interview's result
+function resultShare(report: Report, title: string, role: string | null, name: string | null, detail: string | null, roundLabel: (r: RoundId) => string): ShareData | null {
+  // Only good results get a share button: a low score is for learning, not posting
+  if (report.overallScore === null || report.overallScore < 50) return null
+  // Average question score (out of 10) per round, shown out of 100
+  const byRound = new Map<RoundId, number[]>()
+  for (const q of report.questions) if (!q.skipped && q.score !== null) byRound.set(q.round, [...(byRound.get(q.round) ?? []), q.score])
+  const rounds = [...byRound.entries()].map(([r, xs]) => ({ label: roundLabel(r), score: Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) }))
+  return {
+    kicker: 'Mock interview result',
+    headline: role ? `${title} · ${role}` : title,
+    score: report.overallScore,
+    scoreLabel: 'out of 100',
+    percent: false,
+    name,
+    detail,
+    chips: [`${report.answeredCount} question${report.answeredCount === 1 ? '' : 's'} answered`, 'AI feedback'],
+    rounds: rounds.length > 1 ? rounds : [],
+    caption: `Just finished a mock interview (${title})${role ? ` for ${role}` : ''}: ${report.overallScore}/100.\n\nEvery practice round shows me something specific to fix before the real one. Today it was: ${(report.improvements[0] ?? 'structuring my answers better').replace(/`/g, '')}`,
+  }
 }

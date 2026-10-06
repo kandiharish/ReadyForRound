@@ -61,6 +61,7 @@ export type Interview = {
   created_at: string
   completed_at: string | null
   turns: InterviewTurn[]
+  context?: { roleLabel?: string; experienceLabel?: string } // a snapshot of the profile when the interview started
 }
 
 export type QuestionFeedback = {

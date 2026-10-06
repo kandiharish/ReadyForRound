@@ -70,6 +70,7 @@ ReadyForRound is a full-stack web app that runs a realistic interview round and 
 - **Resume deep-dive round**: a whole round that goes through your resume line by line, checking claimed skills and asking for the evidence behind your results
 - **Company-style interviews**: 12 companies (TCS, Infosys, Wipro, Accenture, Cognizant, HCLTech, Capgemini, Zoho, Amazon, Microsoft, Google, Flipkart) with their publicly reported round sequence, a "company bar" section in the report, and an AI-generated practice question bank per company and role (not affiliated with these companies; no logos)
 - **13 roles**: SDE, Frontend, Backend, Full-Stack, Forward Deployed Engineer, AI / ML, Data Science, Data Engineering, Data Analytics, DevOps, Mobile, QA and Cybersecurity
+- **Share card**: a 1200×630 progress or result image drawn in the browser with canvas, shared through the phone share sheet, downloaded, or posted to LinkedIn with an editable caption (name optional; only results of 50+ get a share button)
 - **Goals that grow with your career**: placements today, a job switch later, each with its own history
 - **Comfort options**: slower speech, repeat question, type instead of speak, a no-scores practice mode, light and dark themes
 - **In-app notifications**, interview guides, and a **feedback button** that emails the team

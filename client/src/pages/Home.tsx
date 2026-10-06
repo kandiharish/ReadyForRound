@@ -8,6 +8,7 @@ import type { HomeStats, Interview, RoundId } from '../types'
 import { StoriesRow } from '../components/Stories'
 import { thoughtOfTheDay } from '../lib/inspiration'
 import { HomeSkeleton } from '../components/Skeleton'
+import { ShareButton, type ShareData } from '../components/ShareCard'
 
 const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
@@ -125,6 +126,7 @@ export default function Home() {
                 ) : (
                   <span className="text-sm text-muted">{stats.readiness.graded === 0 ? 'Do an interview to see your score' : 'Based on your latest interviews'}</span>
                 )}
+                {stats.readiness.score !== null && <ShareButton data={progressShare(stats, label('roles', goal.target_role), me.full_name, label('experienceLevels', me.experience_level), roundLabel)} />}
               </>
             )}
           </div>
@@ -244,4 +246,26 @@ export default function Home() {
       </div>
     </div>
   )
+}
+
+// The share card for overall progress towards the current goal
+function progressShare(stats: HomeStats, role: string, name: string | null, detail: string, roundLabel: (r: RoundId) => string): ShareData {
+  const n = stats.counts.total
+  const score = stats.readiness.score ?? 0
+  return {
+    kicker: 'Mock interview progress',
+    headline: `Getting interview-ready for ${role}`,
+    score,
+    scoreLabel: 'interview-ready',
+    percent: true,
+    name,
+    detail,
+    chips: [
+      `${n} interview${n === 1 ? '' : 's'}`,
+      ...(stats.streak.days > 1 ? [`${stats.streak.days}-day streak`] : []),
+      ...(stats.counts.drills > 0 ? [`${stats.counts.drills} drill${stats.counts.drills === 1 ? '' : 's'}`] : []),
+    ],
+    rounds: stats.roundScores.filter((r): r is { round: RoundId; score: number } => r.score !== null).map((r) => ({ label: roundLabel(r.round), score: r.score })),
+    caption: `Interview prep update: ${score}% interview-ready for ${role} after ${n} mock interview${n === 1 ? '' : 's'}.\n\nThe biggest lesson so far: knowing an answer and explaining it clearly out loud, under time pressure, are two different skills. Practising the second one is what moves the number.`,
+  }
 }
