@@ -5,25 +5,8 @@ import { apiFetch } from '../lib/api'
 import { startDrill } from '../lib/sessions'
 import { Button, Card, EmptyState, Icon, PageHeader } from '../components/ui'
 import { ListSkeleton, TilesSkeleton } from '../components/Skeleton'
-
-export type MarketRole = {
-  role_id: string
-  fetched_on: string
-  total_openings: number
-  sample_size: number
-  salary: { p25: number; p50: number; p75: number; count: number } | null
-  fresher_share: number | null
-  cities: { name: string; share: number }[]
-  companies: { name: string; count: number }[]
-  skills: { skill: string; share: number }[]
-  trend: number | null
-  history: { date: string; openings: number }[]
-}
-type Market = { configured: boolean; updatedAt: string | null; source: string; roles: MarketRole[] }
-
-// ₹ in lakhs per year, the way Indian job ads talk about pay (e.g. "₹6.5L")
-export const lakhs = (n: number) => `₹${(n / 100_000).toFixed(n >= 1_000_000 ? 0 : 1).replace(/\.0$/, '')}L`
-const num = (n: number) => n.toLocaleString('en-IN')
+import { ChartToppers, MarketCharts } from '../components/MarketCharts'
+import { lakhs, num, type Market } from '../lib/market'
 
 function useMarket() {
   const [data, setData] = useState<Market | null>(null)
@@ -78,6 +61,8 @@ export default function Market() {
         : sort === 'fresher' ? (b.fresher_share ?? 0) - (a.fresher_share ?? 0)
           : b.total_openings - a.total_openings)
   const goalRole = me?.active_goal?.target_role
+  const mySkills = new Set((me?.user_skills ?? []).map((s) => s.skill.toLowerCase()))
+  const name = (id: string) => label('roles', id)
 
   return (
     <div className="space-y-6">
@@ -85,7 +70,14 @@ export default function Market() {
         subtitle="Openings, pay and the skills asked for in real job ads across India. Pick a role to see exactly what to learn." />
       {data.roles.length === 0 ? <NotReady m={data} /> : (
         <>
-          <div role="tablist" aria-label="Sort roles" className="flex flex-wrap gap-1 rounded-xl bg-raised p-1 w-fit">
+          <ChartToppers roles={data.roles} name={name} />
+          <MarketCharts roles={data.roles} name={name} goalRole={goalRole} mySkills={mySkills} />
+          <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
+            <div>
+              <h2 className="font-display font-semibold text-2xl sm:text-3xl leading-tight">Every role</h2>
+              <p className="text-sm text-muted mt-1">Pick one to see its pay, cities and the skills to learn.</p>
+            </div>
+            <div role="tablist" aria-label="Sort roles" className="flex flex-wrap gap-1 rounded-xl bg-raised p-1 w-fit">
             {/* "Fastest growing" needs about a month of daily snapshots, so it appears once trends exist */}
             {SORTS.filter((s) => s.id !== 'growth' || data.roles.some((r) => r.trend !== null)).map((s) => (
               <button key={s.id} type="button" role="tab" aria-selected={sort === s.id} onClick={() => setSort(s.id)}
@@ -93,6 +85,7 @@ export default function Market() {
                 {s.label}
               </button>
             ))}
+            </div>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {roles.map((r, i) => (
