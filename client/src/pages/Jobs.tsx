@@ -8,7 +8,7 @@ import { Button, Card, EmptyState, Icon, PageHeader, ScoreRing } from '../compon
 import { ListSkeleton } from '../components/Skeleton'
 import type { Interview, RoundId, UserSkill } from '../types'
 
-// Job match: paste a real job ad, see which of its skills you have, and practise an interview aimed at it.
+// Job Readiness (job match): paste a real job ad, see which of its skills you have, and practise an interview aimed at it.
 
 type JobSkill = { skill: string; must: boolean }
 type JobListItem = { id: string; title: string; company: string; skills: JobSkill[]; created_at: string }
@@ -60,7 +60,7 @@ export default function Jobs() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Career" title="Job match"
+      <PageHeader eyebrow="Placements Hub" title="Job Readiness"
         subtitle="Found a job you want? Paste its description. See which skills you already have, what's missing, and practise an interview aimed at that exact job." />
 
       <form onSubmit={read} className="rounded-2xl border border-line bg-linear-to-br from-sky via-card to-lavender p-5 sm:p-6 space-y-4">
@@ -132,7 +132,7 @@ export function JobPage() {
 
   useEffect(() => { apiFetch<Job>(`/jobs/${id}`).then(setJob).catch((e) => setError(e.message)) }, [id])
 
-  if (error && !job) return <EmptyState title="Job ad not found" body={error} action={<Link to="/jobs" className="text-accent-deep font-semibold">Job match</Link>} />
+  if (error && !job) return <EmptyState title="Job ad not found" body={error} action={<Link to="/jobs" className="text-accent-deep font-semibold">Job Readiness</Link>} />
   if (!job || !me) return <ListSkeleton label="Loading the job ad" />
 
   const status = skillStatus(me.user_skills)
@@ -173,12 +173,12 @@ export function JobPage() {
 
   return (
     <div className="space-y-6">
-      <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><Icon name="arrow" size={15} className="rotate-180" /> Job match</Link>
+      <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><Icon name="arrow" size={15} className="rotate-180" /> Job Readiness</Link>
 
       <section className="rounded-2xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={score} label="match" size={120} /></div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-lavender-ink">Job match</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-lavender-ink">Job Readiness</p>
           <h1 className="font-display font-semibold text-3xl sm:text-4xl leading-tight mt-1">{job.title}</h1>
           <p className="text-soft mt-1">{[job.company, job.summary.experience].filter(Boolean).join(' · ') || 'Company not stated'}</p>
           <p className="text-sm text-soft mt-3 max-w-2xl">

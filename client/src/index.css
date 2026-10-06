@@ -307,7 +307,7 @@ body {
   .skeleton { animation: none; }
 }
 
-/* Sidebar: a soft light sweep across a highlighted page (e.g. the live Job market) */
+/* Sidebar: a soft light sweep across a highlighted page (e.g. the live Jobs Board) */
 @keyframes nav-shine {
   0% { transform: translateX(0) skewX(-20deg); }
   55%, 100% { transform: translateX(450%) skewX(-20deg); }

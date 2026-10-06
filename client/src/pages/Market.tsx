@@ -37,7 +37,7 @@ function NotReady({ m }: { m: Market }) {
   return m.configured ? (
     <EmptyState title="Fetching today's job ads…" body="This takes about a minute the first time. The page will update by itself." />
   ) : (
-    <EmptyState title="Job market data is coming soon" body="We're connecting the live job-ads source. Check back shortly." />
+    <EmptyState title="Jobs Board data is coming soon" body="We're connecting the live job-ads source. Check back shortly." />
   )
 }
 
@@ -53,7 +53,7 @@ export default function Market() {
   const { me, label } = useMe()
   const [sort, setSort] = useState<(typeof SORTS)[number]['id']>('openings')
   if (error) return <p className="text-bad">{error}</p>
-  if (!data) return <TilesSkeleton count={9} label="Loading the job market" />
+  if (!data) return <TilesSkeleton count={9} label="Loading the Jobs Board" />
 
   const roles = [...data.roles].sort((a, b) =>
     sort === 'salary' ? (b.salary?.p50 ?? 0) - (a.salary?.p50 ?? 0)
@@ -66,7 +66,7 @@ export default function Market() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Job market" title="What employers want right now"
+      <PageHeader eyebrow="Jobs Board" title="What employers want right now"
         subtitle="Openings, pay and the skills asked for in real job ads across India. Pick a role to see exactly what to learn."
         actions={<Link to="/jobs" className="inline-flex items-center gap-2 min-h-10 px-4 rounded-xl border border-line-strong bg-card text-sm font-medium hover:border-accent hover:text-accent-deep"><Icon name="file" size={16} /> Match me to a job ad</Link>} />
       {data.roles.length === 0 ? <NotReady m={data} /> : (
@@ -138,7 +138,7 @@ export function MarketRolePage() {
   if (error) return <p className="text-bad">{error}</p>
   if (!data || !me) return <ListSkeleton label="Loading role details" />
   const r = data.roles.find((x) => x.role_id === roleId)
-  if (!r) return data.roles.length === 0 ? <NotReady m={data} /> : <EmptyState title="Role not found" body="Pick a role from the job market." action={<Link to="/market" className="text-accent-deep font-semibold">Job market</Link>} />
+  if (!r) return data.roles.length === 0 ? <NotReady m={data} /> : <EmptyState title="Role not found" body="Pick a role from the Jobs Board." action={<Link to="/market" className="text-accent-deep font-semibold">Jobs Board</Link>} />
 
   const mine = new Map(me.user_skills.map((s) => [s.skill.toLowerCase(), s]))
   const status = (skill: string) => {
@@ -164,8 +164,8 @@ export function MarketRolePage() {
 
   return (
     <div className="space-y-6">
-      <Link to="/market" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><Icon name="arrow" size={15} className="rotate-180" /> Job market</Link>
-      <PageHeader eyebrow="Job market" title={label('roles', r.role_id)}
+      <Link to="/market" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><Icon name="arrow" size={15} className="rotate-180" /> Jobs Board</Link>
+      <PageHeader eyebrow="Jobs Board" title={label('roles', r.role_id)}
         subtitle={`Based on ${num(r.sample_size)} recent job ads we read, out of ${num(r.total_openings)} openings in the last 30 days.`} />
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">

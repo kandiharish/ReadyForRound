@@ -1,4 +1,4 @@
-// Job market data shapes and formatting, shared by the Job market pages and their charts.
+// Jobs Board data shapes and formatting, shared by the Jobs Board pages and their charts.
 
 export type MarketRole = {
   role_id: string

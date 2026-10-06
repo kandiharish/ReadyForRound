@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { Icon, type IconName } from './ui'
 import { compact, hotSkills, lakhs, num, SHORT_ROLE, topCities, type MarketRole } from '../lib/market'
 
-// "Top charts" for the Job market: the #1 in each category, then five small charts,
+// "Top charts" for the Jobs Board: the #1 in each category, then five small charts,
 // drawn with plain CSS and SVG (no chart library) so the page stays light.
 
 type Named = { roles: MarketRole[]; name: (id: string) => string }

@@ -25,7 +25,7 @@ const TONES = {
   grey: { tile: 'bg-raised text-soft', row: 'bg-raised', solid: 'bg-soft text-card' },
 } satisfies Record<string, Tone>
 
-type NavItem = { to: string; label: string; icon: IconName; tone: Tone; shine?: boolean } // shine: a highlighted, "live" page
+type NavItem = { to: string; label: string; icon: IconName; tone: Tone; shine?: boolean; badge?: string } // shine: a highlighted, "live" page
 const WORKSPACE: NavItem[] = [
   { to: '/home', label: 'Home', icon: 'home', tone: TONES.sky },
   { to: '/practice', label: 'Practice', icon: 'practice', tone: TONES.blush },
@@ -37,8 +37,8 @@ const WORKSPACE: NavItem[] = [
 const CAREER: NavItem[] = [
   { to: '/goals', label: 'Goals', icon: 'goals', tone: TONES.amber },
   { to: '/compass', label: 'Career compass', icon: 'compass', tone: TONES.teal },
-  { to: '/market', label: 'Job market', icon: 'trend', tone: TONES.green, shine: true },
-  { to: '/jobs', label: 'Job match', icon: 'file', tone: TONES.lavender },
+  { to: '/market', label: 'Jobs Board', icon: 'trend', tone: TONES.green, shine: true },
+  { to: '/jobs', label: 'Job Readiness', icon: 'file', tone: TONES.lavender, badge: 'New' },
 ]
 // Profile and Settings live in the account row at the bottom of the sidebar (and the top bar on phones).
 
@@ -108,7 +108,7 @@ function Sidebar() {
       {/* The page list scrolls on short screens, so the usage card and profile below always stay visible */}
       <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] -mx-1 px-1 flex flex-col gap-4">
         <NavGroup title="Workspace" items={WORKSPACE} />
-        <NavGroup title="Career" items={CAREER} />
+        <NavGroup title="Placements Hub" items={CAREER} />
       </div>
 
       <UsageCard />
@@ -153,6 +153,9 @@ function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
                 <Icon name={it.icon} size={16} strokeWidth={isActive ? 2.1 : 1.9} />
               </span>
               <span className="relative">{it.label}</span>
+              {it.badge && !it.shine && (
+                <span className="relative ml-auto rounded-full border border-bad/30 bg-bad-soft text-bad px-2 py-px text-[10px] font-semibold">{it.badge}</span>
+              )}
               {it.shine && (
                 <span className="relative ml-auto inline-flex items-center gap-1 rounded-full bg-good text-white px-1.5 py-0.5 text-[9px] font-bold tracking-wider">
                   <span className="relative flex w-1.5 h-1.5"><span className="absolute inset-0 rounded-full bg-white/80 animate-ping motion-reduce:hidden" /><span className="relative w-1.5 h-1.5 rounded-full bg-white" /></span>
