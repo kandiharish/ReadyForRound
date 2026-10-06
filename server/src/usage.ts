@@ -20,15 +20,17 @@ export type Usage = {
 // How much the student has used today, and their limits.
 export async function getUsage(userId: string): Promise<Usage> {
   const { start, resetsAt } = todayWindow()
-  const [{ data: profile }, { data: sessions }] = await Promise.all([
+  const [{ data: profile }, { data: sessions }, { count: discussions }] = await Promise.all([
     supabase!.from('profiles').select('plan').eq('id', userId).single(),
     supabase!.from('interview_sessions').select('mode').eq('user_id', userId).gte('created_at', start.toISOString()),
+    // A group discussion uses about as much AI as an interview, so it counts as one
+    supabase!.from('gd_sessions').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('created_at', start.toISOString()),
   ])
   const plan = (profile?.plan ?? 'free') as Usage['plan']
   const drills = (sessions ?? []).filter((s) => s.mode === 'drill').length
   return {
     plan,
-    interviews: { used: (sessions ?? []).length - drills, limit: plan === 'pro' ? config.DAILY_INTERVIEWS_PRO : config.DAILY_INTERVIEWS_FREE },
+    interviews: { used: (sessions ?? []).length - drills + (discussions ?? 0), limit: plan === 'pro' ? config.DAILY_INTERVIEWS_PRO : config.DAILY_INTERVIEWS_FREE },
     drills: { used: drills, limit: plan === 'pro' ? config.DAILY_DRILLS_PRO : config.DAILY_DRILLS_FREE },
     resetsAt: resetsAt.toISOString(),
   }

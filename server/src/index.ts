@@ -14,6 +14,7 @@ import { resumeRouter } from './routes/resume.js'
 import { companiesRouter } from './routes/companies.js'
 import { compassRouter } from './routes/compass.js'
 import { jobsRouter } from './routes/jobs.js'
+import { gdRouter } from './routes/gd.js'
 import { requireAuth } from './auth/requireAuth.js'
 import { getMarket } from './market.js'
 
@@ -92,6 +93,9 @@ app.use('/api/resume', resumeRouter)
 
 // Job match: paste a job ad and practise for it: /api/jobs
 app.use('/api/jobs', jobsRouter)
+
+// Group discussion practice with AI classmates: /api/gd
+app.use('/api/gd', gdRouter)
 
 // Your data (download / delete): /api/account
 app.use('/api/account', accountRouter)

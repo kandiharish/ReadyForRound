@@ -164,6 +164,22 @@ export default function Practice() {
         </Button>
       </div>
 
+      {/* Group discussion: its own practice room with three AI classmates */}
+      <Link to="/gd" className="group block rounded-2xl border border-line bg-linear-to-br from-peach via-card to-lavender p-5 sm:p-6 hover:shadow-md transition-shadow">
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="flex -space-x-2" aria-hidden="true">
+            {[['R', 'bg-peach text-peach-ink'], ['M', 'bg-lavender text-lavender-ink'], ['K', 'bg-sage text-sage-ink']].map(([l, tone]) => (
+              <span key={l} className={`w-10 h-10 rounded-full grid place-items-center font-bold ring-2 ring-card ${tone}`}>{l}</span>
+            ))}
+          </span>
+          <span className="flex-1 min-w-48">
+            <span className="flex items-center gap-2"><b className="font-semibold">Group discussion (GD)</b><span className="text-[11px] font-semibold rounded-full bg-accent text-on-accent px-2 py-0.5">New</span></span>
+            <span className="block text-sm text-soft mt-0.5">Discuss a topic with three AI classmates, then get scored on initiation, listening, leadership and your summary.</span>
+          </span>
+          <span className="font-semibold text-accent-deep inline-flex items-center gap-1">Start a GD <Icon name="arrow" size={15} className="group-hover:translate-x-0.5 transition-transform" /></span>
+        </div>
+      </Link>
+
       <section className="rounded-2xl border border-line bg-card p-5 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-semibold flex items-center gap-2"><Icon name="bolt" size={16} className="text-accent-deep" /> 5-minute drill</h2>

@@ -11,17 +11,19 @@ accountRouter.use(requireAuth)
 accountRouter.get('/export', async (req, res) => {
   const id = req.user!.id
   const db = supabase!
-  const [profile, skills, goals, sessions, feedback, resume, compass] = await Promise.all([
+  const [profile, skills, goals, sessions, feedback, resume, compass, jobs, discussions] = await Promise.all([
     db.from('profiles').select('full_name, role, experience_level, speaking_pace, practice_without_score, plan, created_at').eq('id', id).single(),
     db.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', id),
     db.from('goals').select('id, target_role, company_type, experience_level, target_date, weekly_hours, status, created_at, finished_at, roadmap_tasks (week, kind, title, done)').eq('user_id', id),
     db.from('interview_sessions')
-      .select('id, goal_id, mode, rounds, focus_topic, status, created_at, completed_at, interview_turns (seq, round, question, answer, skipped, speech), interview_reports (report)')
+      .select('id, goal_id, mode, rounds, focus_topic, job_title, status, created_at, completed_at, interview_turns (seq, round, question, answer, skipped, speech), interview_reports (report)')
       .eq('user_id', id)
       .order('created_at'),
     db.from('feedback').select('kind, message, email, page, created_at').eq('user_id', id).order('created_at'),
     db.from('resumes').select('file_name, text, summary, updated_at').eq('user_id', id).maybeSingle(),
     db.from('career_assessments').select('answers, result, fit, fit_note, created_at').eq('user_id', id).order('created_at'),
+    db.from('job_targets').select('title, company, text, summary, skills, created_at').eq('user_id', id).order('created_at'),
+    db.from('gd_sessions').select('topic, category, status, messages, report, created_at, completed_at').eq('user_id', id).order('created_at'),
   ])
 
   res.setHeader('Content-Disposition', 'attachment; filename="readyforround-my-data.json"')
@@ -34,6 +36,8 @@ accountRouter.get('/export', async (req, res) => {
     feedback: feedback.data ?? [],
     resume: resume.data ?? null,
     careerCompass: compass.data ?? [],
+    jobAds: jobs.data ?? [],
+    groupDiscussions: discussions.data ?? [],
     note: 'Video is never recorded, voice recordings are not stored, and uploaded resume files are deleted after reading (only the text is kept), so those files are not included.',
   })
 })

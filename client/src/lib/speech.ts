@@ -41,7 +41,8 @@ export function pickVoice(voices: SpeechSynthesisVoice[], gender: Gender) {
 
 // Speak text aloud. Resolves when finished (or cancelled).
 // Long text is split into sentences because Chrome stops long utterances after ~15 seconds.
-export function speak(text: string, voice: SpeechSynthesisVoice | null, rate = 1): Promise<void> {
+// pitch: 1 is normal; small changes help tell several speakers apart (group discussion).
+export function speak(text: string, voice: SpeechSynthesisVoice | null, rate = 1, pitch = 1): Promise<void> {
   if (!isSpeechSupported()) return Promise.resolve()
   // Chrome sometimes silently drops speech started immediately after cancel(), or stays "paused".
   // So: cancel, resume, and wait a moment before speaking.
@@ -62,6 +63,7 @@ export function speak(text: string, voice: SpeechSynthesisVoice | null, rate = 1
       if (voice) u.voice = voice
       u.lang = voice?.lang ?? 'en-IN'
       u.rate = rate
+      u.pitch = pitch
       let moved = false // make sure each sentence moves us forward only once
       const advance = () => { if (!moved) { moved = true; next() } }
       u.onend = advance

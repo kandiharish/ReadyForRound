@@ -29,6 +29,7 @@ type NavItem = { to: string; label: string; icon: IconName; tone: Tone }
 const WORKSPACE: NavItem[] = [
   { to: '/home', label: 'Home', icon: 'home', tone: TONES.sky },
   { to: '/practice', label: 'Practice', icon: 'practice', tone: TONES.blush },
+  { to: '/gd', label: 'Group discussion', icon: 'chat', tone: TONES.amber },
   { to: '/companies', label: 'Companies', icon: 'building', tone: TONES.peach },
   { to: '/roadmap', label: 'Roadmap', icon: 'map', tone: TONES.sage },
   { to: '/reports', label: 'Reports', icon: 'reports', tone: TONES.lavender },
@@ -198,7 +199,8 @@ function MobileTopBar() {
 }
 
 function MobileNav() {
-  const tabs = [...WORKSPACE, CAREER[0]]
+  // Phones have room for six tabs: the workspace pages (Group discussion is on the Practice page) and Goals
+  const tabs = [...WORKSPACE.filter((t) => t.to !== '/gd'), CAREER[0]]
   return (
     <nav aria-label="Main" className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-card/95 backdrop-blur border-t border-line grid grid-cols-6 px-0.5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {tabs.map((t) => (
