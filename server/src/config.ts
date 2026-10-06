@@ -36,6 +36,9 @@ const schema = z.object({
   GROQ_STT_MODEL: z.string().default('whisper-large-v3-turbo'),
 
   // Feedback button: messages are emailed here using Resend (free account at https://resend.com).
+  // Job Market data (free key at https://developer.adzuna.com)
+  ADZUNA_APP_ID: z.string().optional(),
+  ADZUNA_APP_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   FEEDBACK_TO_EMAIL: z.string().optional(),
 

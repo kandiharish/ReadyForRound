@@ -19,6 +19,7 @@ const WORKSPACE: { to: string; label: string; icon: IconName }[] = [
 const CAREER: { to: string; label: string; icon: IconName }[] = [
   { to: '/goals', label: 'Goals', icon: 'goals' },
   { to: '/compass', label: 'Career compass', icon: 'target' },
+  { to: '/market', label: 'Job market', icon: 'trend' },
   { to: '/profile', label: 'Profile', icon: 'profile' },
   { to: '/settings', label: 'Settings', icon: 'settings' },
 ]

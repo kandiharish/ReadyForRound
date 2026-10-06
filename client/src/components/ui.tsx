@@ -40,6 +40,7 @@ const ICONS = {
   download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
   file: 'M14 3H6v18h12V7zM14 3v4h4M9 13h6M9 17h6',
   upload: 'M12 16V4M7 9l5-5 5 5M5 20h14',
+  trend: 'M3 17l6-6 4 4 8-8M15 7h6v6',
   building: 'M4 21V5l8-3v19M12 9h8v12M7 8h2M7 12h2M7 16h2M15 13h2M15 17h2M2 21h20',
 } as const
 

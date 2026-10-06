@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router'
 import { apiFetch } from '../lib/api'
 import {
   COMFORTS, DAY_IN_ROLE, DIMENSIONS, EXPERIENCES, INTEREST_CARDS, PAIRS, TASTE_TESTS, scoreCompass,
@@ -64,7 +65,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
 
   if (step === 'intro') return <Intro onStart={() => go('interests')} onClose={onClose} />
   if (step === 'result' && result) {
-    return <Result result={result} roles={roles} savedId={savedId} onPick={onPick}
+    return <Result result={result} roles={roles} savedId={savedId} onPick={onPick} showMarketLinks={!onClose}
       onRetake={() => { setAnswers(EMPTY); setResult(null); setSavedId(null); go('intro') }} />
   }
 
@@ -314,7 +315,7 @@ function TasteTest({ index, answer, onDone, onBack }: { index: number; answer?: 
   )
 }
 
-function Result({ result, roles, savedId, onPick, onRetake }: { result: CompassResult; roles: RoleOption[]; savedId: number | null; onPick: (role: string) => void; onRetake: () => void }) {
+function Result({ result, roles, savedId, onPick, onRetake, showMarketLinks }: { result: CompassResult; roles: RoleOption[]; savedId: number | null; onPick: (role: string) => void; onRetake: () => void; showMarketLinks: boolean }) {
   const name = (id: string) => roles.find((r) => r.id === id)?.label ?? id
   const top = result.matches.slice(0, 3)
   const dims = (Object.entries(result.dims) as [Dim, number][]).sort((a, b) => b[1] - a[1])
@@ -359,6 +360,7 @@ function Result({ result, roles, savedId, onPick, onRetake }: { result: CompassR
             {m.concerns.map((c) => <p key={c} className="text-xs text-peach-ink bg-peach rounded-lg px-2.5 py-2 mt-3">{c}</p>)}
             <div className="flex-1" />
             <Button onClick={() => onPick(m.role)} variant={n === 0 ? 'primary' : 'secondary'} className="mt-5 w-full">Make this my goal</Button>
+            {showMarketLinks && <Link to={`/market/${m.role}`} className="mt-2 text-center text-sm font-medium text-accent-deep hover:underline">Openings, pay and skills →</Link>}
           </article>
         ))}
       </div>

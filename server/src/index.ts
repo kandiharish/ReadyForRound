@@ -13,6 +13,8 @@ import { accountRouter } from './routes/account.js'
 import { resumeRouter } from './routes/resume.js'
 import { companiesRouter } from './routes/companies.js'
 import { compassRouter } from './routes/compass.js'
+import { requireAuth } from './auth/requireAuth.js'
+import { getMarket } from './market.js'
 
 const app = express()
 
@@ -71,6 +73,11 @@ app.post('/api/feedback', feedbackLimit, async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+})
+
+// Job Market: real job ads summarised per role (refreshed once a day)
+app.get('/api/market', requireAuth, async (_req, res, next) => {
+  try { res.json(await getMarket()) } catch (err) { next(err) }
 })
 
 // Career Compass results: /api/compass

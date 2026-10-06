@@ -85,6 +85,12 @@ export default function Practice() {
         <Icon name="arrow" size={16} className="text-accent group-hover:translate-x-0.5 transition-transform" />
       </Link>
 
+      <p className="text-sm text-muted -mt-2">
+        <Icon name="trend" size={14} className="inline -mt-0.5 mr-1 text-accent" />
+        What do employers want for {label('roles', goal.target_role)}?{' '}
+        <Link to={`/market/${goal.target_role}`} className="font-semibold text-accent-deep hover:underline">See openings, pay and skills →</Link>
+      </p>
+
       {/* Resume status: with a resume, questions are about their own projects and experience */}
       {resume !== undefined && (resume ? (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-sage text-sage-ink px-4 py-3 text-sm">
