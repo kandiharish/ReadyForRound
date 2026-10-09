@@ -14,18 +14,22 @@ profileRouter.get('/catalog', (_req, res) => {
 
 // "Who am I?" - profile plus skills for the logged-in user.
 profileRouter.get('/me', requireAuth, async (req, res) => {
-  const { data, error } = await supabase!
-    .from('profiles')
-    .select(
-      'id, full_name, role, target_role, experience_level, target_company_type, placement_timeline, ' +
-        'speaking_pace, practice_without_score, onboarding_completed, ' +
-        'user_skills (skill, self_rating, proven_score)',
-    )
-    .eq('id', req.user!.id)
-    .single()
+  // Profile and active goal are fetched at the same time
+  const [{ data, error }, activeGoal] = await Promise.all([
+    supabase!
+      .from('profiles')
+      .select(
+        'id, full_name, role, target_role, experience_level, target_company_type, placement_timeline, ' +
+          'speaking_pace, practice_without_score, onboarding_completed, ' +
+          'user_skills (skill, self_rating, proven_score)',
+      )
+      .eq('id', req.user!.id)
+      .single(),
+    getActiveGoal(req.user!.id),
+  ])
 
   if (error) return res.status(404).json({ error: 'Profile not found' })
-  res.json({ ...(data as object), active_goal: await getActiveGoal(req.user!.id) })
+  res.json({ ...(data as object), active_goal: activeGoal })
 })
 
 // Rules for what the onboarding form may send. Anything else is rejected.

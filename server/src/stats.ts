@@ -92,8 +92,13 @@ function streak(sessions: SessionSummary[]) {
 }
 
 export async function homeStats(userId: string) {
-  const goal = await getActiveGoal(userId)
-  const all = await listSessions(userId)
+  // Independent lookups run at the same time
+  const [goal, all, { data: skills }, usage] = await Promise.all([
+    getActiveGoal(userId),
+    listSessions(userId),
+    supabase!.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', userId),
+    getUsage(userId),
+  ])
   const forGoal = goal ? all.filter((s) => s.goal_id === goal.id) : []
   const finished = forGoal.filter((s) => s.status !== 'in_progress')
   // Drills are short practice on weak topics, so they don't count towards readiness or round scores.
@@ -101,7 +106,6 @@ export async function homeStats(userId: string) {
   const sequence = COMPLETE_SEQUENCES[goal?.company_type ?? 'any']
   const perRound = roundScores(interviews, sequence)
 
-  const { data: skills } = await supabase!.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', userId)
   const weekAgo = Date.now() - 7 * 86_400_000
 
   return {
@@ -112,8 +116,8 @@ export async function homeStats(userId: string) {
     streak: streak(all),
     daysLeft: goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86_400_000) : null,
     inProgress: forGoal.find((s) => s.status === 'in_progress') ?? null,
-    usage: await getUsage(userId),
-    drillTopic: goal ? await suggestDrillTopic(userId, goal) : null,
+    usage,
+    drillTopic: goal ? await suggestDrillTopic(userId, goal, all, skills ?? []) : null,
     recent: finished.slice(0, 5).map(({ questions, ...s }) => s),
     counts: { total: interviews.length, drills: finished.length - interviews.length, thisWeek: finished.filter((s) => new Date(s.created_at).getTime() > weekAgo).length },
     skills: skills ?? [],

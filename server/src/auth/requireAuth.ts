@@ -19,10 +19,12 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   const token = header.startsWith('Bearer ') ? header.slice(7) : null
   if (!token) return res.status(401).json({ error: 'Not logged in' })
 
-  // Ask Supabase: is this token real and still valid? Which user does it belong to?
-  const { data, error } = await supabase.auth.getUser(token)
-  if (error || !data.user) return res.status(401).json({ error: 'Session expired, please log in again' })
+  // Check the token's signature and expiry here on the server, using Supabase's public signing keys
+  // (fetched once and cached). This avoids a round trip to Supabase on every request.
+  const { data, error } = await supabase.auth.getClaims(token)
+  const claims = data?.claims
+  if (error || !claims?.sub || claims.role !== 'authenticated') return res.status(401).json({ error: 'Session expired, please log in again' })
 
-  req.user = data.user
+  req.user = { id: claims.sub, email: claims.email } as User
   next()
 }

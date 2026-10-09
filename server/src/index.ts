@@ -36,6 +36,12 @@ app.use('/api', rateLimit({ windowMs: 60_000, limit: 120, keyGenerator: perUser,
 app.use(/^\/api\/interviews\/[^/]+\/answer/, rateLimit({ windowMs: 60_000, limit: 20, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
 
 // "Are you alive?" check used by the frontend.
+// Tiny "are you awake?" check: the website calls it on first load, and a scheduled job calls it
+// every 10 minutes, so the free server doesn't fall asleep and make students wait.
+app.get('/api/ping', (_req, res) => {
+  res.json({ ok: true })
+})
+
 app.get('/api/health', async (_req, res) => {
   res.json({
     status: 'ok',

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { MeProvider, useMe } from '../auth/MeProvider'
@@ -7,7 +7,8 @@ import { ThemeToggle } from '../components/ThemeToggle'
 import { NotificationBell } from '../components/NotificationBell'
 import { Brand } from '../components/Brand'
 import { openFeedback } from '../components/FeedbackButton'
-import { ShellSkeleton } from '../components/Skeleton'
+import { PageSkeleton, ShellSkeleton } from '../components/Skeleton'
+import { preloadAppPages } from '../lib/pages'
 
 // Each page has its own soft colour: a small icon tile, a tinted row when it's the open page,
 // and a solid tile when active. Full class names are written out so Tailwind can find them.
@@ -57,6 +58,8 @@ function Shell() {
 
   // Refresh today's usage whenever the student moves between pages (e.g. back from an interview).
   useEffect(() => { refreshUsage() }, [pathname, refreshUsage])
+  // Once the app is open, fetch the other pages quietly so clicking around feels instant
+  useEffect(() => { preloadAppPages() }, [])
 
   if (error) return <main className="min-h-screen p-8 text-bad">{error}</main>
   if (!me) return <ShellSkeleton />
@@ -73,7 +76,10 @@ function Shell() {
       <main className="flex-1 min-w-0 px-4 sm:px-8 lg:px-10 pt-4 lg:pt-16 pb-28 lg:pb-10">
         <MobileTopBar />
         <div className="max-w-7xl 2xl:max-w-[96rem] mx-auto">
-          <Outlet />
+          {/* The sidebar stays put while a page's code downloads */}
+          <Suspense fallback={<PageSkeleton />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
       <MobileNav />

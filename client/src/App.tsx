@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router'
 import { ThemeToggle } from './components/ThemeToggle'
 import { FeedbackProvider } from './components/Feedback'
@@ -5,27 +6,10 @@ import { FeedbackButton } from './components/FeedbackButton'
 import { AuthProvider } from './auth/AuthProvider'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import AppLayout from './layout/AppLayout'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import Status from './pages/Status'
-import Onboarding from './pages/Onboarding'
-import Home from './pages/Home'
-import Practice from './pages/Practice'
-import Reports from './pages/Reports'
-import ReportPage from './pages/ReportPage'
-import Goals from './pages/Goals'
-import Roadmap from './pages/Roadmap'
-import ProfilePage from './pages/ProfilePage'
-import Settings from './pages/Settings'
-import InterviewRoom from './pages/InterviewRoom'
-import { PrivacyPage, TermsPage } from './pages/Legal'
-import Landing from './pages/Landing'
-import Companies from './pages/Companies'
-import CompanyPage from './pages/CompanyPage'
-import Compass from './pages/Compass'
-import Market, { MarketRolePage } from './pages/Market'
-import Jobs, { JobPage } from './pages/Jobs'
-import GdHome, { GdRoom } from './pages/Gd'
+import {
+  Companies, CompanyPage, Compass, GdHome, GdRoom, Goals, Home, InterviewRoom, JobPage, Jobs, Landing, Login, Market, MarketRolePage,
+  Onboarding, Practice, PrivacyPage, ProfilePage, ReportPage, Reports, Roadmap, Settings, Signup, Status, TermsPage,
+} from './lib/pages'
 
 // The app's "map": which page to show for each web address.
 function App() {
@@ -35,6 +19,8 @@ function App() {
       <BrowserRouter>
         <CornerThemeToggle />
         <FeedbackButton />
+        {/* Pages load on demand; this plain background shows for the split second while one downloads */}
+        <Suspense fallback={<div className="min-h-screen bg-paper" />}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
@@ -73,6 +59,7 @@ function App() {
           <Route path="/interview/new" element={<Navigate to="/practice" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
       </FeedbackProvider>
     </AuthProvider>

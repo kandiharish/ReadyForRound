@@ -124,19 +124,20 @@ export async function setTaskDone(userId: string, taskId: number, done: boolean)
 }
 
 // A topic for today's 5-minute drill: the next roadmap topic, else the latest "study next", else the weakest skill.
-export async function suggestDrillTopic(userId: string, goal: Goal) {
+// sessions / skills: pass them in when the caller already has them, to save database calls
+export async function suggestDrillTopic(userId: string, goal: Goal, sessions?: { goal_id: string | null; score: number | null; id: string }[], skillsIn?: { skill: string; self_rating: number; proven_score: number | null }[]) {
   const { data: next } = await supabase!.from('roadmap_tasks').select('topic').eq('goal_id', goal.id).eq('done', false)
     .not('topic', 'is', null).order('week').order('position').limit(1)
   if (next?.[0]?.topic) return next[0].topic as string
 
-  const scored = (await listSessions(userId)).find((s) => s.goal_id === goal.id && s.score !== null)
+  const scored = (sessions ?? await listSessions(userId)).find((s) => s.goal_id === goal.id && s.score !== null)
   if (scored) {
     const { data } = await supabase!.from('interview_reports').select('report').eq('session_id', scored.id).single()
     const topic = data?.report?.studyNext?.[0]?.topic
     if (topic) return String(topic).slice(0, 80)
   }
 
-  const { data: skills } = await supabase!.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', userId)
-  const weakest = (skills ?? []).sort((a, b) => (a.proven_score ?? a.self_rating * 20) - (b.proven_score ?? b.self_rating * 20))[0]
+  const skills = skillsIn ?? (await supabase!.from('user_skills').select('skill, self_rating, proven_score').eq('user_id', userId)).data
+  const weakest = [...(skills ?? [])].sort((a, b) => (a.proven_score ?? a.self_rating * 20) - (b.proven_score ?? b.self_rating * 20))[0]
   return weakest ? `${weakest.skill} fundamentals` : 'Core concepts for your role'
 }
