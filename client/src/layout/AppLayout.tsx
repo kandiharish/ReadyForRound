@@ -80,7 +80,10 @@ function Shell() {
         <div className="max-w-7xl 2xl:max-w-[96rem] mx-auto">
           {/* The sidebar stays put while a page's code downloads */}
           <Suspense fallback={<PageSkeleton />}>
-            <Outlet />
+            {/* Each new page fades and rises in */}
+            <div key={pathname} className="page-in">
+              <Outlet />
+            </div>
           </Suspense>
         </div>
       </main>

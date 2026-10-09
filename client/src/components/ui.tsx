@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { PageSkeleton } from './Skeleton'
 
@@ -75,7 +75,7 @@ type ButtonProps = { variant?: keyof typeof BUTTON; className?: string; children
 
 export function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${BUTTON[variant]} ${className}`}>
+    <button {...rest} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl text-sm hover:-translate-y-px hover:shadow-md active:translate-y-0 active:shadow-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none ${BUTTON[variant]} ${className}`}>
       {children}
     </button>
   )
@@ -83,7 +83,7 @@ export function Button({ variant = 'primary', className = '', children, ...rest 
 
 export function ButtonLink({ to, variant = 'primary', className = '', children }: ButtonProps & { to: string }) {
   return (
-    <Link to={to} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl text-sm transition-colors ${BUTTON[variant]} ${className}`}>
+    <Link to={to} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl text-sm hover:-translate-y-px hover:shadow-md active:translate-y-0 active:shadow-sm ${BUTTON[variant]} ${className}`}>
       {children}
     </Link>
   )
@@ -107,21 +107,40 @@ export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: st
 export const scoreTone = (score: number) => (score >= 70 ? 'good' : score >= 40 ? 'warn' : 'bad')
 const TONE_VAR = { good: 'var(--good)', warn: 'var(--warn)', bad: 'var(--bad)', accent: 'var(--accent)', info: 'var(--info)' }
 
+// Counts up from 0 to the target once, with an ease-out (instant for people who prefer less motion)
+function useCountUp(target: number, ms = 900) {
+  const [v, setV] = useState(0)
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setV(target); return }
+    let raf = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / ms)
+      setV(target * (1 - Math.pow(1 - t, 3)))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, ms])
+  return v
+}
+
 export function ScoreRing({ value, size = 140, label = 'ready', suffix = '%', color }: { value: number | null; size?: number; label?: string; suffix?: string; color?: keyof typeof TONE_VAR }) {
   const r = 42
   const c = 2 * Math.PI * r
   const stroke = TONE_VAR[color ?? (value === null ? 'accent' : scoreTone(value))]
+  const shown = useCountUp(value ?? 0)
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90" aria-hidden="true">
         <circle cx="50" cy="50" r={r} fill="none" style={{ stroke: 'var(--hover)' }} strokeWidth="7" />
         {value !== null && (
           <circle cx="50" cy="50" r={r} fill="none" style={{ stroke }} strokeWidth="7" strokeLinecap="round"
-            strokeDasharray={c} strokeDashoffset={c * (1 - Math.max(0, Math.min(100, value)) / 100)} />
+            strokeDasharray={c} strokeDashoffset={c * (1 - Math.max(0, Math.min(100, shown)) / 100)} />
         )}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display font-semibold leading-none text-ink" style={{ fontSize: size * 0.3 }}>{value === null ? '—' : `${value}${suffix}`}</span>
+        <span className="font-display font-semibold leading-none text-ink" style={{ fontSize: size * 0.3 }}>{value === null ? '—' : `${Math.round(shown)}${suffix}`}</span>
         {label && <span className="text-xs text-muted">{label}</span>}
       </div>
     </div>
