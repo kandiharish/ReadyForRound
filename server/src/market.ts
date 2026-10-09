@@ -21,6 +21,13 @@ export const ROLE_SEARCH: Record<string, string> = {
   mobile: 'mobile developer',
   qa: 'qa automation',
   cybersecurity: 'cyber security',
+  // Core engineering (ECE / EEE / IT networking)
+  vlsi_design: 'vlsi',
+  vlsi_verification: 'design verification engineer',
+  embedded: 'embedded',
+  electrical: 'electrical engineer',
+  network_engineer: 'network engineer',
+  pcb_design: 'pcb design',
 }
 
 export type Ad = {
@@ -87,7 +94,7 @@ export const SKILL_MATCHERS: Matcher[] = (() => {
 // Soft skills and generic practices aren't useful "skills to learn" for a role
 export const NOT_TECH = new Set(['Problem Solving', 'Critical Thinking', 'Time Management', 'Presentation Skills', 'Public Speaking', 'Attention to Detail',
   'Analytical Thinking', 'Decision Making', 'Conflict Resolution', 'Stakeholder Management', 'Customer Handling', 'English Proficiency',
-  'Aptitude', 'Logical Reasoning', 'Software Engineering', 'Verbal Ability', 'Code Review', 'Pair Programming', 'Technical Documentation', 'Clean Code', 'Troubleshooting'])
+  'Aptitude', 'Logical Reasoning', 'Software Engineering', 'Manufacturing', 'Verbal Ability', 'Code Review', 'Pair Programming', 'Technical Documentation', 'Clean Code', 'Troubleshooting'])
 
 // A role's own name isn't a useful "skill to learn" for that role (every ML engineer ad says "machine learning")
 const ROLE_SELF: Record<string, string[]> = {
@@ -95,6 +102,8 @@ const ROLE_SELF: Record<string, string[]> = {
   cybersecurity: ['Cybersecurity'], data_scientist: ['Data Science'], devops: ['DevOps'],
   frontend: ['Frontend Development'], backend: ['Backend Development'], fullstack: ['Full-Stack Development'],
   mobile: ['Mobile Development'], qa: ['Quality Assurance', 'Software Testing'],
+  vlsi_design: ['VLSI'], vlsi_verification: ['Functional Verification'], embedded: ['Embedded Systems'],
+  network_engineer: ['Network Administration', 'Networking', 'Computer Networks'], pcb_design: ['PCB Design'],
 }
 
 // Adzuna spells some cities in older forms
@@ -165,7 +174,7 @@ export function summarise(roleId: string, ads: Ad[], totalOpenings: number, fres
 }
 
 // ---------- Fetching from Adzuna ----------
-const PAGES = 2 // 2 pages x 50 ads per role, plus one fresher count: 39 calls a day in total
+const PAGES = 2 // 2 pages x 50 ads per role, plus one fresher count: 3 calls per role a day (57 for 19 roles)
 async function search(page: number, params: Record<string, string>) {
   const url = new URL(`https://api.adzuna.com/v1/api/jobs/in/search/${page}`)
   url.search = new URLSearchParams({
@@ -221,7 +230,7 @@ export function refreshMarket() {
 // Latest snapshot per role, plus how openings changed since about a month ago.
 export async function getMarket() {
   const configured = !!(config.ADZUNA_APP_ID && config.ADZUNA_APP_KEY)
-  const { data } = await supabase!.from('market_snapshots').select('*').order('fetched_on', { ascending: false }).limit(13 * 40)
+  const { data } = await supabase!.from('market_snapshots').select('*').order('fetched_on', { ascending: false }).limit(Object.keys(ROLE_SEARCH).length * 40)
   const rows = data ?? []
   const latest = new Map<string, (typeof rows)[number]>()
   for (const r of rows) if (!latest.has(r.role_id)) latest.set(r.role_id, r)

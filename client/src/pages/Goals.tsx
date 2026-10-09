@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { Select } from '../components/Select'
 import { apiFetch } from '../lib/api'
+import { groupRoles } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { useFeedback } from '../components/Feedback'
 import { Bar, Button, ButtonLink, Card, ChoiceCards, Icon, PageHeader, ScoreRing, Spinner } from '../components/ui'
@@ -173,7 +174,14 @@ function NewGoalForm({ defaultLevel, defaultRole, onCancel, onCreated }: { defau
         </div>
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium text-soft mb-3">Which role?</legend>
-          <ChoiceCards columns={2} options={catalog!.roles} value={role} onChange={setRole} />
+          <div className="space-y-5">
+            {groupRoles(catalog!.roles).map((g) => (
+              <div key={g.title}>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted mb-2">{g.title}</p>
+                <ChoiceCards columns={2} options={g.roles} value={role} onChange={setRole} />
+              </div>
+            ))}
+          </div>
         </fieldset>
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium text-soft mb-3">What kind of company?</legend>

@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { apiFetch } from '../lib/api'
+import { groupRoles } from '../lib/sessions'
 import { CareerCompass } from '../components/CareerCompass'
 import { SkillPicker } from '../components/SkillPicker'
 import type { Catalog, Option, Profile } from '../types'
@@ -121,7 +122,14 @@ export default function Onboarding() {
         />
       ) : (
         <>
-          <Choices options={catalog.roles} value={answers.target_role} onChange={(v) => set('target_role', v)} />
+          <div className="space-y-5">
+            {groupRoles(catalog.roles).map((g) => (
+              <div key={g.title}>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted mb-2">{g.title}</p>
+                <Choices options={g.roles} value={answers.target_role} onChange={(v) => set('target_role', v)} />
+              </div>
+            ))}
+          </div>
           <button onClick={() => setShowQuiz(true)} className="mt-4 text-accent-deep font-medium text-sm">
             Not sure? Find your fit with Career Compass (about 10 min)
           </button>

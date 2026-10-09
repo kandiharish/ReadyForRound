@@ -81,11 +81,18 @@ async function loadContext(userId: string): Promise<{ ctx: InterviewContext; com
     companyTypeLabel: label(catalog.companyTypes, goal.company_type),
     skills: p.user_skills,
     speakingPace: p.speaking_pace,
+    roleFocus: roleFocus(goal.target_role),
   }
   // If they uploaded a resume, the interviewer asks about their own projects and experience.
   const resume = await getResume(userId)
   if (resume) ctx.resume = resumeForPrompt(resume.summary)
   return { ctx, companyType: goal.company_type, goalId: goal.id, goalRole: goal.target_role }
+}
+
+// Core topics for core-engineering roles (only those roles define them)
+function roleFocus(roleId: string): string | undefined {
+  const role = catalog.roles.find((r) => r.id === roleId)
+  return role && 'focus' in role ? role.focus : undefined
 }
 
 export type Mode = 'single' | 'complete' | 'drill'
@@ -105,6 +112,7 @@ export async function startInterview(userId: string, mode: Mode, round?: RoundId
     const role = roleId ?? (company.roles.includes(goalRole) ? goalRole : company.roles[0])
     if (!company.roles.includes(role)) throw new InterviewError(400, `Choose a role that ${company.name} hires for`)
     ctx.roleLabel = catalog.roles.find((r) => r.id === role)?.label ?? ctx.roleLabel
+    ctx.roleFocus = roleFocus(role)
     ctx.companyTypeLabel = catalog.companyTypes.find((t) => t.id === company.type)?.label ?? ctx.companyTypeLabel
     ctx.company = { id: company.id, name: company.name, style: company.style, lookFor: company.lookFor, rounds: company.rounds }
     if (mode === 'single' && !company.rounds.some((r) => r.id === round)) throw new InterviewError(400, `${company.name} interviews don't include that round`)

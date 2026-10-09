@@ -33,20 +33,23 @@ export function NotAffiliated({ className = '' }: { className?: string }) {
 }
 
 export default function Companies() {
-  const { catalog, label } = useMe()
-  const [filter, setFilter] = useState<'all' | Company['type']>('all')
+  const { catalog, label, me } = useMe()
+  // Core-engineering students (VLSI, embedded, electrical...) start on the core companies
+  const coreRoles = new Set((catalog?.roles ?? []).filter((r) => r.group === 'core').map((r) => r.id))
+  const [filter, setFilter] = useState<'all' | 'core' | Company['type']>(() => (coreRoles.has(me?.active_goal?.target_role ?? '') ? 'core' : 'all'))
   if (!catalog) return <TilesSkeleton count={9} label="Loading companies" />
-  const list = catalog.companies.filter((c) => filter === 'all' || c.type === filter)
+  const isCore = (c: Company) => c.roles.some((r) => coreRoles.has(r))
+  const list = catalog.companies.filter((c) => filter === 'all' || (filter === 'core' ? isCore(c) : c.type === filter))
 
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Companies" title="Practise for a specific company"
         subtitle="Each company hires differently. Pick one to see how they interview, then take a mock interview in their style and practise their kind of questions." />
 
-      <div role="tablist" aria-label="Company type" className="inline-flex rounded-xl bg-raised p-1 gap-1">
-        {([['all', 'All'], ['service', 'Service companies'], ['product', 'Product companies']] as const).map(([id, text]) => (
+      <div role="tablist" aria-label="Company type" className="flex w-fit max-w-full overflow-x-auto [scrollbar-width:none] rounded-xl bg-raised p-1 gap-1">
+        {([['all', 'All'], ['service', 'Service companies'], ['product', 'Product companies'], ['core', 'Core engineering']] as const).map(([id, text]) => (
           <button key={id} type="button" role="tab" aria-selected={filter === id} onClick={() => setFilter(id)}
-            className={`min-h-10 px-4 rounded-lg text-sm font-medium transition-colors ${filter === id ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}>
+            className={`shrink-0 whitespace-nowrap min-h-10 px-4 rounded-lg text-sm font-medium transition-colors ${filter === id ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}>
             {text}
           </button>
         ))}

@@ -9,6 +9,7 @@ export type InterviewContext = {
   companyTypeLabel: string
   skills: { skill: string; self_rating: number }[]
   speakingPace: 'slow' | 'normal'
+  roleFocus?: string // core topics for core-engineering roles (VLSI, embedded, electrical...), so questions stay in the right field
   focusTopic?: string // set for drills: every question is about this one topic
   resume?: string // short summary of the uploaded resume (projects, skills, experience), if any
   job?: string // a job ad the student pasted, summarised: they are practising for this exact job
@@ -90,6 +91,9 @@ function systemPrompt(ctx: InterviewContext, round: RoundId, earlierQuestions: s
     ctx.focusTopic
       ? `This is a quick 5-minute drill. Every question must be about: ${ctx.focusTopic}. Keep questions short and focused.`
       : `Goal of this round: ${r.goal}`,
+    ...(ctx.roleFocus && technicalRound && !ctx.focusTopic
+      ? [`This is a core engineering role, not a software role. Base technical questions on its core topics: ${ctx.roleFocus}. Ask about software only where the role really uses it. Every question must be technically precise and the kind commonly asked in campus interviews for this role: no trick questions about distinctions that don't exist, no obscure language features.`]
+      : []),
     ...(ctx.company && !ctx.focusTopic ? companyLines(ctx.company, round) : []),
     ...(ctx.resume && !ctx.focusTopic
       ? [
@@ -181,7 +185,7 @@ const ROUND_RULES: Record<RoundId, { ask: string; never: string }> = {
 // Asking for technical knowledge: always off-round in Behavioural/HR.
 const TECHNICAL_ASK = /\b(difference between|time complexity|space complexity|big[- ]?o|implement (a|an|the) (function|algorithm|class|method|data structure|api)|write (a|the|some) (code|function|query|program)|how does .{1,40} work|how would you (optimi[sz]e|code|design (a|an|the) (database|schema|system|api|class))|explain (how|what|the concept|the difference))/i
 // Technical topic words: fine inside a real "tell me about a time" story, off-round otherwise.
-const TECHNICAL_TOPIC = /\b(algorithm|data structure|sql|query|database|(inner|outer|left|right|self) joins?|\bapis?\b|endpoint|object[- ]oriented|oop|inheritance|polymorphism|closure|pointer|thread|recursion|array|linked list|hash ?map|binary (tree|search)|framework|react|java\b|python|javascript)/i
+const TECHNICAL_TOPIC = /\b(verilog|vhdl|systemverilog|uvm|flip[- ]?flops?|logic gates?|cmos|transistors?|mosfet|setup (and|&) hold|timing analysis|microcontrollers?|interrupts?|firmware|rtos|i2c|uart|spi protocol|voltage|resistors?|capacitors?|op[- ]?amps?|transformers?|induction motor|power factor|subnet(ting)?|ospf|bgp|vlan|osi model|tcp\/ip|routers?|pcb|schematic|algorithm|data structure|sql|query|database|(inner|outer|left|right|self) joins?|\bapis?\b|endpoint|object[- ]oriented|oop|inheritance|polymorphism|closure|pointer|thread|recursion|array|linked list|hash ?map|binary (tree|search)|framework|react|java\b|python|javascript)/i
 const STORY = /\b(tell me about a time|describe a (time|situation)|give (me )?an example of (a time|when)|have you ever|share (a|an) (time|experience|situation))/i
 const HR_CUES = /\b(tell me about yourself|introduce yourself|strengths?|weakness(es)?|why (do you want|should we hire)|where do you see yourself|salary|relocat|career goals?|notice period)\b/i
 

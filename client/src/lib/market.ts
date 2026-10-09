@@ -26,6 +26,8 @@ export const SHORT_ROLE: Record<string, string> = {
   sde: 'SDE', frontend: 'Frontend', backend: 'Backend', fullstack: 'Full-Stack', fde: 'FDE', ai_engineer: 'AI / ML',
   data_scientist: 'Data Science', data_engineer: 'Data Eng.', data_analyst: 'Data Analyst', devops: 'DevOps',
   mobile: 'Mobile', qa: 'QA', cybersecurity: 'Security',
+  vlsi_design: 'VLSI Design', vlsi_verification: 'VLSI Verif.', embedded: 'Embedded', electrical: 'Electrical',
+  network_engineer: 'Network', pcb_design: 'PCB Design',
 }
 
 // Skills summed across roles, weighted by each role's openings: "about how many ads ask for this".

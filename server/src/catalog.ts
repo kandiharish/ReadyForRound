@@ -84,6 +84,55 @@ export const ROLES = [
     description: 'Protects systems and data by finding weaknesses and responding to threats.',
     skills: ['Network Security', 'Linux', 'Computer Networks', 'Ethical Hacking', 'Wireshark', 'OWASP Top 10', 'Python', 'Cryptography'],
   },
+  // Core engineering roles for ECE, EEE and IT students
+  {
+    id: 'vlsi_design',
+    label: 'VLSI Design Engineer',
+    description: 'Designs the digital circuits inside chips: logic, RTL code and timing.',
+    skills: ['Digital Electronics', 'Verilog', 'RTL Design', 'CMOS', 'Static Timing Analysis', 'Computer Architecture', 'Logic Synthesis', 'FPGA'],
+    group: 'core',
+    focus: 'digital electronics (logic gates, flip-flops, FSMs, counters), CMOS basics, Verilog/RTL coding, setup and hold time and static timing analysis, clock domain crossing, FPGA vs ASIC, and the ASIC design flow',
+  },
+  {
+    id: 'vlsi_verification',
+    label: 'VLSI Verification Engineer',
+    description: 'Proves chip designs work before they are made, with testbenches and simulations.',
+    skills: ['Digital Electronics', 'SystemVerilog', 'UVM', 'Verilog', 'Functional Verification', 'SystemVerilog Assertions', 'C++', 'Python'],
+    group: 'core',
+    focus: 'digital electronics, Verilog vs SystemVerilog, OOP in SystemVerilog (classes, randomisation, constraints), UVM components and phases, functional coverage, assertions, writing a testbench for a simple design (FIFO, counter, FSM)',
+  },
+  {
+    id: 'embedded',
+    label: 'Embedded Systems Engineer',
+    description: 'Writes the software that runs inside devices: microcontrollers, sensors and firmware.',
+    skills: ['Embedded C', 'Microcontrollers', 'RTOS', 'I2C', 'SPI Protocol', 'UART', 'Embedded Linux', 'Digital Electronics'],
+    group: 'core',
+    focus: 'Embedded C (pointers, bit manipulation, volatile, memory layout), microcontroller basics (GPIO, timers, interrupts, ADC), communication protocols (UART, SPI, I2C, CAN), RTOS concepts (tasks, scheduling, semaphores), and debugging hardware/firmware issues',
+  },
+  {
+    id: 'electrical',
+    label: 'Electrical Engineer (Power & Design)',
+    description: 'Designs and maintains electrical systems: power distribution, machines and protection.',
+    skills: ['Power Systems', 'Electrical Machines', 'Power Electronics', 'Electrical Design', 'Switchgear', 'AutoCAD Electrical', 'MATLAB', 'Electrical Safety'],
+    group: 'core',
+    focus: 'circuit theory (KVL/KCL, AC circuits, power factor), electrical machines (transformers, induction and DC motors), power systems (transmission, faults, protection relays), power electronics (rectifiers, inverters), electrical safety and earthing, and design calculations like cable sizing',
+  },
+  {
+    id: 'network_engineer',
+    label: 'Network Engineer',
+    description: 'Builds and runs the networks that connect offices, data centres and the cloud.',
+    skills: ['Computer Networks', 'TCP/IP', 'Routing and Switching', 'Subnetting', 'CCNA', 'Firewalls', 'Linux', 'Network Troubleshooting'],
+    group: 'core',
+    focus: 'the OSI and TCP/IP models, IP addressing and subnetting, switching and VLANs, routing (static, OSPF, BGP basics), DNS and DHCP, firewalls and VPNs, and step-by-step troubleshooting of connectivity problems',
+  },
+  {
+    id: 'pcb_design',
+    label: 'PCB / Hardware Design Engineer',
+    description: 'Designs the circuit boards inside products, from schematic to a working board.',
+    skills: ['PCB Design', 'Circuit Design', 'Analog Electronics', 'Altium Designer', 'Schematic Design', 'Signal Integrity', 'Microcontrollers', 'Oscilloscope'],
+    group: 'core',
+    focus: 'analog and digital circuit basics (resistors, capacitors, op-amps, transistors, power supplies), schematic to PCB flow, component selection, layout rules (grounding, decoupling, trace width, high-speed routing), signal integrity and EMI basics, and board bring-up and testing',
+  },
 ] as const
 
 export const EXPERIENCE_LEVELS = [

@@ -119,6 +119,8 @@ const GROUPS: Record<string, string[]> = {
     'Malware Analysis', 'Digital Forensics|forensics', 'Endpoint Security|edr', 'Vulnerability Management',
     'Cisco Networking|ccna', 'CCNA', 'Routing and Switching', 'Network Administration', 'System Administration|sysadmin',
     'Active Directory', 'IT Support', 'Troubleshooting',
+    'Subnetting', 'OSPF', 'BGP', 'VLAN', 'CCNP', 'SD-WAN|sdwan', 'Juniper Networks|juniper', 'Load Balancers|load balancing',
+    'Network Troubleshooting', 'Network Monitoring', 'Wi-Fi Networks|wifi,wlan', 'VPN',
   ],
   'Embedded, electronics and core engineering': [
     'Embedded Systems', 'Arduino', 'Raspberry Pi', 'Microcontrollers', '8051 Microcontroller|8051', 'ARM', 'RTOS',
@@ -126,6 +128,22 @@ const GROUPS: Record<string, string[]> = {
     'Signal Processing|dsp', 'Control Systems', 'Robotics', 'ROS|robot operating system', 'PLC Programming', 'SCADA',
     'AutoCAD', 'SolidWorks', 'CATIA', 'ANSYS', 'Creo', 'Fusion 360', 'Revit', 'STAAD Pro', 'ETABS', 'Simulink', 'Proteus',
     'Multisim', 'Keil', 'Power Systems', 'Electrical Machines', 'Thermodynamics', 'Manufacturing', 'CNC Programming|cnc',
+    'Embedded Linux', 'Device Drivers', 'Firmware Development|firmware', 'I2C', 'SPI Protocol|spi', 'UART', 'CAN Bus|can protocol',
+    'STM32', 'ESP32', 'Bootloaders|bootloader', 'JTAG Debugging|jtag', 'Oscilloscope', 'Sensors and Actuators|sensors',
+  ],
+  'VLSI and chip design': [
+    'Digital Design|digital logic design', 'RTL Design|rtl', 'Static Timing Analysis|static timing', 'UVM', 'Functional Verification|design verification',
+    'CMOS', 'Physical Design', 'Logic Synthesis|synthesis', 'ASIC Design|asic', 'Low Power Design', 'SystemVerilog Assertions|sva',
+    'Cadence Virtuoso|virtuoso', 'Synopsys Design Compiler|design compiler', 'ModelSim|questasim', 'Xilinx Vivado|vivado', 'Clock Domain Crossing|cdc',
+  ],
+  'Electrical and power': [
+    'Power Electronics', 'Electrical Design', 'Switchgear', 'Transformers', 'Protection Relays|relay protection,protection systems',
+    'Electrical Installation|electrical wiring', 'Renewable Energy|solar power', 'ETAP', 'AutoCAD Electrical', 'EPLAN',
+    'Load Flow Analysis|load flow', 'Electrical Safety', 'Electric Vehicles|ev charging', 'Motor Drives|vfd',
+  ],
+  'PCB and hardware design': [
+    'Altium Designer|altium', 'KiCad', 'OrCAD', 'Cadence Allegro|allegro', 'Schematic Design|schematic capture',
+    'Signal Integrity', 'EMI/EMC|emc testing', 'Hardware Testing|board bring-up,bring up', 'DFM|design for manufacturing',
   ],
   'Design and product': [
     'UI Design', 'UX Design', 'UI/UX Design|ui ux', 'Figma', 'Adobe XD|xd', 'Sketch', 'Adobe Photoshop|photoshop',

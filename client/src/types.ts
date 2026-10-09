@@ -1,7 +1,7 @@
 // Shapes of the data our backend sends. Must match server/src/catalog.ts and routes/profile.ts.
 
 export type Option = { id: string; label: string; description?: string }
-export type RoleOption = Option & { description: string; skills: string[] }
+export type RoleOption = Option & { description: string; skills: string[]; group?: 'core' } // group 'core' = ECE / EEE / IT core engineering
 
 export type RoundId = 'technical' | 'project' | 'behavioural' | 'hr' | 'resume'
 

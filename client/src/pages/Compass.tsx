@@ -11,7 +11,7 @@ export default function Compass() {
   return (
     <div className="space-y-6 max-w-5xl">
       <PageHeader eyebrow="Career Compass" title="Not sure what you want to become?"
-        subtitle="A short, honest assessment of the work you enjoy, what you've tried and what you're comfortable with, matched to 13 tech roles." />
+        subtitle="A short, honest assessment of the work you enjoy, what you've tried and what you're comfortable with, matched to software, data and core engineering (ECE, EEE, IT) roles." />
       <CareerCompass roles={catalog.roles} onPick={(role) => navigate(`/goals?role=${role}`)} />
     </div>
   )

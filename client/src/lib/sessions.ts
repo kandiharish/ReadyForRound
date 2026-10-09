@@ -20,3 +20,11 @@ export function sessionTitle(s: { mode: 'single' | 'complete' | 'drill'; rounds:
 export function startDrill(topic: string) {
   return apiFetch<Interview>('/interviews', { method: 'POST', body: JSON.stringify({ mode: 'drill', topic }) })
 }
+
+// Roles in two groups for pickers: software & data, then core engineering (ECE / EEE / IT)
+export function groupRoles<T extends { group?: string }>(roles: readonly T[]) {
+  return [
+    { title: 'Software & data', roles: roles.filter((r) => r.group !== 'core') },
+    { title: 'Electronics, electrical & networking (ECE · EEE · IT)', roles: roles.filter((r) => r.group === 'core') },
+  ].filter((g) => g.roles.length > 0)
+}

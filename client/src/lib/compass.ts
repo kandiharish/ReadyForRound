@@ -13,6 +13,9 @@ export const DIMENSIONS = {
   quality: 'Quality & detail',
   people: 'People & communication',
   mobile: 'Mobile apps',
+  circuits: 'Electronics & chips',
+  electrical: 'Electrical & power',
+  networks: 'Networks & connectivity',
 } as const
 export type Dim = keyof typeof DIMENSIONS
 const DIMS = Object.keys(DIMENSIONS) as Dim[]
@@ -32,6 +35,12 @@ export const INTEREST_CARDS: { id: string; text: string; dims: Weights }[] = [
   { id: 'i10', text: 'Decide how an app should look and feel in someone\'s hand', dims: { mobile: 2, visual: 1 } },
   { id: 'i11', text: 'Automate a boring task so nobody ever has to do it by hand again', dims: { systems: 1, build: 1 } },
   { id: 'i12', text: 'Make a dashboard that helps a manager take a better decision', dims: { data: 1, people: 1 } },
+  { id: 'i13', text: 'Program a small board to read a sensor and switch on a motor', dims: { circuits: 2, build: 1 } },
+  { id: 'i14', text: 'Design a tiny part of a chip and check in a simulator that it works', dims: { circuits: 2, logic: 1 } },
+  { id: 'i15', text: "Plan the wiring and protection for a building's power supply", dims: { electrical: 2 } },
+  { id: 'i16', text: 'Set up the network for an office so 200 laptops connect securely', dims: { networks: 2, systems: 1 } },
+  { id: 'i17', text: 'Write tests that try to break a chip design before it is manufactured', dims: { quality: 1, circuits: 2 } },
+  { id: 'i18', text: 'Arrange parts on a circuit board so it is compact, neat and reliable', dims: { visual: 1, circuits: 1, quality: 1 } },
 ]
 
 // ---------- Part 2: this or that? ----------
@@ -46,6 +55,9 @@ export const PAIRS: { id: string; a: { text: string; dims: Weights }; b: { text:
   { id: 'p8', a: { text: 'Present your findings in a meeting', dims: { people: 2 } }, b: { text: 'Optimise an algorithm', dims: { logic: 2 } } },
   { id: 'p9', a: { text: 'Build an app for phones', dims: { mobile: 2 } }, b: { text: 'Build a pipeline that processes millions of records', dims: { data: 1, systems: 1 } } },
   { id: 'p10', a: { text: 'Learn the maths behind how AI works', dims: { ai: 2 } }, b: { text: 'Learn how hackers attack systems', dims: { security: 2 } } },
+  { id: 'p11', a: { text: 'Work on circuits and devices you can hold', dims: { circuits: 2 } }, b: { text: 'Work only in software', dims: { build: 1, logic: 1 } } },
+  { id: 'p12', a: { text: 'Design power systems and motors', dims: { electrical: 2 } }, b: { text: 'Design how computers talk to each other', dims: { networks: 2 } } },
+  { id: 'p13', a: { text: 'Simulate a chip design on a computer', dims: { circuits: 1, logic: 2 } }, b: { text: 'Solder and test a real circuit board', dims: { circuits: 1, visual: 1, quality: 1 } } },
 ]
 export type PairAnswer = 'a' | 'b' | 'both'
 
@@ -61,6 +73,11 @@ export const EXPERIENCES: { id: string; text: string; dims: Weights }[] = [
   { id: 'e8', text: 'Did a security challenge (CTF) or found a vulnerability', dims: { security: 2 } },
   { id: 'e9', text: 'Explained something technical to non-technical people', dims: { people: 2 } },
   { id: 'e10', text: 'Solved DSA or competitive programming problems', dims: { logic: 2 } },
+  { id: 'e11', text: 'Built a circuit, Arduino or Raspberry Pi project', dims: { circuits: 2, build: 1 } },
+  { id: 'e12', text: 'Wrote Verilog/VHDL or used a circuit simulator', dims: { circuits: 2, logic: 1 } },
+  { id: 'e13', text: 'Worked with electrical machines, power or wiring in a lab', dims: { electrical: 2 } },
+  { id: 'e14', text: 'Set up a router, switch or network (even at home)', dims: { networks: 2 } },
+  { id: 'e15', text: 'Designed a PCB or soldered a circuit board', dims: { circuits: 1, visual: 1, quality: 1 } },
 ]
 export type Experience = 'none' | 'disliked' | 'ok' | 'loved'
 const EXPERIENCE_VALUE: Record<Experience, number> = { none: 0, disliked: -1.5, ok: 0.5, loved: 2 }
@@ -109,6 +126,12 @@ export const TASTE_TESTS = [
     options: ['Redesign the home page', 'Server and database load at 7 PM', 'Rewrite the app in a new language', 'Ask users to visit later'],
     answer: 1,
   },
+  {
+    id: 't6', title: 'Read the circuit', dims: { circuits: 1, electrical: 1 } as Weights,
+    prompt: 'An LED is connected to a 5 V supply through a 220 Ω resistor. The LED itself drops 2 V. Roughly how much current flows?',
+    options: ['About 23 mA', 'About 14 mA', 'About 1 A', 'No current flows'],
+    answer: 1,
+  },
 ] as const
 export type TasteAnswer = { choice: number | null; enjoyed: number } // enjoyed 1-5
 
@@ -129,12 +152,18 @@ export const ROLE_PROFILES: Record<string, Weights> = {
   fde: { people: 3, build: 2, systems: 1, logic: 1 },
   ai_engineer: { ai: 3, logic: 2, data: 2, build: 1 },
   data_scientist: { data: 3, ai: 2, logic: 1, people: 1 },
-  data_engineer: { data: 2, systems: 3, logic: 2 },
+  data_engineer: { data: 3, systems: 3, logic: 1 },
   data_analyst: { data: 3, people: 2, quality: 1 },
   devops: { systems: 3, quality: 2, security: 1 },
   mobile: { mobile: 3, build: 2, visual: 1, quality: 1 },
   qa: { quality: 3, logic: 1, security: 1 },
-  cybersecurity: { security: 3, systems: 2, logic: 1 },
+  cybersecurity: { security: 3, systems: 2, logic: 1, networks: 1 },
+  vlsi_design: { circuits: 3, logic: 3 },
+  vlsi_verification: { circuits: 2, quality: 3, logic: 1, build: 1 },
+  embedded: { circuits: 2, build: 3, logic: 1 },
+  electrical: { electrical: 3, quality: 1, people: 1 },
+  network_engineer: { networks: 3, systems: 2, security: 1 },
+  pcb_design: { circuits: 3, visual: 2, quality: 2 },
 }
 
 // Practical needs: if someone is uncomfortable with these, the role is marked down and we say why.
@@ -148,6 +177,9 @@ const NEEDS: Record<string, { comfort: ComfortId; why: string }[]> = {
   fde: [{ comfort: 'people', why: 'you would work directly with customers every day' }],
   data_analyst: [{ comfort: 'people', why: 'you would present findings to managers often' }],
   qa: [{ comfort: 'detail', why: 'it is careful, detailed checking every day' }],
+  vlsi_verification: [{ comfort: 'coding', why: 'verification is mostly writing testbench code' }, { comfort: 'detail', why: 'it is careful, detailed checking every day' }],
+  embedded: [{ comfort: 'coding', why: 'you would write firmware most of the day' }],
+  pcb_design: [{ comfort: 'detail', why: 'board layout needs careful attention to detail' }],
 }
 
 export const DAY_IN_ROLE: Record<string, string> = {
@@ -164,12 +196,18 @@ export const DAY_IN_ROLE: Record<string, string> = {
   mobile: 'Build Android and iOS apps: smooth screens, offline behaviour, device features and app store releases.',
   qa: 'Design tests, automate them and find bugs before users do, so every release is reliable.',
   cybersecurity: 'Protect systems by finding weaknesses, monitoring threats and responding when something goes wrong.',
+  vlsi_design: 'Design the digital logic inside chips: write RTL, meet timing and work with the teams that turn it into silicon.',
+  vlsi_verification: 'Prove a chip design works before it is made: build testbenches, write tests and chase down every bug.',
+  embedded: 'Write the firmware inside devices: talk to sensors and chips, handle interrupts and debug on real hardware.',
+  electrical: 'Design and maintain electrical systems: power distribution, machines, protection and safety on real sites.',
+  network_engineer: 'Build and run networks: configure routers and switches, keep connections secure and fix outages fast.',
+  pcb_design: 'Turn circuits into real boards: schematics, component choices, layout and testing the first boards.',
 }
 
 export type CompassResult = {
   version: 1
   dims: Record<Dim, number> // 0-100, how much each kind of work fits
-  matches: { role: string; percent: number; reasons: string[]; concerns: string[] }[] // best first, all 13
+  matches: { role: string; percent: number; reasons: string[]; concerns: string[] }[] // best first, every role
   confidence: 'high' | 'medium' | 'low'
   notes: string[] // honest observations (e.g. hype check, "you liked almost everything")
 }

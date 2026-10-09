@@ -224,7 +224,7 @@ const NavRow = ({ onBack, onNext }: { onBack: () => void; onNext: () => void }) 
 
 function Intro({ onStart, onClose }: { onStart: () => void; onClose?: () => void }) {
   const steps: [string, string][] = [
-    ['What you enjoy', '12 quick cards'], ['This or that', '10 choices'], ["What you've tried", 'Real experience'], ['Comfort check', '4 honest questions'], ['Taste tests', '5 tiny tasks (optional)'],
+    ['What you enjoy', `${INTEREST_CARDS.length} quick cards`], ['This or that', `${PAIRS.length} choices`], ["What you've tried", 'Real experience'], ['Comfort check', `${COMFORTS.length} honest questions`], ['Taste tests', `${TASTE_TESTS.length} tiny tasks (optional)`],
   ]
   return (
     <section className="relative overflow-hidden rounded-3xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6 sm:p-10">
@@ -232,7 +232,7 @@ function Intro({ onStart, onClose }: { onStart: () => void; onClose?: () => void
       <div className="relative max-w-2xl">
         <span className="inline-flex items-center gap-2 rounded-full bg-card/80 px-3 py-1 text-xs font-semibold text-lavender-ink"><Icon name="target" size={14} /> Career Compass</span>
         <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-4">Find the role that fits how you like to work.</h2>
-        <p className="text-soft mt-3 text-lg">Not what's trending. Not what your friends picked. You'll react to real work, and we'll match it to 13 tech roles.</p>
+        <p className="text-soft mt-3 text-lg">Not what's trending. Not what your friends picked. You'll react to real work, and we'll match it to software, data and core engineering roles.</p>
         <ul className="mt-6 grid gap-2 sm:grid-cols-2">
           {steps.map(([t, d], n) => (
             <li key={t} className="flex items-center gap-3 rounded-xl bg-card/75 px-3 py-2.5">
