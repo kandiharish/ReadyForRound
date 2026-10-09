@@ -9,6 +9,7 @@ import type { Interview, InterviewTurn, QuestionFeedback, Report, ReportResponse
 import { ReportSkeleton } from '../components/Skeleton'
 import { SpeakingCoach, SpeechLine } from '../components/SpeakingCoach'
 import { ShareButton, type ShareData } from '../components/ShareCard'
+import { ResourceLinks } from '../components/ResourceLinks'
 
 // The feedback report for one interview. Shows feedback and scores only, never the student's answer text.
 export default function ReportPage() {
@@ -140,7 +141,10 @@ function ReportView({ report, hideScores, roundLabel, turns, share }: { report: 
             {report.studyNext.map((s, i) => (
               <li key={i} className="flex gap-3">
                 <span className="w-6 h-6 shrink-0 rounded-full bg-accent-soft text-accent-deep text-sm font-semibold flex items-center justify-center">{i + 1}</span>
-                <span><b className="text-ink"><Rich text={s.topic} /></b>{s.why && <span className="text-soft">: <Rich text={s.why} /></span>}</span>
+                <span className="min-w-0">
+                  <b className="text-ink"><Rich text={s.topic} /></b>{s.why && <span className="text-soft">: <Rich text={s.why} /></span>}
+                  <ResourceLinks topic={s.topic.replace(/`/g, '')} context={s.why} className="mt-2" />
+                </span>
               </li>
             ))}
           </ol>

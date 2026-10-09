@@ -7,6 +7,7 @@ import { Button, Card, EmptyState, Icon, PageHeader } from '../components/ui'
 import { ListSkeleton, TilesSkeleton } from '../components/Skeleton'
 import { ChartToppers, MarketCharts } from '../components/MarketCharts'
 import { lakhs, num, type Market } from '../lib/market'
+import { ResourceLinks } from '../components/ResourceLinks'
 
 function useMarket() {
   const [data, setData] = useState<Market | null>(null)
@@ -240,6 +241,7 @@ export function MarketRolePage() {
           </ul>
         )}
         {actionError && <p className="text-sm text-bad">{actionError}</p>}
+        <LearnMissing skills={r.skills.map((s) => s.skill).filter((s) => status(s) === 'missing')} />
         <p className="text-xs text-muted">Missing a skill you know? <Link to="/profile" className="text-accent-deep font-semibold">Add it to your profile</Link>, then prove it in an interview.</p>
       </Card>
 
@@ -271,6 +273,25 @@ export function MarketRolePage() {
         <Link to="/companies" className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl border border-line-strong bg-card text-sm font-medium hover:bg-raised"><Icon name="building" size={16} /> Practise for companies</Link>
       </div>
       <Updated m={data} />
+    </div>
+  )
+}
+
+// Free places to learn the most-asked skills you don't have yet
+export function LearnMissing({ skills }: { skills: string[] }) {
+  const top = skills.slice(0, 4)
+  if (top.length === 0) return null
+  return (
+    <div className="rounded-xl bg-raised p-4 space-y-3">
+      <p className="text-sm font-semibold">Where to learn what's missing</p>
+      <ul className="space-y-2.5">
+        {top.map((s) => (
+          <li key={s} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+            <span className="text-sm font-medium sm:w-40 shrink-0">{s}</span>
+            <ResourceLinks topic={s} />
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

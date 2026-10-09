@@ -10,7 +10,8 @@
     "start": "node dist/index.js",
     "sync-skills": "node scripts/sync-skills.mjs",
     "market:refresh": "tsx src/marketRefresh.ts",
-    "compass:sim": "tsx scripts/compass-sim.ts"
+    "compass:sim": "tsx scripts/compass-sim.ts",
+    "check-links": "tsx scripts/check-links.ts"
   },
   "keywords": [],
   "author": "",

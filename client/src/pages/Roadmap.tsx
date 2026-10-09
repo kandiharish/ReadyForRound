@@ -5,6 +5,7 @@ import { startDrill } from '../lib/sessions'
 import { useMe } from '../auth/MeProvider'
 import { useFeedback } from '../components/Feedback'
 import { Bar, Button, ButtonLink, Card, EmptyState, Icon, PageHeader } from '../components/ui'
+import { ResourceLinks } from '../components/ResourceLinks'
 import type { Goal, RoadmapTask } from '../types'
 import { ListSkeleton } from '../components/Skeleton'
 
@@ -126,6 +127,7 @@ export default function Roadmap() {
                     <p className={`font-medium mt-1.5 ${t.done ? 'line-through text-subtle' : ''}`}>{t.title}</p>
                     {t.detail && <p className="text-sm text-soft mt-1">{t.detail}</p>}
                     {t.why && <p className="text-xs text-muted mt-1.5">Why: {t.why}</p>}
+                    {t.topic && !t.done && t.kind !== 'mock' && <ResourceLinks topic={t.topic} context={t.title} className="mt-2.5" />}
                   </div>
                   {!t.done && (
                     t.kind === 'mock'
@@ -136,7 +138,7 @@ export default function Roadmap() {
               ))}
             </ul>
           </Card>
-          <p className="text-xs text-muted">This plan was written by AI from your feedback. It has no links on purpose: search for the topics in trusted sources like official documentation.</p>
+          <p className="text-xs text-muted">This plan was written by AI from your feedback. The learning links are hand-picked free resources (official docs, free courses and practice sites), not written by AI.</p>
         </>
       )}
     </div>

@@ -6,6 +6,7 @@ import { startDrill } from '../lib/sessions'
 import { useFeedback } from '../components/Feedback'
 import { Button, Card, EmptyState, Icon, PageHeader, ScoreRing } from '../components/ui'
 import { ListSkeleton } from '../components/Skeleton'
+import { LearnMissing } from './Market'
 import type { Interview, RoundId, UserSkill } from '../types'
 
 // Job Readiness (job match): paste a real job ad, see which of its skills you have, and practise an interview aimed at it.
@@ -242,6 +243,7 @@ export function JobPage() {
             </div>
           ))}
           {job.skills.length === 0 && <p className="text-sm text-muted">No skills from our list were found in this ad.</p>}
+          <LearnMissing skills={missingMust.map((s) => s.skill)} />
           <p className="text-xs text-muted">Tap a missing skill for a 5-minute drill. Have it already? <Link to="/profile" className="text-accent-deep font-semibold">Add it to your profile</Link>.</p>
         </Card>
 
