@@ -96,7 +96,7 @@ export default function Practice() {
         <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-sage text-sage-ink px-4 py-3 text-sm">
           <Icon name="file" size={18} />
           <span className="flex-1 min-w-0"><b>Using your resume.</b> Expect questions about {resume.summary.projects.length ? `your projects like "${resume.summary.projects[0].name}"` : 'your experience and skills'}.</span>
-          <Link to="/profile" className="font-semibold underline underline-offset-2">Manage</Link>
+          <Link to="/resume" className="font-semibold underline underline-offset-2">Check it in Resume Studio</Link>
         </div>
       ) : (
         <Link to="/profile" className="group flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line-strong bg-card px-4 py-3 text-sm hover:border-accent">

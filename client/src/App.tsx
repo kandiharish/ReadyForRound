@@ -8,7 +8,7 @@ import { ProtectedRoute } from './auth/ProtectedRoute'
 import AppLayout from './layout/AppLayout'
 import {
   Companies, CompanyPage, Compass, GdHome, GdRoom, Goals, Home, InterviewRoom, JobPage, Jobs, Landing, Login, Market, MarketRolePage,
-  Onboarding, Practice, PrivacyPage, ProfilePage, ReportPage, Reports, Roadmap, Settings, Signup, Status, TermsPage,
+  Onboarding, Practice, PrivacyPage, ProfilePage, ReportPage, Reports, ResumeStudio, Roadmap, Settings, Signup, Status, TermsPage,
 } from './lib/pages'
 
 // The app's "map": which page to show for each web address.
@@ -50,6 +50,7 @@ function App() {
             <Route path="/jobs/:id" element={<JobPage />} />
             <Route path="/gd" element={<GdHome />} />
             <Route path="/gd/:id" element={<GdRoom />} />
+            <Route path="/resume" element={<ResumeStudio />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

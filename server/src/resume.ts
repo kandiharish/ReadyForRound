@@ -30,13 +30,15 @@ export type ResumeSummary = z.infer<typeof resumeSummarySchema>
 const MAX_TEXT = 20_000
 
 // Read the text out of a PDF. Scanned resumes (photos of paper) have no text, so we say so clearly.
-export async function readPdfText(bytes: Uint8Array) {
+export async function readPdfText(bytes: Uint8Array): Promise<{ text: string; pages: number }> {
   if (!(bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46)) { // "%PDF"
     throw new ResumeError(400, 'Please upload your resume as a PDF file.')
   }
   let text: string
+  let pages = 1
   try {
     const pdf = await getDocumentProxy(bytes)
+    pages = pdf.numPages
     text = (await extractText(pdf, { mergePages: true })).text as string
   } catch {
     throw new ResumeError(400, "We couldn't open this PDF. Please export your resume again as a PDF and retry.")
@@ -45,7 +47,7 @@ export async function readPdfText(bytes: Uint8Array) {
   if (text.length < 150) {
     throw new ResumeError(400, "We couldn't find any text in this PDF. If it's a scanned image, please upload a PDF exported from Word or Google Docs.")
   }
-  return text
+  return { text, pages }
 }
 
 // Ask the AI to turn the resume into a short, structured summary.
@@ -73,13 +75,15 @@ export async function summariseResume(text: string): Promise<ResumeSummary> {
 }
 
 export async function saveResume(userId: string, fileName: string, bytes: Uint8Array) {
-  const text = await readPdfText(bytes)
+  const { text, pages } = await readPdfText(bytes)
   const summary = await summariseResume(text)
   const { error } = await supabase!.from('resumes').upsert({
     user_id: userId,
     file_name: fileName.slice(0, 200) || 'resume.pdf',
     text,
     summary,
+    pages,
+    project_fit: null, // a new resume needs a fresh review
     updated_at: new Date().toISOString(),
   })
   if (error) throw new ResumeError(500, 'Could not save your resume. Please try again.')

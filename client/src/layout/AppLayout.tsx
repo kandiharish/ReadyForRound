@@ -35,11 +35,13 @@ const WORKSPACE: NavItem[] = [
   { to: '/roadmap', label: 'Roadmap', icon: 'map', tone: TONES.sage },
   { to: '/reports', label: 'Reports', icon: 'reports', tone: TONES.lavender },
 ]
+// Goals open from the "Current goal" card at the top of the sidebar (and a tab on phones)
+const GOALS: NavItem = { to: '/goals', label: 'Goals', icon: 'goals', tone: TONES.amber }
 const CAREER: NavItem[] = [
-  { to: '/goals', label: 'Goals', icon: 'goals', tone: TONES.amber },
   { to: '/compass', label: 'Career compass', icon: 'compass', tone: TONES.teal },
   { to: '/market', label: 'Jobs Board', icon: 'trend', tone: TONES.green, shine: true },
-  { to: '/jobs', label: 'Job Readiness', icon: 'file', tone: TONES.lavender, badge: 'New' },
+  { to: '/jobs', label: 'Job Readiness', icon: 'target', tone: TONES.lavender },
+  { to: '/resume', label: 'Resume Studio', icon: 'file', tone: TONES.blue, badge: 'New' },
 ]
 // Profile and Settings live in the account row at the bottom of the sidebar (and the top bar on phones).
 
@@ -217,7 +219,7 @@ function MobileTopBar() {
 
 function MobileNav() {
   // Phones have room for six tabs: the workspace pages (Group discussion is on the Practice page) and Goals
-  const tabs = [...WORKSPACE.filter((t) => t.to !== '/gd'), CAREER[0]]
+  const tabs = [...WORKSPACE.filter((t) => t.to !== '/gd'), GOALS]
   return (
     <nav aria-label="Main" className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-card/95 backdrop-blur border-t border-line grid grid-cols-6 px-0.5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {tabs.map((t) => (

@@ -1,7 +1,10 @@
 import express, { Router } from 'express'
 import { rateLimit } from 'express-rate-limit'
 import { requireAuth } from '../auth/requireAuth.js'
+import { z } from 'zod'
 import { deleteResume, getResume, ResumeError, saveResume } from '../resume.js'
+import { projectFit, reviewResume } from '../resumeReview.js'
+import { roleIds } from '../catalog.js'
 
 // The student's resume: upload a PDF, see what we understood from it, or remove it.
 export const resumeRouter = Router()
@@ -36,4 +39,37 @@ resumeRouter.post('/', uploadLimit, express.raw({ type: 'application/pdf', limit
 resumeRouter.delete('/', async (req, res) => {
   await deleteResume(req.user!.id)
   res.status(204).end()
+})
+
+// Resume Studio: ATS-readiness, guidelines and the cached project-fit review, for a role or a saved job ad
+const reviewSchema = z.object({ role: z.enum(roleIds), jobId: z.string().uuid().optional() })
+resumeRouter.get('/review', async (req, res, next) => {
+  const parsed = reviewSchema.safeParse(req.query)
+  if (!parsed.success) return res.status(400).json({ error: 'Choose a role' })
+  try {
+    res.json(await reviewResume(req.user!.id, parsed.data.role, parsed.data.jobId))
+  } catch (err) {
+    if (err instanceof ResumeError) return res.status(err.status).json({ error: err.message })
+    next(err)
+  }
+})
+
+// The project-fit review uses the AI, so keep it to a few per hour per person
+const fitLimit = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: 10,
+  keyGenerator: (req) => req.user!.id,
+  message: { error: "You've checked your projects several times already. Please try again in an hour." },
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+})
+resumeRouter.post('/fit', fitLimit, async (req, res, next) => {
+  const parsed = z.object({ role: z.enum(roleIds) }).safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ error: 'Choose a role' })
+  try {
+    res.json(await projectFit(req.user!.id, parsed.data.role))
+  } catch (err) {
+    if (err instanceof ResumeError) return res.status(err.status).json({ error: err.message })
+    next(err)
+  }
 })
