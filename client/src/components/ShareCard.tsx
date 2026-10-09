@@ -20,8 +20,8 @@ export type ShareData = {
 
 const W = 1200, H = 630
 const SITE = 'ready-for-round.vercel.app'
-const SANS = '"Figtree", system-ui, sans-serif'
-const SERIF = '"Bricolage Grotesque", "Figtree", sans-serif'
+const SANS = '"Inter", system-ui, sans-serif'
+const SERIF = '"Inter", system-ui, sans-serif'
 
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
   const lines: string[] = []

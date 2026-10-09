@@ -94,7 +94,7 @@ export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: st
     <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div className="min-w-0">
         {eyebrow && <p className="text-sm text-muted">{eyebrow}</p>}
-        <h1 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-1 text-ink">{title}</h1>
+        <h1 className="font-display font-bold text-[1.75rem] sm:text-[2rem] leading-tight mt-1 text-ink">{title}</h1>
         {subtitle && <p className="text-sm text-muted mt-2 max-w-2xl">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>}

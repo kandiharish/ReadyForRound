@@ -32,8 +32,9 @@ function named<M>(load: () => Promise<M>, pick: (m: M) => ComponentType, preload
 export function preloadAppPages() {
   sessionStorage.removeItem('rfr-reloaded-for-update')
   const run = () => loaders.forEach((l) => void l().catch(() => {}))
-  if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 4000 })
-  else setTimeout(run, 1500)
+  // Wait a moment first: the browser counts "waiting for the network" as idle, and the open page's own data comes first
+  const later = () => ('requestIdleCallback' in window ? requestIdleCallback(run, { timeout: 4000 }) : run())
+  setTimeout(later, 2500)
 }
 
 // Public pages: loaded on demand only

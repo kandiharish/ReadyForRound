@@ -12,7 +12,7 @@ export function AuthCard({ title, children }: { title: string; children: ReactNo
       <QuestionRow />
       <div className="relative z-10 bg-card/85 backdrop-blur-xl border border-line rounded-3xl p-7 sm:p-8 max-w-sm w-full shadow-2xl shadow-accent/10 animate-[pop-in_0.5s_ease-out]">
         <Link to="/" aria-label="ReadyForRound home"><Brand tagline /></Link>
-        <h1 className="font-display font-semibold text-4xl text-ink mt-5">{title}</h1>
+        <h1 className="font-display font-bold text-[1.75rem] text-ink mt-5">{title}</h1>
         <div className="mt-6">{children}</div>
       </div>
       <QuestionRow reverse />
