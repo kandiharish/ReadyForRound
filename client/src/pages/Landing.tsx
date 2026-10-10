@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
-import { Avatar, type AvatarState } from '../components/Avatar'
+import { HeroDemo } from '../components/HeroDemo'
+import { apiFetch } from '../lib/api'
 import { Brand } from '../components/Brand'
 import { Reveal } from '../components/Reveal'
 import { LiveChecks, ProductVideo, RotatingWord, ScrollProgress, StatsStrip, Tour, WordReveal } from '../components/LandingMotion'
@@ -38,16 +39,41 @@ export default function Landing() {
 
 const GRADIENT_TEXT = 'text-accent'
 
-function CtaButtons({ center = false }: { center?: boolean }) {
+function CtaButtons() {
   return (
-    <div className={`flex flex-wrap gap-3 ${center ? 'justify-center' : ''}`}>
+    <div className="flex flex-wrap gap-3">
       <Link to="/signup" className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-lg bg-accent text-on-accent font-semibold hover:bg-accent-hover transition-colors">
         Start practising free <Icon name="arrow" size={18} className="group-hover:translate-x-1 transition-transform" />
       </Link>
-      <Link to="/login" className="inline-flex items-center min-h-12 px-6 rounded-lg border border-line-strong bg-card font-medium hover:bg-raised transition-colors">
-        Log in
-      </Link>
+      <a href="#video" className="group inline-flex items-center gap-2 min-h-12 px-5 rounded-lg border border-line-strong bg-card font-medium hover:bg-raised transition-colors">
+        <span className="w-6 h-6 rounded-full bg-ink text-paper grid place-items-center"><Icon name="play" size={10} /></span> Watch the tour
+      </a>
     </div>
+  )
+}
+
+// A live line from the real Jobs Board data: "10,048 Software Development Engineer openings in India this month"
+function LiveFact() {
+  const [roles, setRoles] = useState<{ role: string; openings: number }[]>([])
+  const [i, setI] = useState(0)
+  useEffect(() => { apiFetch<{ roles: { role: string; openings: number }[] }>('/demo/fact').then((d) => setRoles(d.roles)).catch(() => {}) }, [])
+  useEffect(() => {
+    if (roles.length < 2) return
+    const t = setInterval(() => setI((n) => (n + 1) % roles.length), 3500)
+    return () => clearInterval(t)
+  }, [roles.length])
+  if (!roles.length) return null
+  const r = roles[i]
+  return (
+    <p className="mt-6 flex items-center gap-2.5 text-sm text-soft" title="From job ads posted in India in the last 30 days (Adzuna), refreshed daily">
+      <span className="relative flex w-2 h-2 shrink-0" aria-hidden="true">
+        <span className="absolute inset-0 rounded-full bg-good opacity-60 motion-safe:animate-ping" />
+        <span className="relative w-2 h-2 rounded-full bg-good" />
+      </span>
+      <span key={i} className="motion-safe:animate-[toast-in_0.4s_ease-out]">
+        <b className="text-ink font-semibold tabular-nums">{r.openings.toLocaleString('en-IN')}</b> {r.role} openings in India this month
+      </span>
+    </p>
   )
 }
 
@@ -100,6 +126,7 @@ function Hero() {
             </p>
           </Reveal>
           <Reveal delay={800} className="mt-8"><CtaButtons /></Reveal>
+          <Reveal delay={900}><LiveFact /></Reveal>
           <div className="mt-8"><LiveChecks delay={1050} items={['Free to use', 'No credit card', 'Camera optional']} /></div>
         </div>
 
@@ -111,107 +138,6 @@ function Hero() {
     </section>
   )
 }
-
-const DEMO = [
-  { round: 'Technical round', question: 'When would you use a LEFT JOIN instead of an INNER JOIN?', score: 72, good: 'Clear example with tables', next: 'GROUP BY with HAVING' },
-  { round: 'HR round', question: 'Tell me about a time you worked in a team under pressure.', score: 81, good: 'Great STAR structure', next: 'Say what YOU did, not "we"' },
-  { round: 'Project round', question: 'Why did you choose React for your final-year project?', score: 66, good: 'Honest about trade-offs', next: 'Explain state management' },
-]
-type Phase = 'asking' | 'answering' | 'feedback'
-
-// A tiny looping demo of the app: the question types itself out, the candidate answers, then feedback pops in.
-function HeroDemo() {
-  const [n, setN] = useState(0)
-  const [phase, setPhase] = useState<Phase>('asking')
-  const [typed, setTyped] = useState(0)
-  const item = DEMO[n]
-
-  useEffect(() => {
-    let t: ReturnType<typeof setTimeout>
-    if (phase === 'asking') {
-      t = typed < item.question.length
-        ? setTimeout(() => setTyped((c) => c + 1), 28)
-        : setTimeout(() => setPhase('answering'), 700)
-    } else if (phase === 'answering') {
-      t = setTimeout(() => setPhase('feedback'), 2600)
-    } else {
-      t = setTimeout(() => { setN((x) => (x + 1) % DEMO.length); setTyped(0); setPhase('asking') }, 3400)
-    }
-    return () => clearTimeout(t)
-  }, [phase, typed, item.question.length])
-
-  const avatar: AvatarState = phase === 'asking' ? 'speaking' : phase === 'answering' ? 'listening' : 'idle'
-
-  return (
-    <div className="relative mx-auto w-full max-w-lg xl:max-w-xl 2xl:max-w-2xl mb-36" aria-label="A short animated example of an interview on ReadyForRound">
-      <div className="rounded-3xl bg-stage-card border border-stage-line shadow-lg shadow-black/5 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-stage-line text-xs text-stage-muted">
-          <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-bad animate-pulse" /> {item.round}</span>
-          <span className="flex gap-1">{DEMO.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === n ? 'w-5 bg-accent' : 'w-1.5 bg-stage-line'}`} />)}</span>
-        </div>
-        <div className="bg-stage px-6 pt-8 pb-6 flex flex-col items-center">
-          <div className={`w-36 h-36 rounded-full overflow-hidden transition-shadow duration-500 ${phase === 'asking' ? 'shadow-[0_0_0_6px_rgba(var(--glow-rgb),0.4),0_0_60px_rgba(var(--glow-rgb),0.3)]' : 'shadow-[0_0_0_3px_rgba(var(--glow-rgb),0.15)]'}`}>
-            <Avatar who="priya" state={avatar} />
-          </div>
-          <div className="mt-5 w-full h-28 sm:h-24 overflow-hidden rounded-2xl bg-stage-card border border-stage-line px-4 py-3">
-            <p className="font-display text-xl leading-snug text-stage-text">
-              {item.question.slice(0, typed)}
-              {phase === 'asking' && <span className="inline-block w-0.5 h-5 bg-accent align-middle ml-0.5 animate-[caret_1s_steps(1)_infinite]" />}
-            </p>
-          </div>
-          <div className="mt-5 h-10 flex items-center">
-            {phase === 'answering' ? (
-              <span className="inline-flex items-center gap-3 rounded-full bg-blush text-blush-ink px-4 py-2 text-sm font-semibold motion-safe:animate-[pop-in_0.3s_ease-out]">
-                <span className="w-2.5 h-2.5 rounded-full bg-bad animate-pulse" /> You're answering
-                <span className="flex items-end gap-0.5 h-4" aria-hidden="true">
-                  {[0, 1, 2, 3, 4, 5].map((i) => <span key={i} className="w-0.75 rounded-full bg-current motion-safe:animate-[voice-bar_0.8s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.1}s`, height: '40%' }} />)}
-                </span>
-              </span>
-            ) : (
-              <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${phase === 'asking' ? 'bg-stage-raised text-stage-muted' : 'bg-accent text-on-accent'}`}>
-                <Icon name="mic" size={15} /> {phase === 'asking' ? 'Interviewer is asking…' : 'Answer sent'}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {phase === 'feedback' && (
-        <div key={n} className="absolute right-3 sm:right-5 -bottom-36 w-60 rounded-xl bg-card border border-line shadow-xl p-4 motion-safe:animate-[toast-in_0.45s_cubic-bezier(0.22,1,0.36,1)]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted">Your feedback</span>
-            <span className="text-xs text-muted">Example</span>
-          </div>
-          <div className="flex items-baseline gap-1 mt-1">
-            <CountUp to={item.score} className="font-display font-semibold text-4xl text-good" />
-            <span className="text-sm text-muted">/ 100</span>
-          </div>
-          <p className="text-xs text-sage-ink bg-sage rounded-lg px-2 py-1.5 mt-2">✓ {item.good}</p>
-          <p className="text-xs text-peach-ink bg-peach rounded-lg px-2 py-1.5 mt-1.5">→ Next: {item.next}</p>
-        </div>
-      )}
-
-    </div>
-  )
-}
-
-// A number that counts up from 0 (used for scores).
-function CountUp({ to, className = '', duration = 900 }: { to: number; className?: string; duration?: number }) {
-  const [v, setV] = useState(0)
-  useEffect(() => {
-    const start = performance.now()
-    let raf = 0
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration)
-      setV(Math.round(to * (1 - Math.pow(1 - p, 3)))) // ease-out: fast at first, then settles
-      if (p < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [to, duration])
-  return <span className={className}>{v}</span>
-}
-
 
 const FAQS = [
   { q: 'Is it really free?', a: 'Yes, 100% free. A small daily limit (5 interviews and 10 drills) keeps it running smoothly, and it resets at midnight.' },
@@ -285,9 +211,6 @@ function FinalCta() {
             <div className="flex flex-wrap gap-3 shrink-0">
               <Link to="/signup" className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-lg bg-white text-[#0b63e5] font-semibold hover:bg-white/90 transition-colors">
                 Start practising free <Icon name="arrow" size={18} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link to="/login" className="inline-flex items-center min-h-12 px-6 rounded-lg border border-white/40 text-white font-medium hover:bg-white/10 transition-colors">
-                Log in
               </Link>
             </div>
           </div>

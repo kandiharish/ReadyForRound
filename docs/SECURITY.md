@@ -8,7 +8,7 @@ If a change breaks one of these, fix it before pushing.
 | Layer | Protection |
 | --- | --- |
 | Sign-in | Supabase Auth (email + password, Google). Passwords: 8+ characters. Password reset by one-time email link (`/forgot-password` → `/reset-password`); the reset page never reveals whether an email has an account. |
-| API login check | `server/src/auth/requireAuth.ts` verifies the login token's signature and expiry locally with Supabase's public keys (`jose`). Every route except `/api/ping`, `/api/health`, `/api/catalog`, `/api/feedback` and `/api/client-errors` requires it. |
+| API login check | `server/src/auth/requireAuth.ts` verifies the login token's signature and expiry locally with Supabase's public keys (`jose`). Every route except `/api/ping`, `/api/health`, `/api/catalog`, `/api/feedback`, `/api/client-errors` and the landing-page demo (`/api/demo/*`) requires it. The demo only scores its own fixed questions, allows 3 tries per visitor per day and 300 per day in total, and keeps nothing. |
 | Ownership | Every read or write of a student's record filters by `user_id` (or checks ownership first). A student can never open another student's interview, report, goal, resume, job ad or group discussion by changing an ID. |
 | Database | Row Level Security is on for every table. The browser may only *read* its own rows; it cannot insert, update or delete anything (`018_lock_profile_writes.sql`). All writes go through the server with the secret key. |
 | Rate limits | 300 requests a minute per student for normal use; 20 answers a minute; 120 AI-heavy actions an hour; uploads, job ads, project checks, feedback and error reports have their own small limits. Daily plan limits are enforced on the server (`usage.ts`). |

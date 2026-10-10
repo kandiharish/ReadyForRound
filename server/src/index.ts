@@ -16,6 +16,7 @@ import { companiesRouter } from './routes/companies.js'
 import { compassRouter } from './routes/compass.js'
 import { jobsRouter } from './routes/jobs.js'
 import { gdRouter } from './routes/gd.js'
+import { demoRouter } from './routes/demo.js'
 import { requireAuth } from './auth/requireAuth.js'
 import { getMarket } from './market.js'
 
@@ -92,6 +93,9 @@ app.post('/api/feedback', feedbackLimit, async (req, res, next) => {
     next(err)
   }
 })
+
+// The landing page's try-it demo and live jobs line (no login, tightly limited): /api/demo
+app.use('/api/demo', demoRouter)
 
 // Job Market: real job ads summarised per role (refreshed once a day)
 app.get('/api/market', requireAuth, async (_req, res, next) => {
