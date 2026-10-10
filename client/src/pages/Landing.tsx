@@ -89,7 +89,7 @@ function TopNav() {
   }, [])
   return (
     <header className={`relative sticky top-0 z-40 transition-all duration-300 border-b ${scrolled ? 'bg-paper/80 backdrop-blur-md border-line shadow-sm' : 'bg-transparent border-transparent'}`}>
-      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
         <Link to="/" aria-label="ReadyForRound home"><Brand /></Link>
         <nav aria-label="Sections" className="hidden md:flex items-center gap-7 text-sm text-soft">
           {[['#video', 'Watch'], ['#tour', 'Features'], ['#faq', 'FAQ']].map(([href, label]) => (
@@ -110,10 +110,10 @@ function TopNav() {
 
 function Hero() {
   return (
-    <section className="relative px-4 sm:px-6 pt-10 sm:pt-16 pb-24">
-      <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-14 lg:grid-cols-[1.05fr_1fr] items-center">
+    <section className="relative px-4 sm:px-6 lg:px-10 pt-10 sm:pt-14 pb-20">
+      <div className="relative max-w-6xl mx-auto grid gap-12 lg:gap-16 lg:grid-cols-[1fr_1fr] items-center">
         <div>
-          <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] xl:text-[4.3rem] 2xl:text-[5rem] leading-[1.05]">
+          <h1 className="font-display font-semibold text-[2.5rem] sm:text-[3.25rem] lg:text-[3.4rem] xl:text-[3.75rem] leading-[1.05] tracking-tight">
             <WordReveal delay={120} lines={[
               ['Walk', 'into', 'your'],
               [<RotatingWord words={['placement', 'campus', 'first job', 'next job']} className={GRADIENT_TEXT} />, 'interview', 'like'],
@@ -121,7 +121,7 @@ function Hero() {
             ]} />
           </h1>
           <Reveal delay={650}>
-            <p className="text-lg sm:text-xl text-soft mt-6 max-w-lg">
+            <p className="text-lg text-soft mt-6 max-w-md">
               For students, freshers and working professionals. Practise out loud with an AI interviewer, get honest feedback, and know exactly what to study next.
             </p>
           </Reveal>
@@ -157,7 +157,7 @@ function Faq() {
   const [open, setOpen] = useState<number | null>(0)
   return (
     <section id="faq" className="px-4 sm:px-6 lg:px-10 py-20 sm:py-28 scroll-mt-16">
-      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 items-start">
+      <div className="max-w-6xl mx-auto grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 items-start">
         <Reveal className="lg:sticky lg:top-24">
           <h2 className="font-display font-semibold text-3xl sm:text-4xl leading-tight">Questions</h2>
           <p className="text-soft mt-3 max-w-sm">
@@ -224,7 +224,7 @@ function Footer() {
   const contact = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
   return (
     <footer className="border-t border-line px-4 sm:px-6 pt-10 pb-24">
-      <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="max-w-md text-center sm:text-left">
           <Brand size="sm" />
           <p className="text-xs text-muted mt-3 leading-relaxed">
