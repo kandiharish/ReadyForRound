@@ -21,7 +21,7 @@ const QUESTIONS: { text: string; left: string; delay: number; duration: number; 
 
 export function AuthBackground() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute -top-32 -left-24 w-136 h-136 rounded-full bg-sky opacity-80 blur-3xl motion-safe:animate-[blob-drift_20s_ease-in-out_infinite]" />
       <div className="absolute top-1/3 -right-32 w-120 h-120 rounded-full bg-lavender opacity-80 blur-3xl motion-safe:animate-[blob-drift_24s_ease-in-out_infinite_reverse]" />
       <div className="absolute -bottom-40 left-1/4 w-112 h-112 rounded-full bg-blush opacity-60 blur-3xl motion-safe:animate-[blob-drift_28s_ease-in-out_infinite]" />
