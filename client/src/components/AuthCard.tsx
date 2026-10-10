@@ -2,6 +2,8 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
 import { Link } from 'react-router'
 import { Brand } from './Brand'
+import { Icon, type IconName } from './ui'
+import { WordReveal } from './LandingMotion'
 
 // True while a CSS media query matches (updates live when the window is resized)
 function useMedia(query: string) {
@@ -15,7 +17,15 @@ function useMedia(query: string) {
   return match
 }
 
-const FEATURES = ['Voice mock interviews', 'Live Jobs Board', 'Resume Studio + ATS check', 'Group discussion practice', 'Career Compass']
+// What the looping intro video shows, in order (each feature is on screen for about 2.2 s; the clip is 13.2 s)
+const CLIP = [['Jobs Board', 0], ['Companies', 3 * 2.2], ['Resume Studio', 4 * 2.2], ['Career Compass', 5 * 2.2]] as const
+const CLIP_LENGTH = 13.2
+
+const POINTS: { icon: IconName; title: string; text: string }[] = [
+  { icon: 'mic', title: 'Practise out loud', text: 'An AI interviewer asks about your role and your own projects.' },
+  { icon: 'trend', title: 'See real demand', text: 'Openings, pay and skills from live job ads, every day.' },
+  { icon: 'file', title: 'Fix your resume', text: 'An ATS check and project fit before you apply.' },
+]
 
 // Shared layout for the login and signup pages.
 // Wide screens: a dark intro panel on the left (a short, silent tour of the real app) and the form on the right.
@@ -39,33 +49,61 @@ export function AuthCard({ title, children }: { title: string; children: ReactNo
 function IntroPanel() {
   // People who ask for less motion get the still picture instead of the video
   const still = useMedia('(prefers-reduced-motion: reduce)')
+  const [scene, setScene] = useState(0)
+  function onTime(e: React.SyntheticEvent<HTMLVideoElement>) {
+    const t = e.currentTarget.currentTime % CLIP_LENGTH
+    let i = 0
+    CLIP.forEach(([, start], k) => { if (t >= start) i = k })
+    setScene(i)
+  }
+
   return (
-    <aside className="relative hidden lg:flex flex-col justify-center gap-9 px-12 xl:px-16 py-12 bg-[#0b1220] text-white overflow-hidden">
-      <div className="relative max-w-xl">
-        <p className="text-sm font-semibold text-[#5fb8ff]">Free for every student</p>
-        <h2 className="mt-3 text-[2.5rem] xl:text-[2.75rem] font-bold leading-[1.1] tracking-tight">
-          Walk into your next round ready.
+    <aside className="relative hidden lg:flex flex-col justify-between gap-8 px-12 xl:px-16 py-9 bg-[#0b1220] text-white overflow-hidden">
+      {/* A faint dot grid that fades out towards the edges: texture without colour */}
+      <div aria-hidden="true" className="absolute inset-0 opacity-[0.35] [background-image:radial-gradient(rgb(255_255_255/0.14)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_40%_45%,black_20%,transparent_75%)]" />
+
+      <Link to="/" aria-label="ReadyForRound home" className="relative flex items-center gap-2.5 w-fit">
+        <img src="/logo-mark.png" alt="" className="w-8 h-8" />
+        <span className="font-semibold text-[1.05rem] tracking-tight">Ready<span className="text-[#5fb8ff]">For</span>Round</span>
+      </Link>
+
+      <div className="relative max-w-2xl">
+        <h2 className="text-[2.6rem] xl:text-[3rem] font-semibold leading-[1.08] tracking-tight">
+          <WordReveal delay={100} lines={[['Walk', 'into', 'your'], ['next', 'round', <span className="text-[#5fb8ff]">ready.</span>]]} />
         </h2>
-        <p className="mt-4 text-[1.05rem] leading-relaxed text-white/70">
-          Practise interviews out loud, see which jobs are hiring right now, and fix your resume before a recruiter sees it.
-        </p>
+
+        <figure className="mt-8 rounded-xl overflow-hidden border border-white/10 bg-[#131a2a] shadow-[0_30px_70px_-25px_rgba(0,0,0,0.7)] animate-[pop-in_0.7s_cubic-bezier(0.22,1,0.36,1)_0.35s_both] motion-reduce:animate-none">
+          {still ? (
+            <img src="/intro/intro-poster.jpg" alt="The ReadyForRound Jobs Board, showing which roles have the most openings" className="block w-full aspect-video object-cover" />
+          ) : (
+            <video src="/intro/intro.mp4" poster="/intro/intro-poster.jpg" autoPlay muted loop playsInline preload="auto" onTimeUpdate={onTime}
+              aria-label="A short silent tour of ReadyForRound: the Jobs Board, company practice, Resume Studio and Career Compass"
+              className="block w-full aspect-video object-cover" />
+          )}
+        </figure>
+
+        {/* Which feature the video is showing right now */}
+        {!still && (
+          <div className="mt-4 flex items-center gap-4" aria-hidden="true">
+            <span className="text-sm text-white/55">Now showing <span key={scene} className="inline-block text-white font-medium animate-[toast-in_0.35s_ease-out]">{CLIP[scene][0]}</span></span>
+            <span className="flex gap-1.5">
+              {CLIP.map(([name], i) => <span key={name} className={`h-1 rounded-full transition-all duration-500 ${i === scene ? 'w-6 bg-[#5fb8ff]' : 'w-2 bg-white/20'}`} />)}
+            </span>
+          </div>
+        )}
+
+        <ul className="mt-8 grid grid-cols-3 gap-5 [@media(max-height:860px)]:hidden" aria-label="What you get">
+          {POINTS.map((p, i) => (
+            <li key={p.title} className="animate-[toast-in_0.5s_ease-out_both] motion-reduce:animate-none" style={{ animationDelay: `${600 + i * 120}ms` }}>
+              <span className="w-9 h-9 rounded-lg bg-white/[0.07] border border-white/10 grid place-items-center text-[#5fb8ff]"><Icon name={p.icon} size={17} /></span>
+              <p className="mt-3 text-sm font-semibold">{p.title}</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-white/55">{p.text}</p>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <figure className="relative max-w-2xl rounded-2xl overflow-hidden border border-white/10 shadow-xl shadow-black/40 bg-[#131a2a]">
-        {still ? (
-          <img src="/intro/intro-poster.jpg" alt="The ReadyForRound Jobs Board, showing which roles have the most openings" className="block w-full aspect-video object-cover" />
-        ) : (
-          <video src="/intro/intro.mp4" poster="/intro/intro-poster.jpg" autoPlay muted loop playsInline preload="auto"
-            aria-label="A short silent tour of ReadyForRound: the Jobs Board, company practice, Resume Studio and Career Compass"
-            className="block w-full aspect-video object-cover" />
-        )}
-      </figure>
-
-      <ul className="relative flex flex-wrap gap-2 max-w-2xl" aria-label="What you get">
-        {FEATURES.map((f) => (
-          <li key={f} className="rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-sm text-white/80">{f}</li>
-        ))}
-      </ul>
+      <p className="relative text-xs text-white/40">Free for every student · No credit card · Your video never leaves your device</p>
     </aside>
   )
 }
