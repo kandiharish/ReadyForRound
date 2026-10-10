@@ -64,7 +64,7 @@ export default function Jobs() {
       <PageHeader eyebrow="Placements Hub" title="Job Readiness"
         subtitle="Found a job you want? Paste its description. See which skills you already have, what's missing, and practise an interview aimed at that exact job." />
 
-      <form onSubmit={read} className="rounded-2xl border border-line bg-linear-to-br from-sky via-card to-lavender p-5 sm:p-6 space-y-4">
+      <form onSubmit={read} className="rounded-2xl border border-line bg-card p-5 sm:p-6 space-y-4">
         <div className="flex items-center gap-3">
           <span className="w-10 h-10 rounded-xl bg-card text-sky-ink grid place-items-center shadow-sm"><Icon name="file" size={20} /></span>
           <div>
@@ -96,7 +96,7 @@ export default function Jobs() {
               const score = matchScore(j.skills, status)
               return (
                 <li key={j.id}>
-                  <Link to={`/jobs/${j.id}`} className="h-full rounded-2xl bg-card border border-line p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover:border-accent/40 transition-all">
+                  <Link to={`/jobs/${j.id}`} className="h-full rounded-2xl bg-card border border-line p-4 flex items-center gap-4 hover:border-accent/40 transition-all">
                     <span className={`w-14 h-14 shrink-0 rounded-2xl grid place-items-center font-bold text-lg tabular-nums ${score === null ? 'bg-raised text-muted' : score >= 70 ? 'bg-good-soft text-good' : score >= 40 ? 'bg-warn-soft text-warn' : 'bg-blush text-blush-ink'}`}>
                       {score === null ? '—' : `${score}%`}
                     </span>
@@ -176,7 +176,7 @@ export function JobPage() {
     <div className="space-y-6">
       <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><Icon name="arrow" size={15} className="rotate-180" /> Job Readiness</Link>
 
-      <section className="rounded-2xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+      <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={score} label="match" size={120} /></div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-lavender-ink">Job Readiness</p>
@@ -198,7 +198,7 @@ export function JobPage() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PRACTICE.map((p, i) => (
             <button key={p.round} type="button" onClick={() => start(p.round)} disabled={!!starting}
-              className={`text-left rounded-xl border p-4 flex flex-col gap-1.5 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 ${i === 0 ? 'border-accent bg-accent-soft' : 'border-line bg-card hover:border-accent/40'}`}>
+              className={`text-left rounded-xl border p-4 flex flex-col gap-1.5 transition-all disabled:opacity-60 ${i === 0 ? 'border-accent bg-accent-soft' : 'border-line bg-card hover:border-accent/40'}`}>
               <Icon name={p.icon} size={18} className="text-accent" />
               <span className="font-semibold">{starting === p.round ? 'Starting…' : p.label}</span>
               <span className="text-xs text-muted">{p.hint}</span>

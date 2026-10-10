@@ -94,7 +94,7 @@ export default function GdHome() {
         subtitle="Most campus drives have a GD round. Discuss a topic with three AI classmates who think differently, then see how a GD evaluator would score you." />
 
       {/* The three classmates */}
-      <section className="rounded-2xl border border-line bg-linear-to-br from-peach via-card to-lavender p-5 sm:p-6">
+      <section className="rounded-2xl border border-line bg-card p-5 sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-peach-ink">Your group</p>
         <ul className="grid gap-3 sm:grid-cols-3 mt-3">
           {[
@@ -175,7 +175,7 @@ export default function GdHome() {
           <ul className="grid gap-3 sm:grid-cols-2">
             {past.map((g) => (
               <li key={g.id}>
-                <Link to={`/gd/${g.id}`} className="h-full rounded-2xl bg-card border border-line p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
+                <Link to={`/gd/${g.id}`} className="h-full rounded-2xl bg-card border border-line p-4 flex items-center gap-4 transition-all">
                   <span className={`w-12 h-12 shrink-0 rounded-xl grid place-items-center font-bold tabular-nums ${g.score === null ? 'bg-raised text-muted' : g.score >= 70 ? 'bg-good-soft text-good' : g.score >= 40 ? 'bg-warn-soft text-warn' : 'bg-blush text-blush-ink'}`}>
                     {g.score ?? (g.status === 'in_progress' ? '…' : '—')}
                   </span>
@@ -488,7 +488,7 @@ function GdResult({ gd }: { gd: Gd }) {
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6 flex flex-col sm:flex-row gap-6 items-center">
+      <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-center">
         {!hideScores && <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={r.overall} label="out of 100" suffix="" size={120} /></div>}
         <div className="flex-1">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-lavender-ink">GD feedback</p>

@@ -45,7 +45,7 @@ export function ChartToppers({ roles, name }: Named) {
     <ul className="grid gap-3 grid-cols-2 lg:grid-cols-4">
       {tiles.map((t, i) => (
         <li key={t.kicker} className="motion-reduce-static" style={{ animation: `pop-in 500ms ${i * 80}ms both` }}>
-          <Link to={t.to} className={`group relative h-full overflow-hidden rounded-2xl p-4 flex flex-col gap-1 hover:-translate-y-0.5 hover:shadow-md transition-all ${t.tone}`}>
+          <Link to={t.to} className={`group relative h-full overflow-hidden rounded-2xl p-4 flex flex-col gap-1 transition-all ${t.tone}`}>
             <span aria-hidden="true" className="absolute right-3 top-3 font-bold text-xl leading-none opacity-40 select-none">#1</span>
             <span className="flex items-center gap-1.5 pr-10 text-xs font-semibold uppercase tracking-wide"><Icon name={t.icon} size={14} /> {t.kicker}</span>
             <span className="font-semibold text-ink text-base sm:text-lg leading-snug mt-1">{t.title}</span>
@@ -129,7 +129,7 @@ function OpeningsChart({ roles, name, goalRole }: Named & { goalRole?: string | 
             <span className={`text-sm truncate ${r.role_id === goalRole ? "font-semibold text-accent-deep" : "font-medium"}`}><RoleName id={r.role_id} name={name} />{r.role_id === goalRole && <GoalTag />}</span>
             <span className="col-start-2 sm:col-start-3 flex items-center gap-3 min-w-0">
               <span className="flex-1 h-3 rounded-full bg-raised overflow-hidden">
-                <span className={`block h-full rounded-full ${GROW} ${i < 3 ? 'bg-linear-to-r from-[#12a8f0] to-[#7b3cf0]' : 'bg-accent/40'}`}
+                <span className={`block h-full rounded-full ${GROW} ${i < 3 ? 'bg-accent' : 'bg-accent/40'}`}
                   style={{ width: grown ? `${Math.max(2, (r.total_openings / max) * 100)}%` : 0, transitionDelay: `${i * 45}ms` }} />
               </span>
               <span className="w-14 text-right text-sm font-mono tabular-nums">{num(r.total_openings)}</span>
@@ -159,7 +159,7 @@ function PayLadder({ roles, name, goalRole }: Named & { goalRole?: string | null
               <span className={`text-sm truncate ${r.role_id === goalRole ? "font-semibold text-accent-deep" : "font-medium"}`}><RoleName id={r.role_id} name={name} />{r.role_id === goalRole && <GoalTag />}</span>
               <span className="relative h-4">
                 {ticks.map((t) => <span key={t} className="absolute inset-y-0 w-px bg-line" style={{ left: `${pct(t * 100_000)}%` }} aria-hidden="true" />)}
-                <span className={`absolute top-0.5 h-3 rounded-full bg-linear-to-r from-sage-ink/70 to-[#12a8f0] origin-left ${GROW}`}
+                <span className={`absolute top-0.5 h-3 rounded-full bg-accent origin-left ${GROW}`}
                   style={{ left: `${pct(r.salary!.p25)}%`, width: `${pct(r.salary!.p75 - r.salary!.p25)}%`, transform: grown ? 'scaleX(1)' : 'scaleX(0)', transitionDelay: `${i * 45}ms` }} />
                 <span className={`absolute -top-0.5 w-5 h-5 -ml-2.5 rounded-full bg-card border-[3px] border-accent transition-opacity duration-500 ${grown ? 'opacity-100' : 'opacity-0'}`}
                   style={{ left: `${pct(r.salary!.p50)}%`, transitionDelay: `${300 + i * 45}ms` }} aria-hidden="true" />
@@ -319,7 +319,7 @@ function HotSkills({ roles, name, mySkills }: Named & { mySkills: Set<string> })
               </span>
               <span className="col-start-2 sm:col-start-3 flex items-center gap-3 min-w-0">
                 <span className="flex-1 h-3 rounded-full bg-raised overflow-hidden">
-                  <span className={`block h-full rounded-full ${GROW} ${i < 3 ? 'bg-linear-to-r from-[#f59e0b] to-[#ec4899]' : 'bg-[#f59e0b]/35'}`}
+                  <span className={`block h-full rounded-full ${GROW} ${i < 3 ? 'bg-lavender-ink' : 'bg-lavender-ink/35'}`}
                     style={{ width: grown ? `${Math.max(2, (s.est / max) * 100)}%` : 0, transitionDelay: `${i * 45}ms` }} />
                 </span>
                 <span className="w-14 text-right text-sm font-mono tabular-nums">≈{compact(s.est)}</span>

@@ -10,38 +10,22 @@ import { openFeedback } from '../components/FeedbackButton'
 import { PageSkeleton, ShellSkeleton } from '../components/Skeleton'
 import { preloadAppPages } from '../lib/pages'
 
-// Each page has its own soft colour: a small icon tile, a tinted row when it's the open page,
-// and a solid tile when active. Full class names are written out so Tailwind can find them.
-type Tone = { tile: string; row: string; solid: string }
-const TONES = {
-  sky: { tile: 'bg-sky text-sky-ink', row: 'bg-sky', solid: 'bg-sky-ink text-card' },
-  blush: { tile: 'bg-blush text-blush-ink', row: 'bg-blush', solid: 'bg-blush-ink text-card' },
-  peach: { tile: 'bg-peach text-peach-ink', row: 'bg-peach', solid: 'bg-peach-ink text-card' },
-  sage: { tile: 'bg-sage text-sage-ink', row: 'bg-sage', solid: 'bg-sage-ink text-card' },
-  lavender: { tile: 'bg-lavender text-lavender-ink', row: 'bg-lavender', solid: 'bg-lavender-ink text-card' },
-  amber: { tile: 'bg-warn-soft text-warn', row: 'bg-warn-soft', solid: 'bg-warn text-card' },
-  teal: { tile: 'bg-info-soft text-info', row: 'bg-info-soft', solid: 'bg-info text-card' },
-  green: { tile: 'bg-good-soft text-good', row: 'bg-good-soft', solid: 'bg-good text-card' },
-  blue: { tile: 'bg-accent-soft text-accent-deep', row: 'bg-accent-soft', solid: 'bg-accent text-on-accent' },
-  grey: { tile: 'bg-raised text-soft', row: 'bg-raised', solid: 'bg-soft text-card' },
-} satisfies Record<string, Tone>
-
-type NavItem = { to: string; label: string; icon: IconName; tone: Tone; shine?: boolean; badge?: string } // shine: a highlighted, "live" page
+type NavItem = { to: string; label: string; icon: IconName; live?: boolean; badge?: string } // live: shows real, updating data
 const WORKSPACE: NavItem[] = [
-  { to: '/home', label: 'Home', icon: 'home', tone: TONES.sky },
-  { to: '/practice', label: 'Practice', icon: 'practice', tone: TONES.blush },
-  { to: '/gd', label: 'Group discussion', icon: 'chat', tone: TONES.amber },
-  { to: '/companies', label: 'Companies', icon: 'building', tone: TONES.peach },
-  { to: '/roadmap', label: 'Roadmap', icon: 'map', tone: TONES.sage },
-  { to: '/reports', label: 'Reports', icon: 'reports', tone: TONES.lavender },
+  { to: '/home', label: 'Home', icon: 'home' },
+  { to: '/practice', label: 'Practice', icon: 'practice' },
+  { to: '/gd', label: 'Group discussion', icon: 'chat' },
+  { to: '/companies', label: 'Companies', icon: 'building' },
+  { to: '/roadmap', label: 'Roadmap', icon: 'map' },
+  { to: '/reports', label: 'Reports', icon: 'reports' },
 ]
 // Goals open from the "Current goal" card at the top of the sidebar (and a tab on phones)
-const GOALS: NavItem = { to: '/goals', label: 'Goals', icon: 'goals', tone: TONES.amber }
+const GOALS: NavItem = { to: '/goals', label: 'Goals', icon: 'goals' }
 const CAREER: NavItem[] = [
-  { to: '/compass', label: 'Career compass', icon: 'compass', tone: TONES.teal },
-  { to: '/market', label: 'Jobs Board', icon: 'trend', tone: TONES.green, shine: true },
-  { to: '/jobs', label: 'Job Readiness', icon: 'target', tone: TONES.lavender },
-  { to: '/resume', label: 'Resume Studio', icon: 'file', tone: TONES.blue, badge: 'New' },
+  { to: '/compass', label: 'Career compass', icon: 'compass' },
+  { to: '/market', label: 'Jobs Board', icon: 'trend', live: true },
+  { to: '/jobs', label: 'Job Readiness', icon: 'target' },
+  { to: '/resume', label: 'Resume Studio', icon: 'file', badge: 'New' },
 ]
 // Profile and Settings live in the account row at the bottom of the sidebar (and the top bar on phones).
 
@@ -103,17 +87,14 @@ function Sidebar() {
         <Brand />
       </Link>
 
-      <Link to="/goals" className="group flex items-center gap-2.5 min-h-14 px-3 py-2.5 rounded-xl bg-linear-to-br from-lavender to-sky border border-lavender-ink/15 hover:shadow-md hover:-translate-y-px transition-all">
-        <span className="relative flex w-2.5 h-2.5 shrink-0">
-          {goal && <span className="absolute inset-0 rounded-full bg-accent/40 animate-ping motion-reduce:hidden" />}
-          <span className={`relative w-2.5 h-2.5 rounded-full ${goal ? 'bg-accent' : 'bg-warn'}`} />
-        </span>
+      <Link to="/goals" className="group flex items-center gap-2.5 min-h-14 px-3 py-2.5 rounded-xl bg-raised border border-line hover:border-line-strong transition-colors">
+        <span className={`w-2 h-2 shrink-0 rounded-full ${goal ? 'bg-accent' : 'bg-warn'}`} />
         <span className="flex-1 min-w-0">
-          <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-lavender-ink">Current goal</span>
+          <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Current goal</span>
           <span className="block text-sm font-semibold truncate">{goal ? label('roles', goal.target_role) : 'Choose a goal'}</span>
           {goal && <span className="block text-xs text-muted truncate">{label('companyTypes', goal.company_type)}</span>}
         </span>
-        <Icon name="swap" size={16} className="text-lavender-ink/70 group-hover:text-lavender-ink" />
+        <Icon name="swap" size={16} className="text-muted group-hover:text-ink" />
       </Link>
 
       {/* The page list scrolls on short screens, so the usage card and profile below always stay visible */}
@@ -127,7 +108,7 @@ function Sidebar() {
       <div className="flex items-center gap-1 px-0.5">
         <NavLink to="/profile" title="Your profile"
           className={({ isActive }) => `flex-1 min-w-0 flex items-center gap-2.5 rounded-xl p-1 transition-colors ${isActive ? 'bg-accent-soft' : 'hover:bg-raised'}`}>
-          <span className="w-9 h-9 shrink-0 rounded-full bg-linear-to-br from-peach to-blush text-blush-ink text-sm font-bold flex items-center justify-center ring-2 ring-card shadow-sm">{initials}</span>
+          <span className="w-9 h-9 shrink-0 rounded-full bg-accent-soft text-accent-deep text-sm font-semibold flex items-center justify-center">{initials}</span>
           <span className="min-w-0">
             <span className="block text-sm font-semibold truncate">{me?.full_name}</span>
             <span className="block text-xs text-muted truncate">{label('experienceLevels', me?.experience_level)}</span>
@@ -152,25 +133,19 @@ function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
       <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-subtle px-2.5 pb-1.5">{title}</span>
       {items.map((it) => (
         <NavLink key={it.to} to={it.to}
-          className={({ isActive }) => `group relative overflow-hidden flex items-center gap-3 min-h-9 px-2 rounded-xl text-sm transition-colors ${isActive
-            ? `${it.tone.row} text-ink font-semibold`
-            : it.shine ? 'text-ink font-medium bg-linear-to-r from-good-soft via-card to-good-soft/40 ring-1 ring-good/25 hover:ring-good/50'
-              : 'text-soft hover:text-ink hover:bg-raised'}`}>
+          className={({ isActive }) => `flex items-center gap-3 min-h-9 px-2.5 rounded-lg text-sm transition-colors ${isActive
+            ? 'bg-accent-soft text-accent-deep font-semibold'
+            : 'text-soft hover:text-ink hover:bg-raised'}`}>
           {({ isActive }) => (
             <>
-              {/* A light sweep across the row draws the eye to a live page */}
-              {it.shine && !isActive && <span aria-hidden="true" className="nav-shine pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 motion-reduce:hidden" />}
-              <span className={`relative w-7 h-7 rounded-lg grid place-items-center shrink-0 transition-all ${isActive ? `${it.tone.solid} shadow-sm` : `${it.tone.tile} group-hover:scale-105`}`}>
-                <Icon name={it.icon} size={16} strokeWidth={isActive ? 2.1 : 1.9} />
-              </span>
-              <span className="relative">{it.label}</span>
-              {it.badge && !it.shine && (
-                <span className="relative ml-auto rounded-full border border-bad/30 bg-bad-soft text-bad px-2 py-px text-[10px] font-semibold">{it.badge}</span>
+              <Icon name={it.icon} size={17} strokeWidth={isActive ? 2.1 : 1.8} className={isActive ? '' : 'text-muted'} />
+              <span>{it.label}</span>
+              {it.badge && (
+                <span className="ml-auto rounded-md bg-accent-soft text-accent-deep px-1.5 py-px text-[10px] font-semibold">{it.badge}</span>
               )}
-              {it.shine && (
-                <span className="relative ml-auto inline-flex items-center gap-1 rounded-full bg-good text-white px-1.5 py-0.5 text-[9px] font-bold tracking-wider">
-                  <span className="relative flex w-1.5 h-1.5"><span className="absolute inset-0 rounded-full bg-white/80 animate-ping motion-reduce:hidden" /><span className="relative w-1.5 h-1.5 rounded-full bg-white" /></span>
-                  LIVE
+              {it.live && (
+                <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold text-good" title="Updated daily from real job ads">
+                  <span className="w-1.5 h-1.5 rounded-full bg-good" /> Live
                 </span>
               )}
             </>
@@ -192,7 +167,7 @@ function UsageCard() {
         <span className="text-muted">Today's interviews</span>
         <span className="font-mono">{usage.interviews.used} / {usage.interviews.limit}</span>
       </div>
-      <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className={`h-full rounded-full ${pct >= 100 ? 'bg-warn' : 'bg-linear-to-r from-[#12a8f0] to-[#7b3cf0]'}`} style={{ width: `${pct}%` }} /></div>
+      <div className="h-1.5 rounded-full bg-hover overflow-hidden"><div className={`h-full rounded-full ${pct >= 100 ? 'bg-warn' : 'bg-accent'}`} style={{ width: `${pct}%` }} /></div>
     </div>
   )
 }
@@ -214,7 +189,7 @@ function MobileTopBar() {
         <NotificationBell />
         <ThemeToggle />
         <Link to="/settings" aria-label="Settings" className="w-11 h-11 rounded-xl text-muted hover:text-ink flex items-center justify-center"><Icon name="settings" /></Link>
-        <Link to="/profile" aria-label="Profile" className="w-9 h-9 rounded-full bg-linear-to-br from-peach to-blush text-blush-ink text-xs font-bold flex items-center justify-center">{initials}</Link>
+        <Link to="/profile" aria-label="Profile" className="w-9 h-9 rounded-full bg-accent-soft text-accent-deep text-xs font-semibold flex items-center justify-center">{initials}</Link>
       </div>
     </div>
   )
@@ -230,7 +205,7 @@ function MobileNav() {
           className={({ isActive }) => `flex flex-col items-center justify-center gap-1 min-h-12 text-[10px] tracking-tight ${isActive ? 'text-ink font-semibold' : 'text-muted'}`}>
           {({ isActive }) => (
             <>
-              <span className={`w-11 h-7 rounded-full grid place-items-center transition-colors ${isActive ? t.tone.tile : ''}`}>
+              <span className={`w-11 h-7 rounded-full grid place-items-center transition-colors ${isActive ? 'bg-accent-soft text-accent-deep' : ''}`}>
                 <Icon name={t.icon} size={20} strokeWidth={isActive ? 2.1 : 1.8} />
               </span>
               {t.label}

@@ -29,7 +29,7 @@ export function ResourceLinks({ topic, context = '', limit = 2, className = '' }
       <span className="text-[11px] font-semibold uppercase tracking-wide text-muted mr-0.5">Learn</span>
       {found?.links.map((l) => (
         <a key={l.url} href={l.url} {...external} title={l.title}
-          className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-card pl-1 pr-2.5 py-1 text-xs text-soft hover:text-ink hover:border-line-strong hover:shadow-sm transition-all">
+          className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-card pl-1 pr-2.5 py-1 text-xs text-soft hover:text-ink hover:border-line-strong transition-all">
           <span className={`rounded-full px-1.5 py-px text-[10px] font-semibold ${KIND[l.kind].cls}`}>{KIND[l.kind].label}</span>
           {/* Two links from the same site show their titles, so they don't look identical */}
           <span className="font-medium">{found.links.filter((x) => x.site === l.site).length > 1 ? l.title : l.site}</span>
@@ -37,7 +37,7 @@ export function ResourceLinks({ topic, context = '', limit = 2, className = '' }
         </a>
       ))}
       <a href={videoSearch(found?.name ?? topic)} {...external} title={`Search videos about ${topic}`}
-        className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-card pl-1 pr-2.5 py-1 text-xs text-soft hover:text-ink hover:border-line-strong hover:shadow-sm transition-all">
+        className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-card pl-1 pr-2.5 py-1 text-xs text-soft hover:text-ink hover:border-line-strong transition-all">
         <span className="rounded-full px-1.5 py-px text-[10px] font-semibold bg-bad-soft text-bad">Videos</span>
         <span className="font-medium">YouTube</span>
         <ArrowOut />

@@ -117,7 +117,7 @@ function ReportView({ report, hideScores, roundLabel, turns, share }: { report: 
 
       {/* Company-style interviews: how the answers compare with that company's publicly reported bar */}
       {report.companyFit && (
-        <section className="rounded-2xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6">
+        <section className="rounded-2xl border border-line bg-card p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lavender-ink">The {report.companyFit.company} bar</p>
           <p className="text-ink mt-2 leading-relaxed"><Rich text={report.companyFit.verdict} /></p>
           {report.companyFit.tips.length > 0 && (

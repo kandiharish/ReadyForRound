@@ -78,7 +78,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
           <span>{Math.round(progress * 100)}%</span>
         </div>
         <div className="mt-2 h-2 rounded-full bg-raised overflow-hidden">
-          <div className="h-full rounded-full bg-linear-to-r from-[#12a8f0] to-[#7b3cf0] transition-[width] duration-500" style={{ width: `${progress * 100}%` }} />
+          <div className="h-full rounded-full bg-accent transition-[width] duration-500" style={{ width: `${progress * 100}%` }} />
         </div>
       </div>
 
@@ -92,7 +92,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
                 <button key={label} type="button" onClick={() => {
                   setAnswers((a) => ({ ...a, interests: { ...a.interests, [card.id]: n + 1 } }))
                   if (i + 1 < INTEREST_CARDS.length) setI(i + 1); else go('pairs')
-                }} className={`min-h-16 rounded-2xl border px-1 text-xs sm:text-sm font-semibold transition-all hover:-translate-y-0.5 ${
+                }} className={`min-h-16 rounded-2xl border px-1 text-xs sm:text-sm font-semibold transition-all ${
                   answers.interests[card.id] === n + 1 ? 'border-accent bg-accent-soft text-accent-deep' : 'border-line bg-card hover:border-accent'}`}>
                   <span className="block text-lg sm:text-xl mb-0.5" aria-hidden="true">{['−−', '−', '·', '+', '++'][n]}</span>{label}
                 </button>
@@ -114,7 +114,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
             <div className="grid gap-3 sm:grid-cols-2 mt-2">
               {(['a', 'b'] as const).map((k) => (
                 <button key={k} type="button" onClick={() => choose(k)}
-                  className={`min-h-36 rounded-3xl border-2 p-6 text-left font-display font-semibold text-2xl leading-snug transition-all hover:-translate-y-1 hover:shadow-lg ${
+                  className={`min-h-36 rounded-3xl border-2 p-6 text-left font-display font-semibold text-2xl leading-snug transition-all ${
                     answers.pairs[p.id] === k ? 'border-accent bg-accent-soft' : 'border-line bg-card hover:border-accent'}`}>
                   {p[k].text}
                 </button>
@@ -227,8 +227,7 @@ function Intro({ onStart, onClose }: { onStart: () => void; onClose?: () => void
     ['What you enjoy', `${INTEREST_CARDS.length} quick cards`], ['This or that', `${PAIRS.length} choices`], ["What you've tried", 'Real experience'], ['Comfort check', `${COMFORTS.length} honest questions`], ['Taste tests', `${TASTE_TESTS.length} tiny tasks (optional)`],
   ]
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6 sm:p-10">
-      <div aria-hidden="true" className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-card/40 blur-3xl motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]" />
+    <section className="relative overflow-hidden rounded-3xl border border-line bg-card p-6 sm:p-10">
       <div className="relative max-w-2xl">
         <span className="inline-flex items-center gap-2 rounded-full bg-card/80 px-3 py-1 text-xs font-semibold text-lavender-ink"><Icon name="target" size={14} /> Career Compass</span>
         <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-4">Find the role that fits how you like to work.</h2>
@@ -262,7 +261,7 @@ function TasteTest({ index, answer, onDone, onBack }: { index: number; answer?: 
           {t.chart.map(([m, v]) => (
             <div key={m} className="flex-1 flex flex-col items-center justify-end h-full gap-1">
               <span className="text-xs font-mono text-muted">{v}</span>
-              <div className="w-full rounded-t-lg bg-linear-to-t from-[#3354d6] to-[#7b9bff]" style={{ height: `${(v / 480) * 100}%` }} />
+              <div className="w-full rounded-t-lg bg-accent" style={{ height: `${(v / 480) * 100}%` }} />
               <span className="text-xs font-medium">{m}</span>
             </div>
           ))}
@@ -333,7 +332,7 @@ function Result({ result, roles, savedId, onPick, onRetake, showMarketLinks }: {
 
   return (
     <div className="space-y-6 motion-safe:animate-[pop-in_0.4s_ease-out]">
-      <section className="relative overflow-hidden rounded-3xl border border-line bg-linear-to-br from-lavender via-sky to-sage p-6 sm:p-8">
+      <section className="relative overflow-hidden rounded-3xl border border-line bg-card p-6 sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lavender-ink">Your Career Compass</p>
         <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-tight mt-2">{name(top[0].role)}</h2>
         <p className="text-soft mt-2">fits how you like to work best. Here are your top 3 matches.</p>
@@ -372,7 +371,7 @@ function Result({ result, roles, savedId, onPick, onRetake, showMarketLinks }: {
             {dims.map(([d, v]) => (
               <li key={d}>
                 <div className="flex justify-between text-sm"><span>{DIMENSIONS[d]}</span><span className="font-mono text-muted">{v}</span></div>
-                <div className="h-2 rounded-full bg-raised mt-1 overflow-hidden"><div className="h-full rounded-full bg-linear-to-r from-[#12a8f0] to-[#7b3cf0] transition-[width] duration-700" style={{ width: `${Math.max(4, v)}%` }} /></div>
+                <div className="h-2 rounded-full bg-raised mt-1 overflow-hidden"><div className="h-full rounded-full bg-accent transition-[width] duration-700" style={{ width: `${Math.max(4, v)}%` }} /></div>
               </li>
             ))}
           </ul>

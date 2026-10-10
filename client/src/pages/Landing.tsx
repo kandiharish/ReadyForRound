@@ -48,7 +48,7 @@ const TINTS = {
 } as const
 type Tint = keyof typeof TINTS
 
-const GRADIENT_TEXT = 'bg-linear-to-r from-[#12a8f0] via-[#7b3cf0] to-[#12a8f0] bg-size-[200%_auto] bg-clip-text text-transparent motion-safe:animate-[shimmer_6s_linear_infinite]'
+const GRADIENT_TEXT = 'text-accent'
 
 function Section({ id, eyebrow, title, children, className = '', center = false }: { id?: string; eyebrow: string; title: ReactNode; children: ReactNode; className?: string; center?: boolean }) {
   return (
@@ -75,12 +75,12 @@ function Chip({ tint, icon, size = 'md' }: { tint: Tint; icon: IconName; size?: 
 function CtaButtons({ center = false }: { center?: boolean }) {
   return (
     <div className={`flex flex-wrap gap-3 ${center ? 'justify-center' : ''}`}>
-      <Link to="/signup" className="group relative inline-flex items-center gap-2 min-h-12 px-6 rounded-xl bg-accent text-on-accent font-semibold shadow-lg shadow-accent/30 hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-xl transition-all overflow-hidden">
+      <Link to="/signup" className="group relative inline-flex items-center gap-2 min-h-12 px-6 rounded-xl bg-accent text-on-accent font-semibold hover:bg-accent-hover transition-colors overflow-hidden">
         {/* a light sweep across the button on hover */}
         <span aria-hidden="true" className="absolute inset-y-0 -left-1/2 w-1/3 bg-white/25 -skew-x-12 group-hover:translate-x-[450%] transition-transform duration-700" />
         Start practising free <Icon name="arrow" size={18} className="group-hover:translate-x-1 transition-transform" />
       </Link>
-      <Link to="/login" className="inline-flex items-center min-h-12 px-6 rounded-xl border border-line-strong bg-card font-medium hover:bg-raised hover:-translate-y-0.5 transition-all">
+      <Link to="/login" className="inline-flex items-center min-h-12 px-6 rounded-xl border border-line-strong bg-card font-medium hover:bg-raised transition-all">
         Log in
       </Link>
     </div>
@@ -91,7 +91,7 @@ function FreeBadge() {
   return (
     <span className="inline-flex items-center gap-2 rounded-full bg-sage text-sage-ink px-3.5 py-1.5 text-sm font-semibold">
       <span className="relative flex w-2 h-2">
-        <span className="absolute inset-0 rounded-full bg-good opacity-60 motion-safe:animate-ping" />
+        
         <span className="relative w-2 h-2 rounded-full bg-good" />
       </span>
       100% free
@@ -128,25 +128,11 @@ function TopNav() {
   )
 }
 
-const ROTATING = ['placement', 'technical', 'HR', 'project']
-
-// The word in the headline that changes every few seconds.
-function RotatingWord() {
-  const [i, setI] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setI((n) => (n + 1) % ROTATING.length), 2400)
-    return () => clearInterval(t)
-  }, [])
-  return <span key={i} className={`inline-block ${GRADIENT_TEXT} motion-safe:animate-[pop-in_0.5s_ease-out]`}>{ROTATING[i]}</span>
-}
 
 function Hero() {
   return (
     <section className="relative px-4 sm:px-6 pt-10 sm:pt-16 pb-24">
       <div aria-hidden="true" className="pointer-events-none absolute -top-16 inset-x-0 bottom-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-md h-112 rounded-full bg-sky opacity-80 blur-3xl motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]" />
-        <div className="absolute top-10 -right-24 w-104 h-104 rounded-full bg-lavender opacity-80 blur-3xl motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]" />
-        <div className="absolute -bottom-32 left-1/3 w-96 h-96 rounded-full bg-blush opacity-60 blur-3xl motion-safe:animate-[blob-drift_26s_ease-in-out_infinite]" />
       </div>
 
       <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-14 lg:grid-cols-[1.05fr_1fr] items-center">
@@ -156,7 +142,7 @@ function Hero() {
             {/* Fixed line breaks, so the changing word never makes the headline jump around */}
             <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] xl:text-[4.3rem] 2xl:text-[5rem] leading-[1.05] mt-6">
               <span className="block">Walk into your</span>
-              <span className="block sm:whitespace-nowrap"><RotatingWord /> <span className="block sm:inline">interview like</span></span>
+              <span className="block sm:whitespace-nowrap"><span className={GRADIENT_TEXT}>placement</span> <span className="block sm:inline">interview like</span></span>
               <span className="block">you've already <span className="block sm:inline">done it.</span></span>
             </h1>
           </Reveal>
@@ -213,7 +199,7 @@ function HeroDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-lg xl:max-w-xl 2xl:max-w-2xl mb-20 sm:mb-12" aria-label="A short animated example of an interview on ReadyForRound">
-      <div className="rounded-3xl bg-stage-card border border-stage-line shadow-2xl shadow-accent/15 overflow-hidden">
+      <div className="rounded-3xl bg-stage-card border border-stage-line shadow-lg shadow-black/5 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-stage-line text-xs text-stage-muted">
           <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-bad animate-pulse" /> {item.round}</span>
           <span className="flex gap-1">{DEMO.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === n ? 'w-5 bg-accent' : 'w-1.5 bg-stage-line'}`} />)}</span>
@@ -246,7 +232,7 @@ function HeroDemo() {
       </div>
 
       {phase === 'feedback' && (
-        <div key={n} className="absolute -right-2 sm:-right-12 -bottom-20 w-60 rounded-2xl bg-card border border-line shadow-2xl p-4 motion-safe:animate-[pop-in_0.45s_cubic-bezier(0.22,1,0.36,1)]">
+        <div key={n} className="absolute -right-2 sm:-right-12 -bottom-20 w-60 rounded-2xl bg-card border border-line shadow-lg p-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Your feedback</span>
             <span className="text-[10px] uppercase tracking-wider text-muted">Example</span>
@@ -260,7 +246,7 @@ function HeroDemo() {
         </div>
       )}
 
-      <div className="absolute -left-3 sm:-left-8 top-16 rounded-2xl bg-card border border-line shadow-lg px-3 py-2 flex items-center gap-2 motion-safe:animate-[float_7s_ease-in-out_infinite_1s]">
+      <div className="absolute -left-3 sm:-left-8 top-16 rounded-2xl bg-card border border-line shadow-lg px-3 py-2 flex items-center gap-2">
         <Chip tint="peach" icon="flame" />
         <span className="text-xs leading-tight"><b className="block text-sm">5-day streak</b><span className="text-muted">Keep it going</span></span>
       </div>
@@ -287,18 +273,13 @@ function CountUp({ to, className = '', duration = 900 }: { to: number; className
 
 const TOPICS = ['Tell me about yourself', 'DSA', 'SQL joins', 'OOP', 'React hooks', 'Java', 'Python', 'DBMS', 'Operating systems', 'Computer networks', 'Your final-year project', 'STAR answers', 'Strengths & weaknesses', 'System design basics', 'Why should we hire you?', 'Machine learning', 'Docker & Kubernetes', 'Data pipelines', 'Excel & Power BI', 'Why are you switching jobs?', 'Your biggest project at work', 'Leading a team']
 
-// An endless, slowly scrolling ribbon of things people can practise.
+// The things people can practise, as a simple list of tags.
 function TopicRibbon() {
-  const row = [...TOPICS, ...TOPICS]
   return (
-    <div className="relative border-y border-line bg-card py-5 overflow-hidden" aria-label="Topics you can practise">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r from-card to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l from-card to-transparent z-10" />
-      <ul className="flex w-max gap-3 motion-safe:animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused]">
-        {row.map((t, i) => (
-          <li key={i} aria-hidden={i >= TOPICS.length} className="shrink-0 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium text-soft">
-            {t}
-          </li>
+    <div className="border-y border-line bg-card py-6" aria-label="Topics you can practise">
+      <ul className="max-w-5xl mx-auto px-4 flex flex-wrap justify-center gap-2">
+        {TOPICS.map((t) => (
+          <li key={t} className="rounded-full border border-line bg-paper px-3.5 py-1.5 text-sm font-medium text-soft">{t}</li>
         ))}
       </ul>
     </div>
@@ -335,7 +316,7 @@ function FlipCard({ p, index }: { p: (typeof PAINS)[number]; index: number }) {
           <span className="font-display font-semibold text-xl leading-snug">"{p.pain}"</span>
         </span>
         {/* Back: the fix */}
-        <span className="absolute inset-0 rounded-2xl bg-linear-to-br from-accent-soft to-card border border-accent/30 p-5 flex flex-row sm:flex-col items-center sm:items-start gap-4 sm:justify-between shadow-md backface-hidden rotate-y-180">
+        <span className="absolute inset-0 rounded-2xl bg-accent-soft border border-accent/30 p-5 flex flex-row sm:flex-col items-center sm:items-start gap-4 sm:justify-between shadow-md backface-hidden rotate-y-180">
           <Chip tint={p.tint} icon={p.icon} />
           <span className="font-semibold leading-snug">{p.fix}</span>
         </span>
@@ -354,18 +335,18 @@ function Problems() {
         ].map((img, i) => (
           <Reveal key={img.src} from="zoom" delay={i * 150}>
             <figure className="rounded-3xl overflow-hidden border border-line shadow-sm group">
-              <img src={img.src} alt={img.alt} loading="lazy" className="w-full aspect-3/2 object-cover transition-transform duration-1000 group-hover:scale-105" />
+              <img src={img.src} alt={img.alt} loading="lazy" className="w-full aspect-3/2 object-cover transition-transform duration-1000" />
             </figure>
           </Reveal>
         ))}
       </div>
 
       <Reveal className="mt-12 flex items-center gap-3">
-        <span className="h-px flex-1 bg-linear-to-r from-transparent to-line-strong" />
+        <span className="h-px flex-1 bg-line" />
         <span className="flex items-center gap-2 rounded-full bg-card border border-line px-4 py-2 text-sm font-semibold text-accent shadow-sm">
           <img src="/logo-mark.png" alt="" className="w-5 h-5" /> Watch ReadyForRound fix each one
         </span>
-        <span className="h-px flex-1 bg-linear-to-l from-transparent to-line-strong" />
+        <span className="h-px flex-1 bg-line" />
       </Reveal>
 
       <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
@@ -392,8 +373,8 @@ function ForEveryone() {
         {AUDIENCE.map((a, i) => (
           <li key={a.title}>
             <Reveal delay={i * 100} className="h-full">
-              <div className="group h-full rounded-3xl bg-paper border border-line p-6 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                <span className="inline-flex transition-transform duration-300 group-hover:scale-110"><Chip tint={a.tint} icon={a.icon} size="lg" /></span>
+              <div className="group h-full rounded-3xl bg-paper border border-line p-6 text-center transition-all duration-300">
+                <span className="inline-flex transition-transform duration-300"><Chip tint={a.tint} icon={a.icon} size="lg" /></span>
                 <h3 className="font-semibold text-lg mt-4">{a.title}</h3>
                 <p className="text-sm text-soft mt-1">{a.body}</p>
               </div>
@@ -419,7 +400,7 @@ function HowItWorks() {
       <ol ref={ref} className="grid gap-10 md:gap-6 md:grid-cols-3 relative max-w-5xl mx-auto">
         {/* The line between the steps draws itself from left to right */}
         <span aria-hidden="true" className="hidden md:block absolute top-7 left-[16%] right-[16%] h-0.5 bg-line" />
-        <span aria-hidden="true" className={`hidden md:block absolute top-7 left-[16%] h-0.5 bg-linear-to-r from-[#a99af0] via-[#7fbbf0] to-[#8fd1a6] transition-all duration-1500 ease-out ${inView ? 'right-[16%]' : 'right-[84%]'}`} />
+        <span aria-hidden="true" className={`hidden md:block absolute top-7 left-[16%] h-px bg-line-strong transition-all duration-1500 ease-out ${inView ? 'right-[16%]' : 'right-[84%]'}`} />
         {STEPS.map((s, i) => (
           <li key={s.title} style={{ transitionDelay: `${300 + i * 450}ms` }}
             className={`relative flex flex-col items-center text-center transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
@@ -458,8 +439,8 @@ function Features() {
         {FEATURES.map((f, i) => (
           <li key={f.title}>
             <Reveal delay={(i % 4) * 90 + Math.floor(i / 4) * 60} className="h-full">
-              <div className="group h-full rounded-2xl bg-paper border border-line p-5 flex flex-col items-center text-center gap-3 hover:border-accent/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                <span className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"><Chip tint={f.tint} icon={f.icon} size="lg" /></span>
+              <div className="group h-full rounded-2xl bg-paper border border-line p-5 flex flex-col items-center text-center gap-3 hover:border-accent/40 transition-all duration-300">
+                <span className="transition-transform duration-300 group-hover:-rotate-6"><Chip tint={f.tint} icon={f.icon} size="lg" /></span>
                 <span className="font-semibold leading-snug">{f.title}</span>
               </div>
             </Reveal>
@@ -480,9 +461,7 @@ function FreeBanner() {
   return (
     <section className="px-4 sm:px-6 py-16">
       <Reveal from="zoom">
-        <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto overflow-hidden rounded-3xl bg-linear-to-br from-sage via-sky to-lavender border border-line px-6 py-14 sm:py-20 text-center">
-          <div aria-hidden="true" className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-card/40 blur-3xl motion-safe:animate-[blob-drift_16s_ease-in-out_infinite]" />
-          <div aria-hidden="true" className="absolute -bottom-24 right-0 w-80 h-80 rounded-full bg-blush/60 blur-3xl motion-safe:animate-[blob-drift_20s_ease-in-out_infinite_reverse]" />
+        <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto overflow-hidden rounded-3xl bg-card border border-line px-6 py-14 sm:py-20 text-center">
           <p className={`relative font-display font-semibold text-6xl sm:text-8xl leading-none ${GRADIENT_TEXT}`}>100% free</p>
           <p className="relative text-xl sm:text-2xl font-semibold mt-4">No catch. No hidden charges.</p>
           <ul className="relative mt-8 flex flex-wrap justify-center gap-3">
@@ -585,14 +564,14 @@ function Faq() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Questions</p>
           <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-3">Quick answers</h2>
           <p className="text-soft mt-4 max-w-sm">Everything you might wonder before your first practice interview.</p>
-          <div className="mt-8 rounded-3xl bg-linear-to-br from-lavender via-sky to-sage border border-line p-6 max-w-sm">
+          <div className="mt-8 rounded-2xl bg-card border border-line p-6 max-w-sm">
             <span className="w-11 h-11 rounded-2xl bg-card flex items-center justify-center text-accent shadow-sm">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
             </span>
             <p className="font-semibold text-lg mt-4">Still have a question?</p>
             <p className="text-sm text-soft mt-1">Send it to us. We read every message.</p>
             <button type="button" onClick={openFeedback}
-              className="mt-5 inline-flex items-center gap-2 min-h-11 px-5 rounded-xl bg-card text-ink font-semibold shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all">
+              className="mt-5 inline-flex items-center gap-2 min-h-11 px-5 rounded-xl bg-card text-ink font-semibold shadow-sm transition-all">
               Ask us anything <Icon name="arrow" size={16} />
             </button>
           </div>
@@ -633,22 +612,20 @@ function FinalCta() {
   return (
     <section className="px-4 sm:px-6 lg:px-10 pb-20">
       <Reveal from="zoom">
-        <div className="relative max-w-6xl mx-auto overflow-hidden rounded-3xl bg-linear-to-r from-[#2f5bea] via-[#4a49e6] to-[#7b3cf0] px-6 py-10 sm:px-12 sm:py-12 shadow-xl shadow-accent/20">
+        <div className="relative max-w-6xl mx-auto overflow-hidden rounded-2xl bg-[#0b1220] px-6 py-10 sm:px-12 sm:py-12">
           {/* soft light spots and a faint "R" watermark for depth */}
-          <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-10 w-64 h-64 rounded-full bg-white/15 blur-3xl motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-1/4 w-72 h-72 rounded-full bg-[#12c8f5]/30 blur-3xl motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]" />
           <img aria-hidden="true" src="/logo-mark.png" alt="" className="pointer-events-none absolute -right-6 -bottom-10 w-48 h-48 opacity-15 rotate-12 brightness-200 hidden sm:block" />
 
           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-8">
             <div className="text-white">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#7ef0b4]" /> 100% free
+                <span className="w-1.5 h-1.5 rounded-full bg-[#47c98a]" /> 100% free
               </span>
               <h2 className="font-display font-semibold text-3xl sm:text-5xl leading-[1.05] mt-4">Your next interview is<br className="hidden sm:block" /> a practice round away.</h2>
               <p className="text-white/80 mt-3">Start your first mock interview in under a minute.</p>
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
-              <Link to="/signup" className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-xl bg-white text-[#2f3fd0] font-semibold shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all">
+              <Link to="/signup" className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-xl bg-white text-[#0b63e5] font-semibold hover:bg-white/90 transition-colors">
                 Start practising free <Icon name="arrow" size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link to="/login" className="inline-flex items-center min-h-12 px-6 rounded-xl border border-white/40 text-white font-medium hover:bg-white/10 transition-colors">

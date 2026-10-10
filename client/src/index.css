@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ---- "Sapphire" design tokens: cool light mode + deep navy dark mode ----
+/* ---- Design tokens, built from the colours of the ReadyForRound "R" logo ----
    Each colour name (bg-paper, text-ink, bg-accent...) points to a CSS variable.
    The variables have a light value (:root) and a dark value ([data-theme="dark"]),
    so switching the theme changes every colour in the app at once. */
@@ -68,100 +68,103 @@
   /* "Night": always dark, for the one card that should stand out on every theme (Up next) */
 }
 
-/* Light: cool blue-white, deep navy text, sapphire */
+/* Light: neutral greys, near-black text, and the logo's azure as the one action colour.
+   Brand family (from the R mark): cyan #00c8f8, azure #0a84f8, indigo #5028f8.
+   The accent is a deeper azure so white text on it passes WCAG AA (5.3:1). */
 :root {
   color-scheme: light;
-  --paper: #f4f6fb;
+  --paper: #f6f7f9;
   --card: #ffffff;
-  --raised: #eef2f8;
-  --hover: #e2e8f2;
-  --line: #e1e7f0;
-  --line-strong: #cbd5e3;
-  --ink: #0f172a;
-  --ink-hover: #1e293b;
-  --soft: #334155;
-  --muted: #5a6577;
-  --subtle: #697587;
-  --accent: #3354d6;
-  --accent-hover: #2945bd;
+  --raised: #f2f4f7;
+  --hover: #e8ebf0;
+  --line: #e4e7ec;
+  --line-strong: #d0d5dd;
+  --ink: #101828;
+  --ink-hover: #1d2939;
+  --soft: #344054;
+  --muted: #5d6676;
+  --subtle: #667085;
+  --accent: #0b63e5;
+  --accent-hover: #0a56c7;
   --on-accent: #ffffff;
-  --accent-deep: #2a46b5;
-  --accent-soft: #e7edfe;
-  --good: #157347;
-  --good-soft: #e1f3e9;
-  --warn: #b25a07;
-  --warn-soft: #fdf0dd;
+  --accent-deep: #0a52bd;
+  --accent-soft: #eaf2fe;
+  --good: #067647;
+  --good-soft: #e7f6ee;
+  --warn: #b54708;
+  --warn-soft: #fef4e6;
   --bad: #b42318;
-  --bad-soft: #fde6e3;
-  --info: #0e7490;
-  --info-soft: #ddf2f6;
-  --accent-bright: #3354d6;
+  --bad-soft: #fdecea;
+  --info: #0b6a8b;
+  --info-soft: #e6f6fb;
+  --accent-bright: #0b63e5;
   --on-accent-bright: #ffffff;
 
-  --blush: #fbe7ee;     --blush-ink: #a3385c;
-  --sage: #e3f2e8;      --sage-ink: #2b6a44;
-  --lavender: #ede9fc;  --lavender-ink: #5944ad;
-  --peach: #fdecdf;     --peach-ink: #984a12;
-  --sky: #e2f0fb;       --sky-ink: #1c5c8b;
+  /* Supporting tints, all from the logo family plus one neutral and one green */
+  --sky: #eaf2fe;       --sky-ink: #0a52bd;    /* azure */
+  --lavender: #efecfe;  --lavender-ink: #4527c9; /* indigo */
+  --peach: #e6f6fb;     --peach-ink: #0b6a8b;  /* cyan */
+  --blush: #f2f4f7;     --blush-ink: #344054;  /* neutral */
+  --sage: #e7f6ee;      --sage-ink: #067647;   /* green */
 
-  --stage: #edf1f8;
+  --stage: #f2f4f7;
   --stage-card: #ffffff;
-  --stage-raised: #f1f4fa;
-  --stage-line: #dbe2ed;
-  --stage-text: #0f172a;
-  --stage-soft: #334155;
-  --stage-muted: #5a6577;
-  --avatar-from: #e3eaf8;
-  --avatar-to: #c7d3ec;
-  --glow-rgb: 51, 84, 214; /* sapphire glow around the interviewer */
+  --stage-raised: #f2f4f7;
+  --stage-line: #e4e7ec;
+  --stage-text: #101828;
+  --stage-soft: #344054;
+  --stage-muted: #5d6676;
+  --avatar-from: #eef1f5;
+  --avatar-to: #dfe4eb;
+  --glow-rgb: 11, 99, 229;
 }
 
-/* Dark: deep navy, soft white text, bright periwinkle */
+/* Dark: neutral charcoal (not navy), soft white text, a lighter azure */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper: #0a0f1d;
-  --card: #111a2e;
-  --raised: #17223a;
-  --hover: #1f2b47;
-  --line: #1f2a43;
-  --line-strong: #2e3b5a;
-  --ink: #e8edf7;
+  --paper: #0c0f14;
+  --card: #13171e;
+  --raised: #1a1f28;
+  --hover: #232935;
+  --line: #242a35;
+  --line-strong: #343c4a;
+  --ink: #eceff4;
   --ink-hover: #ffffff;
-  --soft: #c5cee0;
-  --muted: #95a1b9;
-  --subtle: #8390aa;
-  --accent: #7f9bff;
-  --accent-hover: #9cb2ff;
-  --on-accent: #0a0f1d;
-  --accent-deep: #a6b9ff;
-  --accent-soft: #1b2654;
-  --good: #63d09a;
-  --good-soft: #10291f;
-  --warn: #f3b562;
-  --warn-soft: #2d2314;
+  --soft: #c6ccd6;
+  --muted: #98a1b0;
+  --subtle: #8a93a3;
+  --accent: #4d9bff;
+  --accent-hover: #6eaeff;
+  --on-accent: #06101f;
+  --accent-deep: #8fc1ff;
+  --accent-soft: #10233f;
+  --good: #47c98a;
+  --good-soft: #0e2a1d;
+  --warn: #f2b05e;
+  --warn-soft: #2c2113;
   --bad: #f38b82;
-  --bad-soft: #32181a;
-  --info: #5ccadb;
-  --info-soft: #0f2a33;
-  --accent-bright: #8ea7ff;
-  --on-accent-bright: #0b1020;
+  --bad-soft: #321a19;
+  --info: #5fcde8;
+  --info-soft: #0d2730;
+  --accent-bright: #4d9bff;
+  --on-accent-bright: #06101f;
 
-  --blush: #3a1e29;     --blush-ink: #f3a9c1;
-  --sage: #172d20;      --sage-ink: #9fd6b1;
-  --lavender: #251f40;  --lavender-ink: #c0b5f6;
-  --peach: #33231a;     --peach-ink: #f5bb8c;
-  --sky: #142838;       --sky-ink: #95c9ef;
+  --sky: #10233f;       --sky-ink: #8fc1ff;
+  --lavender: #1d1938;  --lavender-ink: #b7a9ff;
+  --peach: #0d2730;     --peach-ink: #7fd8ef;
+  --blush: #1a1f28;     --blush-ink: #c6ccd6;
+  --sage: #0e2a1d;      --sage-ink: #7fd6a6;
 
-  --stage: #0b1020;
-  --stage-card: #131b2e;
-  --stage-raised: #1a2440;
-  --stage-line: #27324f;
-  --stage-text: #eef2fa;
-  --stage-soft: #c9d2e3;
-  --stage-muted: #96a2b9;
-  --avatar-from: #2a3658;
-  --avatar-to: #151d33;
-  --glow-rgb: 142, 167, 255;
+  --stage: #0c0f14;
+  --stage-card: #13171e;
+  --stage-raised: #1a1f28;
+  --stage-line: #242a35;
+  --stage-text: #eceff4;
+  --stage-soft: #c6ccd6;
+  --stage-muted: #98a1b0;
+  --avatar-from: #232935;
+  --avatar-to: #13171e;
+  --glow-rgb: 77, 155, 255;
 }
 
 body {
@@ -195,12 +198,12 @@ p, li { text-wrap: pretty; }
     transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   :where(button, [role="button"], [role="tab"], [role="radio"]):not(:disabled):active,
-  :where(a.inline-flex, a.rounded-xl, a.rounded-2xl, a.rounded-full):active { transform: scale(0.97); }
+  :where(a.inline-flex, a.rounded-xl, a.rounded-2xl, a.rounded-full):active { transform: scale(0.98); }
   /* New pages fade and rise in */
-  .page-in { animation: page-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .page-in { animation: page-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 }
 @keyframes page-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: none; }
 }
 a, button { -webkit-tap-highlight-color: transparent; }
@@ -252,19 +255,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
   to { width: 100%; }
 }
 
-/* Story circles: a slowly turning colour ring and a soft breathing glow, always on */
-@keyframes ring-spin { to { transform: rotate(360deg); } }
-@keyframes ring-glow {
-  0%, 100% { box-shadow: 0 0 4px 0 rgba(var(--ring-glow, var(--glow-rgb)), 0.25); }
-  50% { box-shadow: 0 0 22px 5px rgba(var(--ring-glow, var(--glow-rgb)), 0.6); }
-}
-
-/* Landing page: cards that gently float up and down */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
 /* Interviewer photo: a slight "breathing" while talking, and sound bars */
 @keyframes avatar-talk {
   0%, 100% { transform: scale(1); }
@@ -276,22 +266,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
 }
 
 /* ---------- Landing page motion ---------- */
-/* Big soft colour blobs that slowly drift behind the hero */
-@keyframes blob-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(40px, -30px) scale(1.08); }
-  66% { transform: translate(-30px, 25px) scale(0.95); }
-}
-/* A shine that moves across gradient text */
-@keyframes shimmer {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-/* An endless horizontal ribbon (the content is repeated twice, so -50% loops seamlessly) */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
 /* Small cards popping in */
 @keyframes pop-in {
   0% { opacity: 0; transform: translateY(12px) scale(0.96); }
@@ -305,32 +279,20 @@ a, button { -webkit-tap-highlight-color: transparent; }
   .motion-reduce-static { animation: none !important; }
 }
 
-/* Login / sign-up background: interview moments float up the screen */
-@keyframes rise {
-  0% { transform: translateY(15vh); opacity: 0; }
-  10% { opacity: 0.85; }
-  85% { opacity: 0.85; }
-  100% { transform: translateY(-115vh); opacity: 0; }
-}
-@keyframes sway {
-  0%, 100% { transform: translateX(0) rotate(-1.5deg); }
-  50% { transform: translateX(14px) rotate(1.5deg); }
-}
-
 /* Phones: sheets slide up from the bottom */
 @keyframes sheet-up {
   from { transform: translateY(100%); }
   to { transform: none; }
 }
 
-/* Skeleton loading: placeholder shapes with a soft light sweeping across (works in light and dark themes) */
+/* Skeleton loading: grey placeholder shapes with a faint sweep (works in light and dark themes) */
 .skeleton {
   background-color: var(--raised);
   background-image: linear-gradient(90deg,
     transparent 0%,
-    color-mix(in srgb, var(--accent) 12%, transparent) 45%,
-    color-mix(in srgb, var(--accent) 18%, transparent) 50%,
-    color-mix(in srgb, var(--accent) 12%, transparent) 55%,
+    color-mix(in srgb, var(--ink) 4%, transparent) 45%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 4%, transparent) 55%,
     transparent 100%);
   background-size: 220% 100%;
   background-repeat: no-repeat;
@@ -344,18 +306,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none; }
 }
-
-/* Sidebar: a soft light sweep across a highlighted page (e.g. the live Jobs Board) */
-@keyframes nav-shine {
-  0% { transform: translateX(0) skewX(-20deg); }
-  55%, 100% { transform: translateX(450%) skewX(-20deg); }
-}
-.nav-shine {
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.75), transparent);
-  animation: nav-shine 3.2s ease-in-out infinite;
-}
-:root[data-theme="dark"] .nav-shine { background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav-shine { background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent); } }
 
 /* Inside the app, headings use product sizes (like job platforms), not marketing sizes.
    The landing page keeps its large hero type. */

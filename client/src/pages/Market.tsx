@@ -93,7 +93,7 @@ export default function Market() {
             {roles.map((r, i) => (
               <li key={r.role_id}>
                 <Link to={`/market/${r.role_id}`}
-                  className={`group h-full rounded-2xl bg-card border p-5 flex flex-col gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all ${r.role_id === goalRole ? 'border-accent' : 'border-line hover:border-accent/40'}`}>
+                  className={`group h-full rounded-2xl bg-card border p-5 flex flex-col gap-3 transition-all ${r.role_id === goalRole ? 'border-accent' : 'border-line hover:border-accent/40'}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <span className="text-xs font-mono text-muted">#{i + 1}</span>
@@ -189,7 +189,7 @@ export function MarketRolePage() {
           <h2 className="font-semibold">Pay range</h2>
           <p className="text-sm text-muted mt-1">The middle half of salaries stated in ads (yearly, in lakhs). Freshers usually start near the left end.</p>
           <div className="relative h-3 rounded-full bg-raised mt-6">
-            <div className="absolute inset-y-0 rounded-full bg-linear-to-r from-[#12a8f0] to-[#7b3cf0]"
+            <div className="absolute inset-y-0 rounded-full bg-accent"
               style={{ left: `${(r.salary.p25 / maxSalary) * 100}%`, width: `${((r.salary.p75 - r.salary.p25) / maxSalary) * 100}%` }} />
             <span className="absolute -top-1.5 w-6 h-6 -ml-3 rounded-full bg-card border-4 border-accent" style={{ left: `${(r.salary.p50 / maxSalary) * 100}%` }} aria-hidden="true" />
           </div>

@@ -5,18 +5,18 @@ const SEEN_KEY = 'rfr-seen-stories'
 const SLIDE_MS = 8000 // auto-advance time per slide
 
 const TINT = {
-  blush: { glow: '242, 154, 183', ring: '#f29ab7, #f6c0a0, #f7a8d0, #f29ab7', chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
-  sage: { glow: '110, 200, 140', ring: '#8fd1a6, #bfe3a0, #7fd8c4, #8fd1a6', chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
-  lavender: { glow: '160, 140, 240', ring: '#a99af0, #d7a6ef, #8ea7ff, #a99af0', chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
-  peach: { glow: '246, 160, 100', ring: '#f6b07e, #f7d27a, #f59a9a, #f6b07e', chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
-  sky: { glow: '110, 180, 240', ring: '#7fbbf0, #8ee0d6, #a99af0, #7fbbf0', chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
+  blush: { chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
+  sage: { chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
+  lavender: { chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
+  peach: { chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
+  sky: { chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
 } as const
 
 function loadSeen(): Set<string> {
   try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) ?? '[]')) } catch { return new Set() }
 }
 
-// An Instagram-style row of interview guides. Tap one to open it; unseen ones have a colourful ring.
+// A row of short interview guides. Tap one to open it; unseen ones have a brand-blue ring.
 export function StoriesRow() {
   const [seen, setSeen] = useState<Set<string>>(loadSeen)
   const [openIndex, setOpenIndex] = useState<number | null>(null)
@@ -41,15 +41,10 @@ export function StoriesRow() {
           const isSeen = seen.has(s.id)
           return (
             <button key={s.id} type="button" onClick={() => setOpenIndex(i)} className="snap-start shrink-0 w-20 flex flex-col items-center gap-2 group">
-              {/* The ring turns and glows in its own colour all the time; new guides get a thicker, brighter ring */}
-              <span className="relative w-[70px] h-[70px] rounded-full overflow-hidden motion-safe:animate-[ring-glow_2.8s_ease-in-out_infinite]"
-                style={{ animationDelay: `${i * 0.3}s`, ['--ring-glow' as string]: TINT[s.tint].glow }}>
-                <span className="absolute inset-0 rounded-full motion-safe:animate-[ring-spin_4s_linear_infinite]" aria-hidden="true"
-                  style={{ background: `conic-gradient(${TINT[s.tint].ring})`, opacity: isSeen ? 0.75 : 1 }} />
-                <span className={`absolute rounded-full bg-paper p-[3px] block ${isSeen ? 'inset-[2px]' : 'inset-[3px]'}`}>
-                  <span className={`w-full h-full rounded-full flex items-center justify-center transition-transform group-hover:scale-105 ${TINT[s.tint].chip}`}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={s.icon} /></svg>
-                  </span>
+              {/* New guides get a brand-blue ring; seen ones a quiet grey one */}
+              <span className={`w-16 h-16 rounded-full p-[3px] border-2 ${isSeen ? 'border-line' : 'border-accent'}`}>
+                <span className={`w-full h-full rounded-full flex items-center justify-center transition-colors group-hover:brightness-95 ${TINT[s.tint].chip}`}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={s.icon} /></svg>
                 </span>
               </span>
               <span className={`text-xs text-center leading-tight ${isSeen ? 'text-muted' : 'text-ink font-medium'}`}>{s.title}</span>

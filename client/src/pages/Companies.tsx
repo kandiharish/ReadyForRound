@@ -60,7 +60,7 @@ export default function Companies() {
         {list.map((c) => (
           <li key={c.id}>
             <Link to={`/companies/${c.id}`}
-              className="group h-full rounded-2xl bg-card border border-line p-5 flex flex-col gap-4 hover:border-accent/40 hover:shadow-md hover:-translate-y-0.5 transition-all">
+              className="group h-full rounded-2xl bg-card border border-line p-5 flex flex-col gap-4 hover:border-accent/40 transition-all">
               <div className="flex items-center gap-4">
                 <CompanyMark company={c} />
                 <div className="min-w-0">

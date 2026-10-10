@@ -112,7 +112,7 @@ export default function ResumeStudio() {
           {review && (
             <>
               {/* ATS-readiness */}
-              <section className="rounded-2xl border border-line bg-linear-to-br from-sky via-card to-lavender p-6 flex flex-col sm:flex-row gap-6 items-center">
+              <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-center">
                 <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={review.ats.score} label="ATS-ready" suffix="" size={124} /></div>
                 <div className="flex-1">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-ink">ATS-readiness</p>

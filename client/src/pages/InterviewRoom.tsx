@@ -259,9 +259,9 @@ function LiveRoom({ interview, setInterview, roundLabel, rate, settings, stream,
       </header>
 
       {/* Video area: interviewer big, student small */}
-      <section className="relative flex-1 mx-4 rounded-2xl bg-linear-to-b from-stage-card to-stage overflow-hidden flex items-center justify-center min-h-36 sm:min-h-75">
+      <section className="relative flex-1 mx-4 rounded-2xl bg-stage-card border border-stage-line overflow-hidden flex items-center justify-center min-h-36 sm:min-h-75">
         {/* overflow-hidden lets the circle trim the shoulders, so the portrait sits exactly in the middle */}
-        <div className={`relative w-[min(14rem,26dvh)] h-[min(14rem,26dvh)] sm:w-72 sm:h-72 rounded-full overflow-hidden bg-[radial-gradient(circle_at_50%_35%,var(--avatar-from),var(--avatar-to))] ring-1 ring-stage-line transition-shadow ${
+        <div className={`relative w-[min(14rem,26dvh)] h-[min(14rem,26dvh)] sm:w-72 sm:h-72 rounded-full overflow-hidden bg-stage-raised ring-1 ring-stage-line transition-shadow ${
           avatarState === 'speaking' ? 'shadow-[0_0_0_6px_rgba(var(--glow-rgb),0.45),0_0_60px_rgba(var(--glow-rgb),0.25)]' : 'shadow-[0_20px_60px_rgba(15,23,42,0.18)]'}`}>
           <Avatar who={settings.interviewer} state={avatarState} />
         </div>

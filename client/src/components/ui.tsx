@@ -75,7 +75,7 @@ type ButtonProps = { variant?: keyof typeof BUTTON; className?: string; children
 
 export function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl text-sm hover:-translate-y-px hover:shadow-md active:translate-y-0 active:shadow-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none ${BUTTON[variant]} ${className}`}>
+    <button {...rest} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed ${BUTTON[variant]} ${className}`}>
       {children}
     </button>
   )
@@ -83,7 +83,7 @@ export function Button({ variant = 'primary', className = '', children, ...rest 
 
 export function ButtonLink({ to, variant = 'primary', className = '', children }: ButtonProps & { to: string }) {
   return (
-    <Link to={to} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl text-sm hover:-translate-y-px hover:shadow-md active:translate-y-0 active:shadow-sm ${BUTTON[variant]} ${className}`}>
+    <Link to={to} className={`inline-flex items-center justify-center gap-2 min-h-11 px-4 rounded-lg text-sm ${BUTTON[variant]} ${className}`}>
       {children}
     </Link>
   )

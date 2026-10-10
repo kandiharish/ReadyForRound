@@ -13,7 +13,7 @@ export function Brand({ size = 'md', tagline = false, collapse = false, classNam
       <img src="/logo-mark.png" alt="" aria-hidden="true" className={`${s.img} shrink-0`} />
       <span className={`leading-none ${collapse ? 'max-sm:sr-only' : ''}`}>
         <span className={`${s.text} font-extrabold tracking-tight text-ink`}>
-          Ready<span className="bg-linear-to-b from-[#12c8f5] to-[#7b3cf0] bg-clip-text text-transparent">For</span>Round
+          Ready<span className="text-accent">For</span>Round
         </span>
         {tagline && <span className={`block ${s.tag} font-medium tracking-[0.32em] text-muted mt-1`}>PREPARE. PRACTICE. PROGRESS.</span>}
       </span>

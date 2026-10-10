@@ -234,7 +234,7 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
 
             {/* Phones: pinned to the bottom of the screen so it's always in reach */}
             <div className="sticky bottom-0 -mx-4 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-stage/90 backdrop-blur md:static md:mx-0 md:p-0 md:bg-transparent md:backdrop-blur-none">
-              <button onClick={join} className="w-full bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-xl py-3.5 font-semibold shadow-lg shadow-accent/25 inline-flex items-center justify-center gap-2">
+              <button onClick={join} className="w-full bg-accent-bright text-on-accent-bright hover:opacity-90 rounded-xl py-3.5 font-semibold inline-flex items-center justify-center gap-2">
                 <Icon name="play" size={16} /> Join interview
               </button>
             </div>

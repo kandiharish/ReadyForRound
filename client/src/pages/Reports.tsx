@@ -90,7 +90,7 @@ export default function Reports() {
 
 // Scores over time as columns: one per interview, coloured by how it went, with the score on top.
 type TrendItem = { id: string; score: number; label: string; date: string }
-const tone = (s: number) => (s >= 70 ? { bar: 'from-[#34d399] to-[#059669]', text: 'text-good' } : s >= 40 ? { bar: 'from-[#fbbf24] to-[#d97706]', text: 'text-warn' } : { bar: 'from-[#fb7185] to-[#e11d48]', text: 'text-bad' })
+const tone = (s: number) => (s >= 70 ? { bar: 'bg-good', text: 'text-good' } : s >= 40 ? { bar: 'bg-warn', text: 'text-warn' } : { bar: 'bg-bad', text: 'text-bad' })
 
 function Trend({ items: all }: { items: TrendItem[] }) {
   const [grown, setGrown] = useState(false)
@@ -140,7 +140,7 @@ function Trend({ items: all }: { items: TrendItem[] }) {
               <li key={it.id} className="flex-1 min-w-12 h-full">
                 <Link to={`/interview/${it.id}/report`} className="group h-full flex flex-col justify-end items-center" title={`${it.label} · ${it.date}: ${it.score}/100`}>
                   <span className={`text-xs font-bold tabular-nums mb-1 transition-opacity duration-500 ${tone(it.score).text} ${grown ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${300 + i * 50}ms` }}>{it.score}</span>
-                  <span className={`w-full max-w-11 rounded-t-lg bg-linear-to-t ${tone(it.score).bar} shadow-sm group-hover:brightness-110 group-hover:-translate-y-0.5 transition-all duration-700 ease-out motion-reduce:transition-none`}
+                  <span className={`w-full max-w-11 rounded-t-md ${tone(it.score).bar} group-hover:opacity-85 transition-all duration-700 ease-out motion-reduce:transition-none`}
                     style={{ height: grown ? `${Math.max(3, (it.score / 100) * 168)}px` : 0, transitionDelay: `${i * 50}ms` }} />
                   <span className="h-11 pt-1.5 flex flex-col items-center text-center leading-tight">
                     <span className="text-[11px] font-medium text-soft truncate max-w-16">{it.label}</span>

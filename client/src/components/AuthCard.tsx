@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
 import { Link } from 'react-router'
 import { Brand } from './Brand'
-import { AuthBackground, QuestionRow } from './AuthBackground'
 
 // True while a CSS media query matches (updates live when the window is resized)
 function useMedia(query: string) {
@@ -20,21 +19,18 @@ const FEATURES = ['Voice mock interviews', 'Live Jobs Board', 'Resume Studio + A
 
 // Shared layout for the login and signup pages.
 // Wide screens: a dark intro panel on the left (a short, silent tour of the real app) and the form on the right.
-// Phones: just the form, with floating interview questions around it.
+// Phones: just the form.
 export function AuthCard({ title, children }: { title: string; children: ReactNode }) {
   const wide = useMedia('(min-width: 1024px)')
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(420px,1fr)]">
       {wide && <IntroPanel />}
-      <main className="relative min-h-screen flex flex-col items-center justify-center gap-5 p-4 overflow-hidden">
-        <AuthBackground />
-        <QuestionRow />
-        <div className="relative z-10 bg-card/85 backdrop-blur-xl border border-line rounded-3xl p-7 sm:p-8 max-w-sm w-full shadow-2xl shadow-accent/10 animate-[pop-in_0.5s_ease-out]">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-paper">
+        <div className="bg-card border border-line rounded-2xl p-7 sm:p-8 max-w-sm w-full shadow-sm">
           <Link to="/" aria-label="ReadyForRound home"><Brand tagline /></Link>
           <h1 className="font-display font-bold text-[1.75rem] text-ink mt-5">{title}</h1>
           <div className="mt-6">{children}</div>
         </div>
-        <QuestionRow reverse />
       </main>
     </div>
   )
@@ -44,12 +40,9 @@ function IntroPanel() {
   // People who ask for less motion get the still picture instead of the video
   const still = useMedia('(prefers-reduced-motion: reduce)')
   return (
-    <aside className="relative hidden lg:flex flex-col justify-center gap-9 px-12 xl:px-16 py-12 bg-[#0b1020] text-white overflow-hidden">
-      <div aria-hidden="true" className="absolute -top-40 -left-32 w-[36rem] h-[36rem] rounded-full bg-[#3354d6] opacity-30 blur-3xl" />
-      <div aria-hidden="true" className="absolute -bottom-48 right-0 w-[30rem] h-[30rem] rounded-full bg-[#8b5cf6] opacity-20 blur-3xl" />
-
-      <div className="relative max-w-xl animate-[pop-in_0.5s_ease-out]">
-        <p className="text-sm font-semibold text-[#9db0ff]">Free for every student</p>
+    <aside className="relative hidden lg:flex flex-col justify-center gap-9 px-12 xl:px-16 py-12 bg-[#0b1220] text-white overflow-hidden">
+      <div className="relative max-w-xl">
+        <p className="text-sm font-semibold text-[#5fb8ff]">Free for every student</p>
         <h2 className="mt-3 text-[2.5rem] xl:text-[2.75rem] font-bold leading-[1.1] tracking-tight">
           Walk into your next round ready.
         </h2>
@@ -58,7 +51,7 @@ function IntroPanel() {
         </p>
       </div>
 
-      <figure className="relative max-w-2xl rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 bg-[#141a2e]">
+      <figure className="relative max-w-2xl rounded-2xl overflow-hidden border border-white/10 shadow-xl shadow-black/40 bg-[#131a2a]">
         {still ? (
           <img src="/intro/intro-poster.jpg" alt="The ReadyForRound Jobs Board, showing which roles have the most openings" className="block w-full aspect-video object-cover" />
         ) : (
