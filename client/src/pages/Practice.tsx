@@ -95,13 +95,13 @@ export default function Practice() {
       {resume !== undefined && (resume ? (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-sage text-sage-ink px-4 py-3 text-sm">
           <Icon name="file" size={18} />
-          <span className="flex-1 min-w-0"><b>Using your resume.</b> Expect questions about {resume.summary.projects.length ? `your projects like "${resume.summary.projects[0].name}"` : 'your experience and skills'}.</span>
+          <span className="flex-1 min-w-56"><b>Using your resume.</b> Expect questions about {resume.summary.projects.length ? `your projects like "${resume.summary.projects[0].name}"` : 'your experience and skills'}.</span>
           <Link to="/resume" className="font-semibold underline underline-offset-2">Check it in Resume Studio</Link>
         </div>
       ) : (
         <Link to="/profile" className="group flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line-strong bg-card px-4 py-3 text-sm hover:border-accent">
           <span className="w-9 h-9 rounded-xl bg-peach text-peach-ink flex items-center justify-center shrink-0"><Icon name="file" size={17} /></span>
-          <span className="flex-1 min-w-0 text-soft"><b className="text-ink">Add your resume</b> and the interviewer will ask about your own projects, like a real interview.</span>
+          <span className="flex-1 min-w-56 text-soft"><b className="text-ink">Add your resume</b> and the interviewer will ask about your own projects, like a real interview.</span>
           <span className="font-semibold text-accent inline-flex items-center gap-1">Upload <Icon name="arrow" size={15} className="group-hover:translate-x-0.5 transition-transform" /></span>
         </Link>
       ))}

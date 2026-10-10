@@ -2,7 +2,7 @@ import { Suspense, useEffect } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { MeProvider, useMe } from '../auth/MeProvider'
-import { Icon, type IconName } from '../components/ui'
+import { Button, Icon, type IconName } from '../components/ui'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { NotificationBell } from '../components/NotificationBell'
 import { Brand } from '../components/Brand'
@@ -55,7 +55,7 @@ export default function AppLayout() {
 }
 
 function Shell() {
-  const { me, error, refreshUsage } = useMe()
+  const { me, error, refresh, refreshUsage } = useMe()
   const { pathname } = useLocation()
 
   // Refresh today's usage whenever the student moves between pages (e.g. back from an interview).
@@ -63,7 +63,7 @@ function Shell() {
   // Once the app is open, fetch the other pages quietly so clicking around feels instant
   useEffect(() => { preloadAppPages() }, [])
 
-  if (error) return <main className="min-h-screen p-8 text-bad">{error}</main>
+  if (error) return <LoadError message={error} onRetry={refresh} />
   if (!me) return <ShellSkeleton />
   if (!me.onboarding_completed) return <Navigate to="/onboarding" replace />
 
@@ -239,5 +239,22 @@ function MobileNav() {
         </NavLink>
       ))}
     </nav>
+  )
+}
+
+// Shown when the account can't be loaded (server busy, offline, or the account no longer exists)
+function LoadError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <main className="min-h-screen grid place-items-center p-4">
+      <div className="max-w-sm w-full bg-card border border-line rounded-3xl p-7 text-center shadow-sm">
+        <Brand />
+        <h1 className="font-display font-bold text-xl text-ink mt-6">We couldn't load your account</h1>
+        <p className="text-sm text-muted mt-2">{message}</p>
+        <div className="mt-6 flex flex-col gap-2">
+          <Button onClick={onRetry}>Try again</Button>
+          <Button variant="secondary" onClick={() => supabase.auth.signOut()}>Log out</Button>
+        </div>
+      </div>
+    </main>
   )
 }

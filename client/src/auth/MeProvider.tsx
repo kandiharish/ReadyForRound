@@ -22,6 +22,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
+    setError(null)
     try {
       const [m, c] = await Promise.all([apiFetch<Profile>('/me'), apiFetch<Catalog>('/catalog')])
       setMe(m)

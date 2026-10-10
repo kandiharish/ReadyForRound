@@ -47,10 +47,11 @@ export default function Companies() {
         subtitle="Each company hires differently. Pick one to see how they interview, then take a mock interview in their style and practise their kind of questions." />
 
       <div role="tablist" aria-label="Company type" className="flex w-fit max-w-full overflow-x-auto [scrollbar-width:none] rounded-xl bg-raised p-1 gap-1">
-        {([['all', 'All'], ['service', 'Service companies'], ['product', 'Product companies'], ['core', 'Core engineering']] as const).map(([id, text]) => (
+        {/* Phones show the short names so all four tabs fit without scrolling */}
+        {([['all', 'All', 'All'], ['service', 'Service companies', 'Service'], ['product', 'Product companies', 'Product'], ['core', 'Core engineering', 'Core']] as const).map(([id, text, short]) => (
           <button key={id} type="button" role="tab" aria-selected={filter === id} onClick={() => setFilter(id)}
-            className={`shrink-0 whitespace-nowrap min-h-10 px-4 rounded-lg text-sm font-medium transition-colors ${filter === id ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}>
-            {text}
+            className={`shrink-0 whitespace-nowrap min-h-10 px-3.5 sm:px-4 rounded-lg text-sm font-medium transition-colors ${filter === id ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}>
+            <span className="sm:hidden">{short}</span><span className="max-sm:hidden">{text}</span>
           </button>
         ))}
       </div>

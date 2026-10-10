@@ -84,9 +84,11 @@ export function MarketCharts({ roles, name, goalRole, mySkills }: Named & { goal
           <p className="text-sm text-muted mt-1">{NOTES[tab]}</p>
         </div>
       </div>
-      <div role="tablist" aria-label="Charts" className="flex gap-1 rounded-xl bg-raised p-1 overflow-x-auto [scrollbar-width:none] max-w-full w-fit">
+      {/* On phones the tabs scroll sideways: a soft fade on the right hints there are more, and a tapped tab slides fully into view */}
+      <div role="tablist" aria-label="Charts" className="flex gap-1 rounded-xl bg-raised p-1 overflow-x-auto [scrollbar-width:none] max-w-full w-fit max-sm:[mask-image:linear-gradient(90deg,black_85%,transparent)] max-sm:pr-8">
         {TABS.map((t) => (
-          <button key={t.id} type="button" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
+          <button key={t.id} type="button" role="tab" aria-selected={tab === t.id}
+            onClick={(e) => { setTab(t.id); e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }) }}
             className={`shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg text-sm font-medium transition-colors ${tab === t.id ? 'bg-card text-ink shadow-sm' : 'text-muted hover:text-ink'}`}>
             <Icon name={t.icon} size={15} /> {t.label}
           </button>

@@ -31,7 +31,8 @@ app.use(express.json()) // lets us read JSON sent by the frontend
 // (their login token), or per network address for requests without one.
 const perUser = (req: express.Request) => req.headers.authorization?.slice(-32) ?? ipKeyGenerator(req.ip ?? '')
 const tooMany = { error: 'Too many requests. Please slow down and try again in a minute.' }
-app.use('/api', rateLimit({ windowMs: 60_000, limit: 120, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
+// One page refresh makes about 6-10 calls, so the general limit leaves room for a student clicking around quickly.
+app.use('/api', rateLimit({ windowMs: 60_000, limit: 300, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
 // Answers call the AI, so they get a tighter limit.
 app.use(/^\/api\/interviews\/[^/]+\/answer/, rateLimit({ windowMs: 60_000, limit: 20, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
 
