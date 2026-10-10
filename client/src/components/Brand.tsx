@@ -15,7 +15,7 @@ export function Brand({ size = 'md', tagline = false, collapse = false, classNam
         <span className={`${s.text} font-extrabold tracking-tight text-ink`}>
           Ready<span className="text-accent">For</span>Round
         </span>
-        {tagline && <span className={`block ${s.tag} font-medium tracking-[0.32em] text-muted mt-1`}>PREPARE. PRACTICE. PROGRESS.</span>}
+        {tagline && <span className={`block ${s.tag} font-medium text-muted mt-1`}>PREPARE. PRACTICE. PROGRESS.</span>}
       </span>
     </span>
   )

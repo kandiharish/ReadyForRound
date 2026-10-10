@@ -177,7 +177,7 @@ function NewGoalForm({ defaultLevel, defaultRole, onCancel, onCreated }: { defau
           <div className="space-y-5">
             {groupRoles(catalog!.roles).map((g) => (
               <div key={g.title}>
-                <p className="text-xs font-semibold tracking-[0.14em] text-muted mb-2">{g.title}</p>
+                <p className="text-xs font-semibold text-muted mb-2">{g.title}</p>
                 <ChoiceCards columns={2} options={g.roles} value={role} onChange={setRole} />
               </div>
             ))}

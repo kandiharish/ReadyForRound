@@ -76,7 +76,7 @@ export default function CompanyPage() {
       <div className="flex flex-wrap items-center gap-5">
         <CompanyMark company={company} size="lg" />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold tracking-[0.18em] text-muted">{label('companyTypes', company.type)}</p>
+          <p className="text-xs font-semibold text-muted">{label('companyTypes', company.type)}</p>
           <h1 className="font-display font-semibold text-4xl sm:text-5xl leading-tight">{company.name}-style interview</h1>
           <p className="text-soft mt-1">{company.tagline}</p>
         </div>

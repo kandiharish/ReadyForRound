@@ -95,7 +95,7 @@ export default function GdHome() {
 
       {/* The three classmates */}
       <section className="rounded-2xl border border-line bg-card p-5 sm:p-6">
-        <p className="text-xs font-semibold tracking-[0.16em] text-peach-ink">Your group</p>
+        <p className="text-xs font-semibold text-peach-ink">Your group</p>
         <ul className="grid gap-3 sm:grid-cols-3 mt-3">
           {[
             ['rohan', 'Confident and quick to take charge. Sometimes talks over others.'],
@@ -356,7 +356,7 @@ export function GdRoom() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <Link to="/gd" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><Icon name="arrow" size={15} className="rotate-180" /> Group discussion</Link>
-          <p className="text-xs font-semibold tracking-[0.16em] text-peach-ink mt-3">{gd.category || 'Topic'}</p>
+          <p className="text-xs font-semibold text-peach-ink mt-3">{gd.category || 'Topic'}</p>
           <h1 className="font-display font-semibold text-3xl sm:text-4xl leading-tight">{gd.topic}</h1>
         </div>
         {live && (
@@ -491,7 +491,7 @@ function GdResult({ gd }: { gd: Gd }) {
       <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-center">
         {!hideScores && <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={r.overall} label="out of 100" suffix="" size={120} /></div>}
         <div className="flex-1">
-          <p className="text-xs font-semibold tracking-[0.16em] text-lavender-ink">GD feedback</p>
+          <p className="text-xs font-semibold text-lavender-ink">GD feedback</p>
           <p className="text-ink mt-2 leading-relaxed">{r.summary}</p>
           <ul className="flex flex-wrap gap-2 mt-4">
             {[

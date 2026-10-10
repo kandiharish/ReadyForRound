@@ -179,7 +179,7 @@ export function JobPage() {
       <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={score} label="match" size={120} /></div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold tracking-[0.16em] text-lavender-ink">Job Readiness</p>
+          <p className="text-xs font-semibold text-lavender-ink">Job Readiness</p>
           <h1 className="font-display font-semibold text-3xl sm:text-4xl leading-tight mt-1">{job.title}</h1>
           <p className="text-soft mt-1">{[job.company, job.summary.experience].filter(Boolean).join(' · ') || 'Company not stated'}</p>
           <p className="text-sm text-soft mt-3 max-w-2xl">

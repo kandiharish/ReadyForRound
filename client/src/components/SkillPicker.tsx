@@ -182,7 +182,7 @@ function RateSkillDialog({ skill, current, onSave, onCancel }: { skill: string; 
       <button type="button" aria-label="Cancel" onClick={onCancel} className="absolute inset-0 bg-[#0b1020]/50 backdrop-blur-sm" />
       <div role="dialog" aria-modal="true" aria-labelledby="rate-title"
         className="relative w-full max-w-md rounded-2xl bg-card border border-line p-6 shadow-2xl animate-[toast-in_0.15s_ease-out]">
-        <p className="text-xs font-semibold tracking-[0.16em] text-accent">Rate your level</p>
+        <p className="text-xs font-semibold text-accent">Rate your level</p>
         <h3 id="rate-title" className="font-display font-semibold text-3xl mt-1">How good are you at {skill}?</h3>
         <p className="text-sm text-muted mt-1">Be honest. Your interviews will show how this compares with what you can prove.</p>
         <div className="mt-5 space-y-2">

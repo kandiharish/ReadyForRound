@@ -92,7 +92,7 @@ function Sidebar() {
       <Link to="/goals" data-tour="goal" className="group flex items-center gap-2.5 min-h-14 px-3 py-2.5 rounded-xl bg-raised border border-line hover:border-line-strong transition-colors">
         <span className={`w-2 h-2 shrink-0 rounded-full ${goal ? 'bg-accent' : 'bg-warn'}`} />
         <span className="flex-1 min-w-0">
-          <span className="block text-xs font-semibold tracking-[0.14em] text-muted">Current goal</span>
+          <span className="block text-xs font-semibold text-muted">Current goal</span>
           <span className="block text-sm font-semibold truncate">{goal ? label('roles', goal.target_role) : 'Choose a goal'}</span>
           {goal && <span className="block text-xs text-muted truncate">{label('companyTypes', goal.company_type)}</span>}
         </span>
@@ -136,7 +136,7 @@ function Sidebar() {
 function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-semibold tracking-[0.16em] text-subtle px-2.5 pb-1.5">{title}</span>
+      <span className="text-xs font-semibold text-subtle px-2.5 pb-1.5">{title}</span>
       {items.map((it) => (
         <NavLink key={it.to} to={it.to} data-tour={it.to.slice(1)}
           className={({ isActive }) => `flex items-center gap-3 min-h-9 px-2.5 rounded-lg text-sm transition-colors ${isActive

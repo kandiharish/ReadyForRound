@@ -115,7 +115,7 @@ export default function ResumeStudio() {
               <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-center">
                 <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={review.ats.score} label="ATS-ready" suffix="" size={124} /></div>
                 <div className="flex-1">
-                  <p className="text-xs font-semibold tracking-[0.16em] text-sky-ink">ATS-readiness</p>
+                  <p className="text-xs font-semibold text-sky-ink">ATS-readiness</p>
                   <p className="text-lg font-semibold mt-1">
                     {review.ats.score >= 80 ? 'Ready to send.' : review.ats.score >= 60 ? 'Close. A few fixes will make it stronger.' : 'Needs work before you apply.'}
                   </p>

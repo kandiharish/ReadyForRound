@@ -203,7 +203,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
 function Panel({ kicker, title, children }: { kicker: string; title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-3xl bg-card border border-line p-5 sm:p-8 shadow-sm motion-safe:animate-[pop-in_0.35s_ease-out]">
-      <p className="text-xs font-semibold tracking-[0.18em] text-accent">{kicker}</p>
+      <p className="text-xs font-semibold text-accent">{kicker}</p>
       <h2 className="font-display font-semibold text-3xl mt-1">{title}</h2>
       {children}
     </section>
@@ -333,7 +333,7 @@ function Result({ result, roles, savedId, onPick, onRetake, showMarketLinks }: {
   return (
     <div className="space-y-6 motion-safe:animate-[pop-in_0.4s_ease-out]">
       <section className="relative overflow-hidden rounded-3xl border border-line bg-card p-6 sm:p-8">
-        <p className="text-xs font-semibold tracking-[0.18em] text-lavender-ink">Your Career Compass</p>
+        <p className="text-xs font-semibold text-lavender-ink">Your Career Compass</p>
         <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-tight mt-2">{name(top[0].role)}</h2>
         <p className="text-soft mt-2">fits how you like to work best. Here are your top 3 matches.</p>
         <span className={`inline-flex mt-4 rounded-full px-3 py-1 text-xs font-semibold ${result.confidence === 'high' ? 'bg-sage text-sage-ink' : result.confidence === 'medium' ? 'bg-sky text-sky-ink' : 'bg-peach text-peach-ink'}`}>
