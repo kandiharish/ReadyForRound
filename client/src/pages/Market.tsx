@@ -96,7 +96,7 @@ export default function Market() {
                   className={`group h-full rounded-2xl bg-card border p-5 flex flex-col gap-3 transition-all ${r.role_id === goalRole ? 'border-accent' : 'border-line hover:border-accent/40'}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <span className="text-xs font-mono text-muted">#{i + 1}</span>
+                      <span className="text-xs tabular-nums text-muted">#{i + 1}</span>
                       <p className="font-semibold text-lg leading-tight">{label('roles', r.role_id)}</p>
                     </div>
                     {r.role_id === goalRole && <span className="text-[11px] font-semibold rounded-full bg-accent-soft text-accent-deep px-2 py-0.5 shrink-0">Your goal</span>}
@@ -222,7 +222,7 @@ export function MarketRolePage() {
                   <div className="flex-1 min-w-32 h-2 rounded-full bg-raised overflow-hidden">
                     <div className="h-full rounded-full bg-accent" style={{ width: `${Math.round(s.share * 100)}%` }} />
                   </div>
-                  <span className="w-24 shrink-0 whitespace-nowrap text-right text-sm font-mono text-muted">{Math.round(s.share * 100)}% of ads</span>
+                  <span className="w-24 shrink-0 whitespace-nowrap text-right text-sm tabular-nums text-muted">{Math.round(s.share * 100)}% of ads</span>
                   <span className="w-44 text-right">
                     {st === 'proven' ? <span className="text-xs text-good font-semibold">Proven in interviews</span>
                       : st === 'claimed' ? (
@@ -251,7 +251,7 @@ export function MarketRolePage() {
           <ul className="mt-4 space-y-3">
             {r.cities.map((c) => (
               <li key={c.name}>
-                <div className="flex justify-between text-sm"><span>{c.name}</span><span className="font-mono text-muted">{Math.round(c.share * 100)}%</span></div>
+                <div className="flex justify-between text-sm"><span>{c.name}</span><span className="tabular-nums text-muted">{Math.round(c.share * 100)}%</span></div>
                 <div className="h-2 rounded-full bg-raised mt-1 overflow-hidden"><div className="h-full rounded-full bg-sky-ink/60" style={{ width: `${Math.round(c.share * 100)}%` }} /></div>
               </li>
             ))}

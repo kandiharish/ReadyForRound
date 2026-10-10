@@ -47,7 +47,7 @@ export function ChartToppers({ roles, name }: Named) {
         <li key={t.kicker} className="motion-reduce-static" style={{ animation: `pop-in 500ms ${i * 80}ms both` }}>
           <Link to={t.to} className={`group relative h-full overflow-hidden rounded-2xl p-4 flex flex-col gap-1 transition-all ${t.tone}`}>
             <span aria-hidden="true" className="absolute right-3 top-3 font-bold text-xl leading-none opacity-40 select-none">#1</span>
-            <span className="flex items-center gap-1.5 pr-10 text-xs font-semibold uppercase tracking-wide"><Icon name={t.icon} size={14} /> {t.kicker}</span>
+            <span className="flex items-center gap-1.5 pr-10 text-xs font-semibold"><Icon name={t.icon} size={14} /> {t.kicker}</span>
             <span className="font-semibold text-ink text-base sm:text-lg leading-snug mt-1">{t.title}</span>
             <span className="text-xs sm:text-sm mt-auto pt-1">{t.stat}</span>
           </Link>
@@ -132,7 +132,7 @@ function OpeningsChart({ roles, name, goalRole }: Named & { goalRole?: string | 
                 <span className={`block h-full rounded-full ${GROW} ${i < 3 ? 'bg-accent' : 'bg-accent/40'}`}
                   style={{ width: grown ? `${Math.max(2, (r.total_openings / max) * 100)}%` : 0, transitionDelay: `${i * 45}ms` }} />
               </span>
-              <span className="w-14 text-right text-sm font-mono tabular-nums">{num(r.total_openings)}</span>
+              <span className="w-14 text-right text-sm tabular-nums ">{num(r.total_openings)}</span>
             </span>
           </Link>
         </li>
@@ -164,7 +164,7 @@ function PayLadder({ roles, name, goalRole }: Named & { goalRole?: string | null
                 <span className={`absolute -top-0.5 w-5 h-5 -ml-2.5 rounded-full bg-card border-[3px] border-accent transition-opacity duration-500 ${grown ? 'opacity-100' : 'opacity-0'}`}
                   style={{ left: `${pct(r.salary!.p50)}%`, transitionDelay: `${300 + i * 45}ms` }} aria-hidden="true" />
               </span>
-              <span className="text-sm font-mono tabular-nums text-right">{lakhs(r.salary!.p50)}</span>
+              <span className="text-sm tabular-nums  text-right">{lakhs(r.salary!.p50)}</span>
             </Link>
           </li>
         ))}
@@ -322,7 +322,7 @@ function HotSkills({ roles, name, mySkills }: Named & { mySkills: Set<string> })
                   <span className={`block h-full rounded-full ${GROW} ${i < 3 ? 'bg-lavender-ink' : 'bg-lavender-ink/35'}`}
                     style={{ width: grown ? `${Math.max(2, (s.est / max) * 100)}%` : 0, transitionDelay: `${i * 45}ms` }} />
                 </span>
-                <span className="w-14 text-right text-sm font-mono tabular-nums">≈{compact(s.est)}</span>
+                <span className="w-14 text-right text-sm tabular-nums ">≈{compact(s.est)}</span>
               </span>
             </Link>
           </li>
@@ -351,7 +351,7 @@ function CitiesChart({ roles }: { roles: MarketRole[] }) {
           <li key={c.name} className="flex items-center gap-2 min-w-0">
             <span className="w-3 h-3 rounded-full shrink-0" style={{ background: PALETTE[i % PALETTE.length] }} aria-hidden="true" />
             <span className="text-sm truncate">{c.name}</span>
-            <span className="ml-auto text-sm font-mono tabular-nums text-muted">{Math.round(c.share * 100)}%</span>
+            <span className="ml-auto text-sm tabular-nums  text-muted">{Math.round(c.share * 100)}%</span>
           </li>
         ))}
       </ul>

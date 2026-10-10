@@ -156,7 +156,7 @@ export default function Practice() {
       {/* On phones this row sticks just above the bottom tab bar, so "Start interview" is always in reach */}
       <div className="sticky bottom-[calc(4.6rem+env(safe-area-inset-bottom))] z-10 -mx-4 px-4 py-3 bg-paper/90 backdrop-blur border-t border-line flex flex-wrap items-center justify-between gap-3 sm:static sm:mx-0 sm:px-0 sm:py-0 sm:pt-5 sm:bg-transparent sm:backdrop-blur-none">
         <p className="text-sm text-muted">
-          {usage && <><b className="text-ink font-mono">{Math.max(0, interviewsLeft)}</b> of {usage.interviews.limit} interviews left today · </>}
+          {usage && <><b className="text-ink tabular-nums">{Math.max(0, interviewsLeft)}</b> of {usage.interviews.limit} interviews left today · </>}
           Preparing for something else? <Link to="/goals" className="text-accent-deep">Change your goal</Link>
         </p>
         <Button onClick={start} disabled={starting || interviewsLeft <= 0} className="px-6 w-full sm:w-auto order-first sm:order-none">

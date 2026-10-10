@@ -58,7 +58,7 @@ function Section({ id, eyebrow, title, children, className = '', center = false 
     <section id={id} className={`px-4 sm:px-6 lg:px-10 py-20 sm:py-28 scroll-mt-16 ${className}`}>
       <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto">
         <Reveal className={center ? 'text-center max-w-2xl mx-auto' : 'max-w-2xl'}>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>
+          <p className="text-xs font-semibold tracking-[0.2em] text-accent">{eyebrow}</p>
           <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-3">{title}</h2>
         </Reveal>
         <div className="mt-12">{children}</div>
@@ -238,7 +238,7 @@ function HeroDemo() {
         <div key={n} className="absolute -right-2 sm:-right-12 -bottom-20 w-60 rounded-2xl bg-card border border-line shadow-lg p-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Your feedback</span>
-            <span className="text-[10px] uppercase tracking-wider text-muted">Example</span>
+            <span className="text-xs text-muted">Example</span>
           </div>
           <div className="flex items-baseline gap-1 mt-1">
             <CountUp to={item.score} className="font-display font-semibold text-4xl text-good" />
@@ -481,7 +481,7 @@ function SampleReport() {
           <div ref={ref} className="rounded-3xl bg-paper border border-line p-6 sm:p-8 shadow-sm">
             <div className="flex items-center justify-between text-xs text-muted">
               <span>Technical round · Frontend</span>
-              <span className="uppercase tracking-wider">Sample report</span>
+              <span className="">Sample report</span>
             </div>
             <div className="flex items-center gap-5 mt-5">
               {/* Score ring fills up when it scrolls into view */}
@@ -500,11 +500,11 @@ function SampleReport() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 mt-6">
               <div className={`rounded-xl bg-sage text-sage-ink p-4 transition-all duration-500 delay-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                <p className="text-xs font-semibold uppercase tracking-wider">Went well</p>
+                <p className="text-xs font-semibold">Went well</p>
                 <p className="text-sm mt-1.5">Props vs state, with a real example.</p>
               </div>
               <div className={`rounded-xl bg-peach text-peach-ink p-4 transition-all duration-500 delay-1000 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                <p className="text-xs font-semibold uppercase tracking-wider">Work on</p>
+                <p className="text-xs font-semibold">Work on</p>
                 <p className="text-sm mt-1.5">When useEffect cleanup runs.</p>
               </div>
             </div>
@@ -550,7 +550,7 @@ function Faq() {
     <section id="faq" className="px-4 sm:px-6 lg:px-10 py-20 sm:py-28 scroll-mt-16">
       <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 items-start">
         <Reveal className="lg:sticky lg:top-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Questions</p>
+          <p className="text-xs font-semibold tracking-[0.2em] text-accent">Questions</p>
           <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-[1.05] mt-3">Quick answers</h2>
           <p className="text-soft mt-4 max-w-sm">Everything you might wonder before your first practice interview.</p>
           <div className="mt-8 rounded-2xl bg-card border border-line p-6 max-w-sm">
@@ -574,7 +574,7 @@ function Faq() {
                 <Reveal delay={i * 60}>
                   <button type="button" onClick={() => setOpen(isOpen ? null : i)} aria-expanded={isOpen} aria-controls={`faq-${i}`}
                     className="group w-full flex items-center gap-5 py-6 text-left">
-                    <span className={`font-mono text-sm w-8 shrink-0 transition-colors ${isOpen ? 'text-accent' : 'text-muted'}`}>{String(i + 1).padStart(2, '0')}</span>
+                    <span className={`tabular-nums text-sm w-8 shrink-0 transition-colors ${isOpen ? 'text-accent' : 'text-muted'}`}>{String(i + 1).padStart(2, '0')}</span>
                     <span className={`flex-1 text-lg sm:text-xl font-semibold transition-colors ${isOpen ? 'text-ink' : 'text-soft group-hover:text-ink'}`}>{f.q}</span>
                     <span className={`w-10 h-10 shrink-0 rounded-full border flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-accent border-accent text-on-accent rotate-45' : 'border-line-strong text-soft group-hover:border-accent group-hover:text-accent'}`}>
                       <Icon name="plus" size={18} />

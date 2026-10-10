@@ -115,7 +115,7 @@ export default function ResumeStudio() {
               <section className="rounded-2xl border border-line bg-card p-6 flex flex-col sm:flex-row gap-6 items-center">
                 <div className="bg-card/80 rounded-full p-1 shadow-sm"><ScoreRing value={review.ats.score} label="ATS-ready" suffix="" size={124} /></div>
                 <div className="flex-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-ink">ATS-readiness</p>
+                  <p className="text-xs font-semibold tracking-[0.16em] text-sky-ink">ATS-readiness</p>
                   <p className="text-lg font-semibold mt-1">
                     {review.ats.score >= 80 ? 'Ready to send.' : review.ats.score >= 60 ? 'Close. A few fixes will make it stronger.' : 'Needs work before you apply.'}
                   </p>
@@ -132,7 +132,7 @@ export default function ResumeStudio() {
                   <div key={c.id} className={`rounded-2xl border bg-card p-4 flex gap-3 ${STATUS[c.status].ring}`}>
                     <span className={`w-8 h-8 shrink-0 rounded-full grid place-items-center ${STATUS[c.status].cls}`}><Icon name={STATUS[c.status].icon} size={16} strokeWidth={2.2} /></span>
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm flex items-center gap-2">{c.label}<span className={`text-[10px] font-bold uppercase tracking-wide rounded-full px-1.5 py-px ${STATUS[c.status].cls}`}>{STATUS[c.status].word}</span></p>
+                      <p className="font-semibold text-sm flex items-center gap-2">{c.label}<span className={`text-xs font-semibold rounded-full px-1.5 py-px ${STATUS[c.status].cls}`}>{STATUS[c.status].word}</span></p>
                       <p className="text-sm text-soft mt-0.5">{c.detail}</p>
                       {c.fix && <p className="text-sm text-ink mt-1.5"><span className="font-semibold">How: </span>{c.fix}</p>}
                     </div>
@@ -143,7 +143,7 @@ export default function ResumeStudio() {
               <Card className="space-y-3">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h2 className="font-semibold">Keywords for {review.ats.keywords.label}</h2>
-                  <span className="text-sm font-mono text-muted">{review.ats.keywords.percent}% found</span>
+                  <span className="text-sm tabular-nums text-muted">{review.ats.keywords.percent}% found</span>
                 </div>
                 <ul className="flex flex-wrap gap-2">
                   {review.ats.keywords.found.map((k) => <li key={k} className="inline-flex items-center gap-1 rounded-full bg-good-soft text-good px-3 py-1 text-sm font-medium"><Icon name="check" size={13} strokeWidth={2.4} />{k}</li>)}
@@ -173,7 +173,7 @@ export default function ResumeStudio() {
                           <p className="text-sm text-soft">{p.why}</p>
                           {p.gaps.length > 0 && <p className="text-xs text-muted"><span className="font-semibold text-soft">The role would also want: </span>{p.gaps.join('; ')}</p>}
                           <div className="rounded-xl bg-accent-soft p-3">
-                            <p className="text-[11px] font-semibold uppercase tracking-wide text-accent-deep">Stronger line for this role</p>
+                            <p className="text-xs font-semibold text-accent-deep">Stronger line for this role</p>
                             <p className="text-sm text-ink mt-1">{p.rewrite}</p>
                             <button type="button" onClick={() => navigator.clipboard.writeText(p.rewrite).then(() => toast('Copied', 'success')).catch(() => {})}
                               className="mt-2 text-xs font-semibold text-accent-deep hover:underline">Copy</button>
@@ -193,7 +193,7 @@ export default function ResumeStudio() {
                 <Card className="space-y-4">
                   <h2 className="font-semibold">A strong resume for {roleName}</h2>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">Section order</p>
+                    <p className="text-xs font-semibold text-muted mb-2">Section order</p>
                     <ol className="space-y-1.5">
                       {review.guidelines.order.map((o, i) => (
                         <li key={o} className="flex gap-2.5 text-sm"><span className="w-5 h-5 shrink-0 rounded-full bg-accent-soft text-accent-deep text-[11px] font-bold grid place-items-center">{i + 1}</span><span className="text-soft">{o}</span></li>
@@ -201,13 +201,13 @@ export default function ResumeStudio() {
                     </ol>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">What to show</p>
+                    <p className="text-xs font-semibold text-muted mb-2">What to show</p>
                     <ul className="space-y-1.5">{review.guidelines.show.map((s) => <li key={s} className="flex gap-2 text-sm text-soft"><span className="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0" />{s}</li>)}</ul>
                   </div>
                 </Card>
                 <Card className="space-y-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-1.5">The bullet formula</p>
+                    <p className="text-xs font-semibold text-muted mb-1.5">The bullet formula</p>
                     <p className="text-sm font-semibold">{review.guidelines.formula}</p>
                   </div>
                   <ul className="space-y-3">
@@ -219,7 +219,7 @@ export default function ResumeStudio() {
                     ))}
                   </ul>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">Leave out</p>
+                    <p className="text-xs font-semibold text-muted mb-2">Leave out</p>
                     <ul className="space-y-1.5">{review.guidelines.avoid.map((s) => <li key={s} className="flex gap-2 text-sm text-soft"><Icon name="alert" size={14} className="text-warn mt-0.5 shrink-0" />{s}</li>)}</ul>
                   </div>
                 </Card>

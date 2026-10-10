@@ -132,7 +132,7 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
 
           {resume.summary.projects.length > 0 && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Projects the interviewer can ask about</p>
+              <p className="text-xs font-semibold text-muted mb-2">Projects the interviewer can ask about</p>
               <ul className="grid gap-2 sm:grid-cols-2">
                 {resume.summary.projects.map((p) => (
                   <li key={p.name} className="rounded-xl bg-raised border border-line p-3">
@@ -147,7 +147,7 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
 
           {resume.summary.experience.length > 0 && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Experience</p>
+              <p className="text-xs font-semibold text-muted mb-2">Experience</p>
               <ul className="space-y-1 text-sm">
                 {resume.summary.experience.map((e) => (
                   <li key={e.role + e.organisation}><b className="text-ink">{e.role}</b>{e.organisation && <span className="text-muted"> · {e.organisation}</span>}</li>
@@ -158,7 +158,7 @@ export function ResumeCard({ onChange }: { onChange?: (resume: Resume | null) =>
 
           {resume.summary.skills.length > 0 && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Skills on your resume</p>
+              <p className="text-xs font-semibold text-muted mb-2">Skills on your resume</p>
               <div className="flex flex-wrap gap-1.5">
                 {resume.summary.skills.map((s) => <span key={s} className="rounded-full bg-sky text-sky-ink px-2.5 py-1 text-xs font-medium">{s}</span>)}
               </div>

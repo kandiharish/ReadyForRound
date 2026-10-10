@@ -118,7 +118,7 @@ function ReportView({ report, hideScores, roundLabel, turns, share }: { report: 
       {/* Company-style interviews: how the answers compare with that company's publicly reported bar */}
       {report.companyFit && (
         <section className="rounded-2xl border border-line bg-card p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lavender-ink">The {report.companyFit.company} bar</p>
+          <p className="text-xs font-semibold tracking-[0.18em] text-lavender-ink">The {report.companyFit.company} bar</p>
           <p className="text-ink mt-2 leading-relaxed"><Rich text={report.companyFit.verdict} /></p>
           {report.companyFit.tips.length > 0 && (
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -169,7 +169,7 @@ function QuestionCard({ q, hideScores, roundLabel, speech }: { q: QuestionFeedba
     <section className="bg-card border border-line rounded-2xl p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs text-accent-deep font-medium uppercase tracking-wide">
+          <p className="text-xs text-accent-deep font-medium">
             {roundLabel(q.round)}{q.skill ? ` · ${q.skill}` : ''}
           </p>
           <p className="font-semibold text-ink mt-1"><Rich text={q.question} /></p>
@@ -252,7 +252,7 @@ function ListCard({ title, icon, items, tone }: { title: string; icon: IconName;
 function Rich({ text }: { text: string }) {
   const parts = text.split(/`([^`]+)`/)
   return <>{parts.map((part, i) => i % 2 === 1
-    ? <code key={i} className="font-mono text-[0.88em] bg-raised border border-line rounded px-1 py-px">{part}</code>
+    ? <code key={i} className="tabular-nums text-[0.88em] bg-raised border border-line rounded px-1 py-px">{part}</code>
     : part)}</>
 }
 

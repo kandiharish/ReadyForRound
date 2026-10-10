@@ -70,7 +70,7 @@ export default function ProfilePage() {
         <SkillPicker skills={skills} onChange={setSkills} suggested={roleSkills} fromResume={resumeSkills}
           extra={(skill) => (
             <span className="text-xs text-muted">
-              {proven[skill] == null ? 'Not tested yet' : me.practice_without_score ? 'Tested' : <>Proven <b className="font-mono text-ink">{proven[skill]}</b>/100</>}
+              {proven[skill] == null ? 'Not tested yet' : me.practice_without_score ? 'Tested' : <>Proven <b className="tabular-nums text-ink">{proven[skill]}</b>/100</>}
             </span>
           )} />
       </Card>

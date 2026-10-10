@@ -67,7 +67,7 @@ export default function Goals() {
                 </div>
                 <div className={`flex-1 rounded-2xl border p-4 mb-4 ${g.status === 'active' ? 'bg-accent-soft border-accent/40' : 'bg-raised/60 border-line'}`}>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="font-mono text-xs text-muted">
+                    <span className="tabular-nums text-xs text-muted">
                       {new Date(g.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
                       {g.target_date ? ` → target ${new Date(g.target_date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
                     </span>
@@ -79,7 +79,7 @@ export default function Goals() {
                     {!hideScores && g.startedAt !== null && g.readiness !== null && g.interviews > 3 ? ` · ${g.startedAt}% → ${g.readiness}%` : ''}
                   </p>
                   {!hideScores && g.readiness !== null && (
-                    <div className="flex items-center gap-3 mt-3"><div className="flex-1"><Bar value={g.readiness} tone={g.status === 'active' ? 'accent' : 'info'} /></div><span className="font-mono text-xs text-soft">{g.readiness}%</span></div>
+                    <div className="flex items-center gap-3 mt-3"><div className="flex-1"><Bar value={g.readiness} tone={g.status === 'active' ? 'accent' : 'info'} /></div><span className="tabular-nums text-xs text-soft">{g.readiness}%</span></div>
                   )}
                   <div className="flex flex-wrap gap-2 mt-3">
                     {g.status !== 'active' && <Button variant="secondary" className="min-h-9 text-xs" onClick={() => setStatus(g.id, 'active')}>Make this my current goal</Button>}
@@ -131,7 +131,7 @@ export default function Goals() {
               [String(goals.filter((g) => g.status === 'achieved').length), 'achieved'],
             ].map(([v, k]) => (
               <div key={k}>
-                <p className="font-mono text-2xl font-semibold">{v}</p>
+                <p className="tabular-nums text-2xl font-semibold">{v}</p>
                 <p className="text-xs text-muted mt-1">{k}</p>
               </div>
             ))}
@@ -177,7 +177,7 @@ function NewGoalForm({ defaultLevel, defaultRole, onCancel, onCreated }: { defau
           <div className="space-y-5">
             {groupRoles(catalog!.roles).map((g) => (
               <div key={g.title}>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted mb-2">{g.title}</p>
+                <p className="text-xs font-semibold tracking-[0.14em] text-muted mb-2">{g.title}</p>
                 <ChoiceCards columns={2} options={g.roles} value={role} onChange={setRole} />
               </div>
             ))}

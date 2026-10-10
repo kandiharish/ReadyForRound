@@ -162,7 +162,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button key={n} type="button" onClick={() => setAnswers((a) => ({ ...a, comfort: { ...a.comfort, [c.id]: n } as Record<ComfortId, number> }))}
                       aria-label={`${c.text}: ${n} of 5`}
-                      className={`h-11 rounded-xl border font-mono font-semibold transition-colors ${answers.comfort[c.id] === n ? 'border-accent bg-accent text-on-accent' : 'border-line hover:border-accent'}`}>{n}</button>
+                      className={`h-11 rounded-xl border tabular-nums font-semibold transition-colors ${answers.comfort[c.id] === n ? 'border-accent bg-accent text-on-accent' : 'border-line hover:border-accent'}`}>{n}</button>
                   ))}
                 </div>
                 <div className="flex justify-between text-xs text-muted mt-1.5"><span>{c.low}</span><span>{c.high}</span></div>
@@ -203,7 +203,7 @@ export function CareerCompass({ roles, onPick, onClose }: {
 function Panel({ kicker, title, children }: { kicker: string; title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-3xl bg-card border border-line p-5 sm:p-8 shadow-sm motion-safe:animate-[pop-in_0.35s_ease-out]">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{kicker}</p>
+      <p className="text-xs font-semibold tracking-[0.18em] text-accent">{kicker}</p>
       <h2 className="font-display font-semibold text-3xl mt-1">{title}</h2>
       {children}
     </section>
@@ -255,12 +255,12 @@ function TasteTest({ index, answer, onDone, onBack }: { index: number; answer?: 
   const [choice, setChoice] = useState<number | null>(answer?.choice ?? null)
   return (
     <Panel kicker={`Task ${index + 1} of ${TASTE_TESTS.length} · ${t.title}`} title={t.prompt}>
-      {'code' in t && <pre className="mt-4 rounded-2xl bg-raised border border-line p-4 text-sm font-mono overflow-x-auto leading-relaxed">{t.code.split('\n').map((l, n) => <div key={n}><span className="text-muted select-none mr-4">{n + 1}</span>{l}</div>)}</pre>}
+      {'code' in t && <pre className="mt-4 rounded-2xl bg-raised border border-line p-4 text-sm tabular-nums overflow-x-auto leading-relaxed">{t.code.split('\n').map((l, n) => <div key={n}><span className="text-muted select-none mr-4">{n + 1}</span>{l}</div>)}</pre>}
       {'chart' in t && (
         <div className="mt-4 rounded-2xl bg-raised border border-line p-4 flex items-end gap-3 h-48">
           {t.chart.map(([m, v]) => (
             <div key={m} className="flex-1 flex flex-col items-center justify-end h-full gap-1">
-              <span className="text-xs font-mono text-muted">{v}</span>
+              <span className="text-xs tabular-nums text-muted">{v}</span>
               <div className="w-full rounded-t-lg bg-accent" style={{ height: `${(v / 480) * 100}%` }} />
               <span className="text-xs font-medium">{m}</span>
             </div>
@@ -333,7 +333,7 @@ function Result({ result, roles, savedId, onPick, onRetake, showMarketLinks }: {
   return (
     <div className="space-y-6 motion-safe:animate-[pop-in_0.4s_ease-out]">
       <section className="relative overflow-hidden rounded-3xl border border-line bg-card p-6 sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lavender-ink">Your Career Compass</p>
+        <p className="text-xs font-semibold tracking-[0.18em] text-lavender-ink">Your Career Compass</p>
         <h2 className="font-display font-semibold text-4xl sm:text-5xl leading-tight mt-2">{name(top[0].role)}</h2>
         <p className="text-soft mt-2">fits how you like to work best. Here are your top 3 matches.</p>
         <span className={`inline-flex mt-4 rounded-full px-3 py-1 text-xs font-semibold ${result.confidence === 'high' ? 'bg-sage text-sage-ink' : result.confidence === 'medium' ? 'bg-sky text-sky-ink' : 'bg-peach text-peach-ink'}`}>
@@ -370,7 +370,7 @@ function Result({ result, roles, savedId, onPick, onRetake, showMarketLinks }: {
           <ul className="mt-4 space-y-3">
             {dims.map(([d, v]) => (
               <li key={d}>
-                <div className="flex justify-between text-sm"><span>{DIMENSIONS[d]}</span><span className="font-mono text-muted">{v}</span></div>
+                <div className="flex justify-between text-sm"><span>{DIMENSIONS[d]}</span><span className="tabular-nums text-muted">{v}</span></div>
                 <div className="h-2 rounded-full bg-raised mt-1 overflow-hidden"><div className="h-full rounded-full bg-accent transition-[width] duration-700" style={{ width: `${Math.max(4, v)}%` }} /></div>
               </li>
             ))}

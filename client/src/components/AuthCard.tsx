@@ -33,7 +33,7 @@ export function AuthCard({ title, children }: { title: string; children: ReactNo
       {wide && <IntroPanel />}
       <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-paper">
         <div className="bg-card border border-line rounded-2xl p-7 sm:p-8 max-w-sm w-full shadow-sm">
-          <Link to="/" aria-label="ReadyForRound home"><Brand tagline /></Link>
+          <Link to="/" aria-label="ReadyForRound home"><Brand /></Link>
           <h1 className="font-display font-bold text-[1.75rem] text-ink mt-5">{title}</h1>
           <div className="mt-6">{children}</div>
         </div>

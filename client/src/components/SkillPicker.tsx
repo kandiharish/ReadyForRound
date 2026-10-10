@@ -182,14 +182,14 @@ function RateSkillDialog({ skill, current, onSave, onCancel }: { skill: string; 
       <button type="button" aria-label="Cancel" onClick={onCancel} className="absolute inset-0 bg-[#0b1020]/50 backdrop-blur-sm" />
       <div role="dialog" aria-modal="true" aria-labelledby="rate-title"
         className="relative w-full max-w-md rounded-2xl bg-card border border-line p-6 shadow-2xl animate-[toast-in_0.15s_ease-out]">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Rate your level</p>
+        <p className="text-xs font-semibold tracking-[0.16em] text-accent">Rate your level</p>
         <h3 id="rate-title" className="font-display font-semibold text-3xl mt-1">How good are you at {skill}?</h3>
         <p className="text-sm text-muted mt-1">Be honest. Your interviews will show how this compares with what you can prove.</p>
         <div className="mt-5 space-y-2">
           {RATING_LEVELS.map((l, i) => (
             <button key={l.n} ref={i === 0 ? firstRef : undefined} type="button" onClick={() => onSave(l.n)}
               className={`w-full flex items-center gap-3 rounded-xl border px-3.5 py-3 text-left hover:border-accent hover:bg-accent-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${current === l.n ? 'border-accent bg-accent-soft' : 'border-line'}`}>
-              <span className="w-8 h-8 shrink-0 rounded-lg bg-raised font-mono text-sm font-semibold flex items-center justify-center text-ink">{l.n}</span>
+              <span className="w-8 h-8 shrink-0 rounded-lg bg-raised tabular-nums text-sm font-semibold flex items-center justify-center text-ink">{l.n}</span>
               <span>
                 <span className="block text-sm font-semibold text-ink">{l.label}</span>
                 <span className="block text-xs text-muted">{l.hint}</span>

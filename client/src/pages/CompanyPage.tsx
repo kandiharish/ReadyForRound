@@ -76,7 +76,7 @@ export default function CompanyPage() {
       <div className="flex flex-wrap items-center gap-5">
         <CompanyMark company={company} size="lg" />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">{label('companyTypes', company.type)}</p>
+          <p className="text-xs font-semibold tracking-[0.18em] text-muted">{label('companyTypes', company.type)}</p>
           <h1 className="font-display font-semibold text-4xl sm:text-5xl leading-tight">{company.name}-style interview</h1>
           <p className="text-soft mt-1">{company.tagline}</p>
         </div>
@@ -95,7 +95,7 @@ export default function CompanyPage() {
             ))}
           </ol>
           <div className="rounded-xl bg-raised p-3 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted">What they look for</p>
+            <p className="text-xs font-semibold text-muted">What they look for</p>
             <p className="text-soft mt-1">{company.lookFor[0].toUpperCase() + company.lookFor.slice(1)}.</p>
           </div>
           <p className="text-xs text-muted">Based on publicly reported candidate experiences. Online tests aren't simulated; our mock interview covers the interview rounds.</p>

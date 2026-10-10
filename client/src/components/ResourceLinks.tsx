@@ -26,7 +26,7 @@ export function ResourceLinks({ topic, context = '', limit = 2, className = '' }
   const found = resourcesFor(topic, limit) ?? (context ? resourcesFor(`${topic} ${context}`, limit) : null)
   return (
     <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-muted mr-0.5">Learn</span>
+      <span className="text-xs font-semibold text-muted mr-0.5">Learn</span>
       {found?.links.map((l) => (
         <a key={l.url} href={l.url} {...external} title={l.title}
           className="group inline-flex items-center gap-1.5 rounded-full border border-line bg-card pl-1 pr-2.5 py-1 text-xs text-soft hover:text-ink hover:border-line-strong transition-all">

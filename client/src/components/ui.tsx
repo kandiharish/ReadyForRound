@@ -89,13 +89,13 @@ export function ButtonLink({ to, variant = 'primary', className = '', children }
   )
 }
 
-export function PageHeader({ eyebrow, title, subtitle, actions }: { eyebrow?: string; title: string; subtitle?: string; actions?: ReactNode }) {
+// eyebrow is accepted for older call sites but no longer shown: page titles stand on their own
+export function PageHeader({ title, subtitle, actions }: { eyebrow?: string; title: string; subtitle?: string; actions?: ReactNode }) {
   return (
     <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div className="min-w-0">
-        {eyebrow && <p className="text-sm text-muted">{eyebrow}</p>}
-        <h1 className="font-display font-bold text-[1.75rem] sm:text-[2rem] leading-tight mt-1 text-ink">{title}</h1>
-        {subtitle && <p className="text-sm text-muted mt-2 max-w-2xl">{subtitle}</p>}
+        <h1 className="font-display font-semibold text-[1.75rem] leading-tight text-ink">{title}</h1>
+        {subtitle && <p className="text-[15px] text-muted mt-1.5 max-w-2xl">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>}
     </header>
@@ -159,7 +159,7 @@ export function Bar({ value, tone }: { value: number; tone?: 'good' | 'warn' | '
 export function ScoreChip({ score, outOf = 100 }: { score: number; outOf?: number }) {
   const tone = scoreTone((score / outOf) * 100)
   const cls = { good: 'bg-good-soft text-good', warn: 'bg-warn-soft text-warn', bad: 'bg-bad-soft text-bad' }[tone]
-  return <span className={`inline-block font-mono text-sm font-semibold rounded-full px-3 py-0.5 ${cls}`}>{score}{outOf === 10 ? '/10' : ''}</span>
+  return <span className={`inline-block tabular-nums text-sm font-semibold rounded-full px-3 py-0.5 ${cls}`}>{score}{outOf === 10 ? '/10' : ''}</span>
 }
 
 // Loading state for a page: a skeleton of the page instead of a spinner and text.

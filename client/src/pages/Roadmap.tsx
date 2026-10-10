@@ -90,7 +90,7 @@ export default function Roadmap() {
         <>
           <Card className="flex flex-wrap items-center gap-6">
             <div className="flex-1 min-w-60 space-y-2">
-              <div className="flex justify-between text-sm"><span className="text-soft">Overall progress</span><span className="font-mono">{done} / {tasks.length} tasks</span></div>
+              <div className="flex justify-between text-sm"><span className="text-soft">Overall progress</span><span className="tabular-nums">{done} / {tasks.length} tasks</span></div>
               <Bar value={(done / tasks.length) * 100} tone="accent" />
             </div>
             <p className="text-sm text-muted">You're on <b className="text-ink">week {currentWeek}</b> of {weeks.length}</p>
@@ -121,8 +121,8 @@ export default function Roadmap() {
                     className="mt-1 w-5 h-5 shrink-0 accent-[var(--accent-deep)] cursor-pointer" />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`text-[11px] font-semibold uppercase tracking-wide rounded-full px-2 py-0.5 ${KIND[t.kind].cls}`}>{KIND[t.kind].label}</span>
-                      <span className="text-xs text-muted font-mono">{t.minutes} min</span>
+                      <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${KIND[t.kind].cls}`}>{KIND[t.kind].label}</span>
+                      <span className="text-xs text-muted tabular-nums">{t.minutes} min</span>
                     </div>
                     <p className={`font-medium mt-1.5 ${t.done ? 'line-through text-subtle' : ''}`}>{t.title}</p>
                     {t.detail && <p className="text-sm text-soft mt-1">{t.detail}</p>}
