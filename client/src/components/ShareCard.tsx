@@ -166,8 +166,8 @@ export function ShareButton({ data, className = '' }: { data: ShareData; classNa
   return (
     <>
       <button type="button" onClick={() => setOpen(true)}
-        className={`inline-flex items-center gap-1.5 min-h-9 px-3 rounded-full text-sm font-semibold bg-card text-ink border border-line-strong hover:bg-raised transition-colors ${className}`}>
-        <Icon name="share" size={15} /> Share progress
+        className={`inline-flex items-center gap-1.5 min-h-8 text-sm font-medium text-accent-deep hover:underline ${className}`}>
+        <Icon name="share" size={14} /> Share
       </button>
       {open && <ShareDialog data={data} onClose={() => setOpen(false)} />}
     </>

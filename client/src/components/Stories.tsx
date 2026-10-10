@@ -2,22 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { STORIES, type Story } from '../lib/inspiration'
 
 const SEEN_KEY = 'rfr-seen-stories'
-const SLIDE_MS = 8000 // auto-advance time per slide
-
-const TINT = {
-  blush: { chip: 'bg-blush text-blush-ink', slide: 'bg-blush text-blush-ink' },
-  sage: { chip: 'bg-sage text-sage-ink', slide: 'bg-sage text-sage-ink' },
-  lavender: { chip: 'bg-lavender text-lavender-ink', slide: 'bg-lavender text-lavender-ink' },
-  peach: { chip: 'bg-peach text-peach-ink', slide: 'bg-peach text-peach-ink' },
-  sky: { chip: 'bg-sky text-sky-ink', slide: 'bg-sky text-sky-ink' },
-} as const
 
 function loadSeen(): Set<string> {
   try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) ?? '[]')) } catch { return new Set() }
 }
 
-// A row of short interview guides. Tap one to open it; unseen ones have a brand-blue ring.
-export function StoriesRow() {
+// Short interview guides as a plain list. Unread ones carry a small blue dot; each opens in a reading panel.
+export function GuidesList() {
   const [seen, setSeen] = useState<Set<string>>(loadSeen)
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
@@ -31,38 +22,32 @@ export function StoriesRow() {
   }, [])
 
   return (
-    <section aria-label="Interview guides">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-display font-semibold text-2xl">Interview guides</h2>
-        <span className="text-xs text-muted hidden sm:inline">Tips interviewers commonly share. General guidance, not quotes from specific people.</span>
+    <section aria-labelledby="guides-title">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 id="guides-title" className="font-semibold">Guides</h2>
+        <span className="text-xs text-muted">General tips interviewers commonly share</span>
       </div>
-      <div className="flex gap-4 overflow-x-auto py-4 -my-3 px-3 -mx-3 snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {STORIES.map((s, i) => {
-          const isSeen = seen.has(s.id)
-          return (
-            <button key={s.id} type="button" onClick={() => setOpenIndex(i)} className="snap-start shrink-0 w-20 flex flex-col items-center gap-2 group">
-              {/* New guides get a brand-blue ring; seen ones a quiet grey one */}
-              <span className={`w-16 h-16 rounded-full p-[3px] border-2 ${isSeen ? 'border-line' : 'border-accent'}`}>
-                <span className={`w-full h-full rounded-full flex items-center justify-center transition-colors group-hover:brightness-95 ${TINT[s.tint].chip}`}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={s.icon} /></svg>
-                </span>
-              </span>
-              <span className={`text-xs text-center leading-tight ${isSeen ? 'text-muted' : 'text-ink font-medium'}`}>{s.title}</span>
+      <ul className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6">
+        {STORIES.map((s, i) => (
+          <li key={s.id} className="border-t border-line">
+            <button type="button" onClick={() => setOpenIndex(i)} className="group w-full flex items-center gap-3 min-h-12 text-left">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-muted shrink-0"><path d={s.icon} /></svg>
+              <span className="flex-1 text-sm text-ink group-hover:text-accent-deep">{s.title}</span>
+              {!seen.has(s.id) && <span className="w-1.5 h-1.5 rounded-full bg-accent" aria-label="Not read yet" />}
             </button>
-          )
-        })}
-      </div>
+          </li>
+        ))}
+      </ul>
       {openIndex !== null && (
-        <StoryViewer index={openIndex} onIndex={setOpenIndex} onClose={() => setOpenIndex(null)} onSeen={markSeen} />
+        <GuideViewer index={openIndex} onIndex={setOpenIndex} onClose={() => setOpenIndex(null)} onSeen={markSeen} />
       )}
     </section>
   )
 }
 
-function StoryViewer({ index, onIndex, onClose, onSeen }: { index: number; onIndex: (i: number) => void; onClose: () => void; onSeen: (id: string) => void }) {
+function GuideViewer({ index, onIndex, onClose, onSeen }: { index: number; onIndex: (i: number) => void; onClose: () => void; onSeen: (id: string) => void }) {
   const story: Story = STORIES[index]
   const [slide, setSlide] = useState(0)
-  const [paused, setPaused] = useState(false)
 
   useEffect(() => { setSlide(0); onSeen(story.id) }, [story.id, onSeen])
 
@@ -77,7 +62,6 @@ function StoryViewer({ index, onIndex, onClose, onSeen }: { index: number; onInd
     else if (index > 0) onIndex(index - 1)
   }, [slide, index, onIndex])
 
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -89,51 +73,40 @@ function StoryViewer({ index, onIndex, onClose, onSeen }: { index: number; onInd
   }, [next, prev, onClose])
 
   const s = story.slides[slide]
+  const lastSlide = slide === story.slides.length - 1
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-[#0b1020]/70 backdrop-blur-sm" />
+      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/40" />
       <div role="dialog" aria-modal="true" aria-label={story.title}
-        onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
-        className={`relative w-full max-w-md min-h-[460px] rounded-3xl p-6 sm:p-8 flex flex-col shadow-2xl animate-[toast-in_0.18s_ease-out] ${TINT[story.tint].slide}`}>
-        {/* Progress bars, one per slide */}
-        <div className="flex gap-1.5">
-          {story.slides.map((_, i) => (
-            <span key={i} className="h-1 flex-1 rounded-full bg-current/20 overflow-hidden">
-              {i === slide ? (
-                // The current bar fills up over SLIDE_MS; when it finishes, we move on. Hovering pauses it.
-                <span key={`${story.id}-${slide}`} onAnimationEnd={next} className="block h-full bg-current"
-                  style={{ animation: `story-progress ${SLIDE_MS}ms linear forwards`, animationPlayState: paused ? 'paused' : 'running' }} />
-              ) : (
-                <span className={`block h-full bg-current ${i < slide ? 'w-full' : 'w-0'}`} />
-              )}
-            </span>
-          ))}
-        </div>
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">{story.title}</span>
-          <button type="button" onClick={onClose} aria-label="Close story" className="w-9 h-9 -mr-2 rounded-full hover:bg-current/10 flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        className="relative w-full max-w-lg rounded-xl bg-card border border-line shadow-2xl flex flex-col animate-[toast-in_0.18s_ease-out]">
+        <div className="flex items-center justify-between gap-4 px-6 h-14 border-b border-line">
+          <span className="text-sm font-medium text-muted">{story.title}</span>
+          <button type="button" onClick={onClose} aria-label="Close guide" className="w-8 h-8 -mr-2 rounded-md text-muted hover:text-ink hover:bg-raised flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
           </button>
         </div>
 
-        <h3 className="font-display font-semibold text-3xl leading-tight mt-6">{s.heading}</h3>
-        <ul className="mt-5 space-y-3">
-          {s.points.map((p) => (
-            <li key={p} className="flex gap-3 text-[15px] leading-relaxed">
-              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-current shrink-0" aria-hidden="true" />
-              <span className="opacity-90">{p}</span>
-            </li>
-          ))}
-        </ul>
+        <div key={`${story.id}-${slide}`} className="px-6 py-6 min-h-64 animate-[toast-in_0.2s_ease-out]">
+          <h3 className="text-xl font-semibold leading-snug">{s.heading}</h3>
+          <ul className="mt-4 space-y-2.5">
+            {s.points.map((p) => (
+              <li key={p} className="flex gap-3 text-[15px] leading-relaxed text-soft">
+                <span className="mt-2.5 w-1 h-1 rounded-full bg-muted shrink-0" aria-hidden="true" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <div className="flex-1" />
-        <div className="flex items-center justify-between mt-6">
+        <div className="flex items-center justify-between gap-4 px-6 h-16 border-t border-line">
           <button type="button" onClick={prev} disabled={index === 0 && slide === 0}
-            className="min-h-11 px-4 rounded-full border border-current/30 text-sm font-medium disabled:opacity-30 hover:bg-current/10">Back</button>
-          <span className="text-xs opacity-70">{slide + 1} / {story.slides.length}</span>
+            className="min-h-9 px-3 rounded-lg text-sm font-medium text-soft hover:bg-raised disabled:opacity-30">Back</button>
+          <span className="flex gap-1" aria-label={`Page ${slide + 1} of ${story.slides.length}`}>
+            {story.slides.map((_, i) => <span key={i} className={`h-1 rounded-full transition-all ${i === slide ? 'w-4 bg-ink' : 'w-1 bg-line-strong'}`} />)}
+          </span>
           <button type="button" onClick={next}
-            className="min-h-11 px-5 rounded-full bg-current/15 text-sm font-semibold hover:bg-current/25">
-            {slide < story.slides.length - 1 ? 'Next' : index < STORIES.length - 1 ? 'Next guide' : 'Done'}
+            className="min-h-9 px-4 rounded-lg text-sm font-semibold bg-accent text-on-accent hover:bg-accent-hover">
+            {!lastSlide ? 'Next' : index < STORIES.length - 1 ? 'Next guide' : 'Done'}
           </button>
         </div>
       </div>
