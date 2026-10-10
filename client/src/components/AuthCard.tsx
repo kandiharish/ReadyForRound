@@ -17,10 +17,6 @@ function useMedia(query: string) {
   return match
 }
 
-// What the looping intro video shows, in order (each feature is on screen for about 2.2 s; the clip is 13.2 s)
-const CLIP = [['Jobs Board', 0], ['Companies', 3 * 2.2], ['Resume Studio', 4 * 2.2], ['Career Compass', 5 * 2.2]] as const
-const CLIP_LENGTH = 13.2
-
 const POINTS: { icon: IconName; title: string; text: string }[] = [
   { icon: 'mic', title: 'Practise out loud', text: 'An AI interviewer asks about your role and your own projects.' },
   { icon: 'trend', title: 'See real demand', text: 'Openings, pay and skills from live job ads, every day.' },
@@ -49,13 +45,6 @@ export function AuthCard({ title, children }: { title: string; children: ReactNo
 function IntroPanel() {
   // People who ask for less motion get the still picture instead of the video
   const still = useMedia('(prefers-reduced-motion: reduce)')
-  const [scene, setScene] = useState(0)
-  function onTime(e: React.SyntheticEvent<HTMLVideoElement>) {
-    const t = e.currentTarget.currentTime % CLIP_LENGTH
-    let i = 0
-    CLIP.forEach(([, start], k) => { if (t >= start) i = k })
-    setScene(i)
-  }
 
   return (
     <aside className="relative hidden lg:flex flex-col justify-between gap-8 px-12 xl:px-16 py-9 bg-[#0b1220] text-white overflow-hidden">
@@ -76,21 +65,12 @@ function IntroPanel() {
           {still ? (
             <img src="/intro/intro-poster.jpg" alt="The ReadyForRound Jobs Board, showing which roles have the most openings" className="block w-full aspect-video object-cover" />
           ) : (
-            <video src="/intro/intro.mp4" poster="/intro/intro-poster.jpg" autoPlay muted loop playsInline preload="auto" onTimeUpdate={onTime}
+            <video src="/intro/intro.mp4" poster="/intro/intro-poster.jpg" autoPlay muted loop playsInline preload="auto"
               aria-label="A short silent tour of ReadyForRound: the Jobs Board, company practice, Resume Studio and Career Compass"
               className="block w-full aspect-video object-cover" />
           )}
         </figure>
 
-        {/* Which feature the video is showing right now */}
-        {!still && (
-          <div className="mt-4 flex items-center gap-4" aria-hidden="true">
-            <span className="text-sm text-white/55">Now showing <span key={scene} className="inline-block text-white font-medium animate-[toast-in_0.35s_ease-out]">{CLIP[scene][0]}</span></span>
-            <span className="flex gap-1.5">
-              {CLIP.map(([name], i) => <span key={name} className={`h-1 rounded-full transition-all duration-500 ${i === scene ? 'w-6 bg-[#5fb8ff]' : 'w-2 bg-white/20'}`} />)}
-            </span>
-          </div>
-        )}
 
         <ul className="mt-8 grid grid-cols-3 gap-5 [@media(max-height:860px)]:hidden" aria-label="What you get">
           {POINTS.map((p, i) => (
