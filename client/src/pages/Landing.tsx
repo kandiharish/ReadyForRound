@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthProvider'
 import { Avatar, type AvatarState } from '../components/Avatar'
 import { Brand } from '../components/Brand'
 import { Reveal, useInView } from '../components/Reveal'
+import { ProductVideo, ScrollProgress, StatsStrip, Tour, WordReveal } from '../components/LandingMotion'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { openFeedback } from '../components/FeedbackButton'
 import { Icon, type IconName } from '../components/ui'
@@ -18,14 +19,16 @@ export default function Landing() {
   if (!loading && session) return <Navigate to="/home" replace />
 
   return (
-    <div className="min-h-screen bg-paper text-ink overflow-x-hidden">
+    <div className="min-h-screen bg-paper text-ink overflow-x-clip">
       <TopNav />
       <main>
         <Hero />
-        <TopicRibbon />
+        <ProductVideo />
+        <StatsStrip />
         <Problems />
         <ForEveryone />
         <HowItWorks />
+        <Tour />
         <Features />
         <FreeBanner />
         <SampleReport />
@@ -110,11 +113,11 @@ function TopNav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
   return (
-    <header className={`sticky top-0 z-40 transition-all duration-300 border-b ${scrolled ? 'bg-paper/80 backdrop-blur-md border-line shadow-sm' : 'bg-transparent border-transparent'}`}>
+    <header className={`relative sticky top-0 z-40 transition-all duration-300 border-b ${scrolled ? 'bg-paper/80 backdrop-blur-md border-line shadow-sm' : 'bg-transparent border-transparent'}`}>
       <div className="max-w-7xl 2xl:max-w-[104rem] mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
         <Link to="/" aria-label="ReadyForRound home"><Brand /></Link>
         <nav aria-label="Sections" className="hidden md:flex items-center gap-7 text-sm text-soft">
-          {[['#problems', 'Why'], ['#how', 'How it works'], ['#features', 'Features'], ['#faq', 'FAQ']].map(([href, label]) => (
+          {[['#video', 'Watch'], ['#how', 'How it works'], ['#tour', 'Features'], ['#faq', 'FAQ']].map(([href, label]) => (
             <a key={href} href={href} className="relative hover:text-ink after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:bg-accent after:scale-x-0 hover:after:scale-x-100 after:origin-left after:transition-transform">{label}</a>
           ))}
         </nav>
@@ -124,6 +127,7 @@ function TopNav() {
           <Link to="/signup" className="inline-flex items-center min-h-10 px-4 rounded-xl bg-accent text-on-accent text-sm font-semibold hover:bg-accent-hover">Start free</Link>
         </div>
       </div>
+      <ScrollProgress />
     </header>
   )
 }
@@ -138,21 +142,20 @@ function Hero() {
       <div className="relative max-w-7xl 2xl:max-w-[104rem] mx-auto grid gap-14 lg:grid-cols-[1.05fr_1fr] items-center">
         <div>
           <Reveal><FreeBadge /></Reveal>
-          <Reveal delay={100}>
-            {/* Fixed line breaks, so the changing word never makes the headline jump around */}
-            <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] xl:text-[4.3rem] 2xl:text-[5rem] leading-[1.05] mt-6">
-              <span className="block">Walk into your</span>
-              <span className="block sm:whitespace-nowrap"><span className={GRADIENT_TEXT}>placement</span> <span className="block sm:inline">interview like</span></span>
-              <span className="block">you've already <span className="block sm:inline">done it.</span></span>
-            </h1>
-          </Reveal>
-          <Reveal delay={200}>
+          <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] xl:text-[4.3rem] 2xl:text-[5rem] leading-[1.05] mt-6">
+            <WordReveal delay={120} lines={[
+              ['Walk', 'into', 'your'],
+              [<span className={GRADIENT_TEXT}>placement</span>, 'interview', 'like'],
+              ["you've", 'already', 'done', 'it.'],
+            ]} />
+          </h1>
+          <Reveal delay={650}>
             <p className="text-lg sm:text-xl text-soft mt-6 max-w-lg">
               The AI mock interview platform: practise by voice, get honest feedback, and know exactly what to study next.
             </p>
           </Reveal>
-          <Reveal delay={300} className="mt-8"><CtaButtons /></Reveal>
-          <Reveal delay={450}>
+          <Reveal delay={800} className="mt-8"><CtaButtons /></Reveal>
+          <Reveal delay={950}>
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
               {['No credit card', 'No hidden plans', 'Camera optional'].map((t) => (
                 <li key={t} className="flex items-center gap-1.5"><Icon name="check" size={15} className="text-good" />{t}</li>
@@ -161,7 +164,7 @@ function Hero() {
           </Reveal>
         </div>
 
-        <Reveal from="right" delay={200}><HeroDemo /></Reveal>
+        <Reveal from="right" delay={500}><HeroDemo /></Reveal>
       </div>
     </section>
   )
@@ -271,20 +274,6 @@ function CountUp({ to, className = '', duration = 900 }: { to: number; className
   return <span className={className}>{v}</span>
 }
 
-const TOPICS = ['Tell me about yourself', 'DSA', 'SQL joins', 'OOP', 'React hooks', 'Java', 'Python', 'DBMS', 'Operating systems', 'Computer networks', 'Your final-year project', 'STAR answers', 'Strengths & weaknesses', 'System design basics', 'Why should we hire you?', 'Machine learning', 'Docker & Kubernetes', 'Data pipelines', 'Excel & Power BI', 'Why are you switching jobs?', 'Your biggest project at work', 'Leading a team']
-
-// The things people can practise, as a simple list of tags.
-function TopicRibbon() {
-  return (
-    <div className="border-y border-line bg-card py-6" aria-label="Topics you can practise">
-      <ul className="max-w-5xl mx-auto px-4 flex flex-wrap justify-center gap-2">
-        {TOPICS.map((t) => (
-          <li key={t} className="rounded-full border border-line bg-paper px-3.5 py-1.5 text-sm font-medium text-soft">{t}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}
 
 const PAINS: { pain: string; fix: string; icon: IconName; tint: Tint }[] = [
   { pain: 'I freeze when they ask', fix: 'Practise out loud until it feels normal', icon: 'mic', tint: 'sky' },

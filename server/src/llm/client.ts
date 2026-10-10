@@ -14,6 +14,7 @@ export type ChatOptions = {
   maxTokens?: number // upper limit on the length of the reply
   json?: boolean // ask the model to reply with a JSON object only
   task?: 'interview' | 'report' // which job this is for; the report can use a stronger AI (see REPORT_LLM_PROVIDER)
+  retries?: number // set internally when a busy AI service asked us to wait and try again
 }
 
 type Provider = 'ollama' | 'groq' | 'openrouter'
@@ -66,6 +67,15 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
 
   if (!res.ok) {
     const body = await res.text()
+    // Free AI plans allow only so many words a minute. When the service says "try again in a few seconds",
+    // wait that long and try again (twice at most), instead of failing a student's report.
+    if (res.status === 429 && (options.retries ?? 0) < 2) {
+      const wait = retryAfterSeconds(res.headers.get('retry-after'), body)
+      if (wait !== null && wait <= 20) {
+        await new Promise((r) => setTimeout(r, Math.ceil(wait * 1000) + 250))
+        return callProvider(provider, messages, { ...options, retries: (options.retries ?? 0) + 1 })
+      }
+    }
     // Reasoning models (like gpt-oss) sometimes wrap a normal reply in a broken "tool call". Groq then refuses it,
     // but still sends back what the model wrote ("failed_generation"). Recover that text instead of failing.
     const recovered = recoverFailedGeneration(body)
@@ -80,6 +90,14 @@ async function callProvider(provider: Provider, messages: ChatMessage[], options
     text: data.choices[0].message.content as string,
     usage: data.usage, // how many tokens the question and reply used
   }
+}
+
+// Seconds to wait before retrying, from the Retry-After header or the "Please try again in 1.5s" message.
+export function retryAfterSeconds(header: string | null, body: string): number | null {
+  const fromHeader = header !== null ? Number(header) : NaN
+  if (Number.isFinite(fromHeader)) return fromHeader
+  const m = body.match(/try again in (?:(\d+)m)?([\d.]+)s/i)
+  return m ? Number(m[1] ?? 0) * 60 + Number(m[2]) : null
 }
 
 export function recoverFailedGeneration(body: string): string | null {
