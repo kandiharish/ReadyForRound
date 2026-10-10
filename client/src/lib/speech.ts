@@ -3,8 +3,9 @@
 export type Gender = 'female' | 'male'
 
 // Voices don't say their gender, so we guess from well-known voice names.
-const FEMALE_NAMES = /female|heera|neerja|swara|kalpana|veena|zira|aria|jenny|samantha|sonia|libby|natasha|susan|hazel|karen|moira|google us english/i
-const MALE_NAMES = /\bmale\b|ravi|prabhat|madhur|hemant|rishi|david|mark|guy|ryan|daniel|george|thomas|alex|fred/i
+// Includes Microsoft Edge's natural Indian English voices (Neerja, Aashi, Ananya, Kavya; Prabhat, Aarav, Kunal, Rehaan).
+const FEMALE_NAMES = /female|heera|neerja|aashi|ananya|kavya|swara|kalpana|veena|zira|aria|jenny|samantha|sonia|libby|natasha|susan|hazel|karen|moira|google us english/i
+const MALE_NAMES = /\bmale\b|ravi|prabhat|aarav|kunal|rehaan|madhur|hemant|rishi|david|mark|guy|ryan|daniel|george|thomas|alex|fred/i
 
 export function isSpeechSupported() {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
@@ -30,13 +31,27 @@ export function voiceGender(v: SpeechSynthesisVoice): Gender | null {
   return null
 }
 
-// Pick the best voice: matching gender, Indian English, and "natural"/online voices sound most human.
+const isIndian = (v: SpeechSynthesisVoice) => /^en[-_]IN$/i.test(v.lang)
+const isNatural = (v: SpeechSynthesisVoice) => /natural|online/i.test(v.name)
+
+// How well a voice suits an interviewer: the right gender first, then an Indian English accent,
+// then a natural (neural) voice. Edge's "Neerja Online (Natural)" and "Prabhat Online (Natural)" score highest.
+function voiceScore(v: SpeechSynthesisVoice, gender: Gender) {
+  return (voiceGender(v) === gender ? 10 : 0) + (isIndian(v) ? 5 : 0) + (isNatural(v) ? 4 : 0) + (/google/i.test(v.name) ? 1 : 0)
+}
+
 export function pickVoice(voices: SpeechSynthesisVoice[], gender: Gender) {
-  const score = (v: SpeechSynthesisVoice) =>
-    (voiceGender(v) === gender ? 4 : 0) +
-    (v.lang === 'en-IN' || v.lang === 'en_IN' ? 3 : 0) +
-    (/natural|online|google/i.test(v.name) ? 2 : 0)
-  return [...voices].sort((a, b) => score(b) - score(a))[0] ?? null
+  return [...voices].sort((a, b) => voiceScore(b, gender) - voiceScore(a, gender))[0] ?? null
+}
+
+// The voice picker lists the most suitable voices first
+export function sortVoices(voices: SpeechSynthesisVoice[], gender: Gender) {
+  return [...voices].sort((a, b) => voiceScore(b, gender) - voiceScore(a, gender) || a.name.localeCompare(b.name))
+}
+
+// True when this browser has a natural Indian English voice (Microsoft Edge on Windows does; most others don't)
+export function hasNaturalIndianVoice(voices: SpeechSynthesisVoice[]) {
+  return voices.some((v) => isIndian(v) && isNatural(v))
 }
 
 // Speak text aloud. Resolves when finished (or cancelled).

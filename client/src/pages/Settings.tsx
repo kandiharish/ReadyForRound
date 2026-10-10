@@ -9,7 +9,8 @@ import { supabase } from '../lib/supabase'
 import { loadSettings, saveSettings, type RoomSettings } from '../components/PreJoin'
 import { Avatar, INTERVIEWERS, type InterviewerId } from '../components/Avatar'
 import { Button, Card, ChoiceCards, Icon, PageHeader, Spinner } from '../components/ui'
-import { loadVoices, pickVoice, speak } from '../lib/speech'
+import { loadVoices, pickVoice, sortVoices, speak } from '../lib/speech'
+import { VoiceHint } from '../components/VoiceHint'
 import { replayTour } from '../components/WelcomeTour'
 
 export default function Settings() {
@@ -60,13 +61,13 @@ export default function Settings() {
           <div className="flex flex-col gap-2 text-sm font-medium text-soft flex-1 min-w-60 max-w-md">
             Voice
             <Select label="Interviewer voice" value={voice?.voiceURI ?? ''} onChange={(v) => updateRoom({ voiceURI: v })}
-              options={voices.length === 0 ? [{ value: '', label: 'Default voice' }] : voices.map((v) => ({ value: v.voiceURI, label: v.name, hint: v.lang }))} />
+              options={voices.length === 0 ? [{ value: '', label: 'Default voice' }] : sortVoices(voices, INTERVIEWERS[room.interviewer].gender).map((v) => ({ value: v.voiceURI, label: v.name, hint: v.lang }))} />
           </div>
           <Button type="button" variant="secondary" onClick={() => speak(`Hello, I'm ${INTERVIEWERS[room.interviewer].name}. Ready when you are.`, voice, me.speaking_pace === 'slow' ? 0.85 : 1)}>
             Test voice
           </Button>
         </div>
-        <p className="text-xs text-muted">Tip: in Microsoft Edge, voices marked "Online (Natural)" sound the most human.</p>
+        <VoiceHint />
       </Card>
 
       <Card className="space-y-5">

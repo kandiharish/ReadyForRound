@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/api'
 import { loadVoices, pickVoice, speak, stopSpeaking } from '../lib/speech'
 import { Avatar, type AvatarState } from './Avatar'
 import { Icon } from './ui'
+import { VoiceHint } from './VoiceHint'
 
 // The landing page's hero: a real one-question interview anyone can try without signing up.
 // Pick your role, hear Priya ask, answer out loud (or type), and get a real score with one strength and one fix.
@@ -286,6 +287,7 @@ export function HeroDemo() {
         ) : null}
       </div>
       <p className="mt-3 text-center text-xs text-muted">Your recording is turned into text for scoring, then deleted.</p>
+      {touched && <VoiceHint className="mt-1 text-center" />}
     </div>
   )
 }

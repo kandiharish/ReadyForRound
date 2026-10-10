@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Select } from './Select'
 import { Avatar, INTERVIEWERS, type InterviewerId } from './Avatar'
 import { isRecordingSupported } from '../lib/recorder'
-import { loadVoices, pickVoice, speak, stopSpeaking } from '../lib/speech'
+import { loadVoices, pickVoice, sortVoices, speak, stopSpeaking } from '../lib/speech'
+import { VoiceHint } from './VoiceHint'
 import { apiFetch } from '../lib/api'
 import { Icon } from './ui'
 
@@ -174,12 +175,13 @@ export function PreJoin({ roundLabel, rate, onJoin }: {
               <p className="text-sm font-medium text-stage-soft mb-2">Voice</p>
               <div className="flex gap-2">
                 <Select stage label="Interviewer voice" className="flex-1 min-w-0" value={voice?.voiceURI ?? ''} onChange={(v) => update({ voiceURI: v })}
-                  options={voices.length === 0 ? [{ value: '', label: 'Default voice' }] : voices.map((v) => ({ value: v.voiceURI, label: v.name, hint: v.lang }))} />
+                  options={voices.length === 0 ? [{ value: '', label: 'Default voice' }] : sortVoices(voices, gender).map((v) => ({ value: v.voiceURI, label: v.name, hint: v.lang }))} />
                 <button onClick={() => speak(`Hello, I'm ${INTERVIEWERS[settings.interviewer].name}. Can you hear me clearly?`, voice, rate)}
                   className="border border-stage-line rounded-lg px-3 text-sm hover:bg-stage-raised">
                   <Icon name="volume" size={15} /> Test
                 </button>
               </div>
+              <VoiceHint className="mt-2 text-stage-muted" />
             </div>
 
             <div>
