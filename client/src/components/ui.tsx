@@ -60,8 +60,8 @@ export function Icon({ name, size = 18, className = '', strokeWidth = 1.8 }: { n
   )
 }
 
-export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`bg-card border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-18px_rgba(15,23,42,0.18)] ${className}`}>{children}</section>
+export function Card({ children, className = '', tour }: { children: ReactNode; className?: string; tour?: string }) {
+  return <section data-tour={tour} className={`bg-card border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-18px_rgba(15,23,42,0.18)] ${className}`}>{children}</section>
 }
 
 // Classic style: a solid ink button for the main action (it flips to ivory in dark mode), outlined buttons for the rest.

@@ -1,6 +1,6 @@
 import { apiFetch } from '../lib/api'
 import { Select } from '../components/Select'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useEffect, useState } from 'react'
 import { useMe } from '../auth/MeProvider'
 import { useFeedback } from '../components/Feedback'
@@ -10,9 +10,11 @@ import { loadSettings, saveSettings, type RoomSettings } from '../components/Pre
 import { Avatar, INTERVIEWERS, type InterviewerId } from '../components/Avatar'
 import { Button, Card, ChoiceCards, Icon, PageHeader, Spinner } from '../components/ui'
 import { loadVoices, pickVoice, speak } from '../lib/speech'
+import { replayTour } from '../components/WelcomeTour'
 
 export default function Settings() {
   const { me, refresh } = useMe()
+  const navigate = useNavigate()
   const [room, setRoom] = useState<RoomSettings>(loadSettings)
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const { toast } = useFeedback()
@@ -91,6 +93,14 @@ export default function Settings() {
             className="w-5 h-5 accent-[var(--accent-deep)]" />
           <span className="text-sm">{me.practice_without_score ? 'On' : 'Off'}</span>
         </label>
+      </Card>
+
+      <Card className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="font-semibold">Welcome tour</h2>
+          <p className="text-sm text-muted mt-1">A quick walk through the main parts of the app.</p>
+        </div>
+        <Button variant="secondary" onClick={() => { replayTour(me.id); navigate('/home') }}><Icon name="play" size={15} /> Replay the tour</Button>
       </Card>
 
       <Card className="flex flex-wrap items-center justify-between gap-4">

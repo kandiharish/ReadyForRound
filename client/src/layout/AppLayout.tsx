@@ -9,6 +9,7 @@ import { Brand } from '../components/Brand'
 import { openFeedback } from '../components/FeedbackButton'
 import { PageSkeleton, ShellSkeleton } from '../components/Skeleton'
 import { preloadAppPages } from '../lib/pages'
+import { WelcomeTour } from '../components/WelcomeTour'
 
 type NavItem = { to: string; label: string; icon: IconName; live?: boolean; badge?: string } // live: shows real, updating data
 const WORKSPACE: NavItem[] = [
@@ -72,6 +73,7 @@ function Shell() {
         </div>
       </main>
       <MobileNav />
+      {pathname === '/home' && <WelcomeTour userId={me.id} firstName={(me.full_name ?? '').split(' ')[0]} />}
     </div>
   )
 }
@@ -87,7 +89,7 @@ function Sidebar() {
         <Brand />
       </Link>
 
-      <Link to="/goals" className="group flex items-center gap-2.5 min-h-14 px-3 py-2.5 rounded-xl bg-raised border border-line hover:border-line-strong transition-colors">
+      <Link to="/goals" data-tour="goal" className="group flex items-center gap-2.5 min-h-14 px-3 py-2.5 rounded-xl bg-raised border border-line hover:border-line-strong transition-colors">
         <span className={`w-2 h-2 shrink-0 rounded-full ${goal ? 'bg-accent' : 'bg-warn'}`} />
         <span className="flex-1 min-w-0">
           <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Current goal</span>
@@ -132,7 +134,7 @@ function NavGroup({ title, items }: { title: string; items: NavItem[] }) {
     <div className="flex flex-col gap-0.5">
       <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-subtle px-2.5 pb-1.5">{title}</span>
       {items.map((it) => (
-        <NavLink key={it.to} to={it.to}
+        <NavLink key={it.to} to={it.to} data-tour={it.to.slice(1)}
           className={({ isActive }) => `flex items-center gap-3 min-h-9 px-2.5 rounded-lg text-sm transition-colors ${isActive
             ? 'bg-accent-soft text-accent-deep font-semibold'
             : 'text-soft hover:text-ink hover:bg-raised'}`}>
@@ -201,7 +203,7 @@ function MobileNav() {
   return (
     <nav aria-label="Main" className="lg:hidden fixed bottom-0 inset-x-0 z-20 bg-card/95 backdrop-blur border-t border-line grid grid-cols-6 px-0.5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {tabs.map((t) => (
-        <NavLink key={t.to} to={t.to}
+        <NavLink key={t.to} to={t.to} data-tour={t.to.slice(1)}
           className={({ isActive }) => `flex flex-col items-center justify-center gap-1 min-h-12 text-[10px] tracking-tight ${isActive ? 'text-ink font-semibold' : 'text-muted'}`}>
           {({ isActive }) => (
             <>

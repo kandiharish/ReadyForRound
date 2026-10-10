@@ -110,7 +110,7 @@ export default function Home() {
 
       {/* Row 1: readiness · up next · daily habit */}
       <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr_0.85fr]">
-        <Card className="flex flex-col sm:flex-row gap-6">
+        <Card tour="readiness" className="flex flex-col sm:flex-row gap-6">
           <div className="flex flex-col gap-3 items-start">
             <span className="text-sm text-muted">Readiness · {label('roles', goal.target_role)}</span>
             {hideScores ? (
@@ -144,7 +144,7 @@ export default function Home() {
         </Card>
 
         {/* The most important card: a soft lavender-to-sky glow that suits both themes */}
-        <section className="relative overflow-hidden rounded-2xl bg-card text-ink border border-line p-6 flex flex-col shadow-sm order-first lg:order-none">
+        <section data-tour="next" className="relative overflow-hidden rounded-2xl bg-card text-ink border border-line p-6 flex flex-col shadow-sm order-first lg:order-none">
           <span className="relative self-start rounded-full bg-card/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-lavender-ink">Up next for you</span>
           <h2 className="relative font-display font-semibold text-4xl leading-none mt-4">{recTitle}</h2>
           <p className="relative text-sm mt-3 text-soft leading-relaxed">{rec.reason}</p>
