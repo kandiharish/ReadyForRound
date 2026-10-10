@@ -47,7 +47,7 @@ function IntroPanel() {
   const still = useMedia('(prefers-reduced-motion: reduce)')
 
   return (
-    <aside className="relative hidden lg:flex flex-col justify-between gap-8 px-12 xl:px-16 py-9 bg-[#0b1220] text-white overflow-hidden">
+    <aside className="relative hidden lg:flex flex-col gap-8 px-12 xl:px-16 py-9 bg-[#0b1220] text-white overflow-hidden">
       {/* A faint dot grid that fades out towards the edges: texture without colour */}
       <div aria-hidden="true" className="absolute inset-0 opacity-[0.35] [background-image:radial-gradient(rgb(255_255_255/0.14)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_40%_45%,black_20%,transparent_75%)]" />
 
@@ -56,12 +56,15 @@ function IntroPanel() {
         <span className="font-semibold text-[1.05rem] tracking-tight">Ready<span className="text-[#5fb8ff]">For</span>Round</span>
       </Link>
 
-      <div className="relative max-w-2xl">
+      <div className="relative max-w-2xl my-auto">
         <h2 className="text-[2.6rem] xl:text-[3rem] font-semibold leading-[1.08] tracking-tight">
           <WordReveal delay={100} lines={[['Walk', 'into', 'your'], ['next', 'round', <span className="text-[#5fb8ff]">ready.</span>]]} />
         </h2>
+        <p className="mt-4 text-[1.05rem] leading-relaxed text-white/65 max-w-lg animate-[toast-in_0.5s_ease-out_0.45s_both] motion-reduce:animate-none">
+          Mock interviews, live job demand and resume checks in one place, for students, freshers and working professionals.
+        </p>
 
-        <figure className="mt-8 rounded-xl overflow-hidden border border-white/10 bg-[#131a2a] shadow-[0_30px_70px_-25px_rgba(0,0,0,0.7)] animate-[pop-in_0.7s_cubic-bezier(0.22,1,0.36,1)_0.35s_both] motion-reduce:animate-none">
+        <figure className="mt-7 rounded-xl overflow-hidden border border-white/10 bg-[#131a2a] shadow-[0_30px_70px_-25px_rgba(0,0,0,0.7)] animate-[pop-in_0.7s_cubic-bezier(0.22,1,0.36,1)_0.35s_both] motion-reduce:animate-none">
           {still ? (
             <img src="/intro/intro-poster.jpg" alt="The ReadyForRound Jobs Board, showing which roles have the most openings" className="block w-full aspect-video object-cover" />
           ) : (
