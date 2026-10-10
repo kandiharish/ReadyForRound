@@ -37,7 +37,7 @@ export function ChartToppers({ roles, name }: Named) {
 
   const tiles: { kicker: string; icon: IconName; tone: string; title: string; stat: string; to: string }[] = []
   if (byOpenings) tiles.push({ kicker: 'Most openings', icon: 'trophy', tone: 'bg-peach text-peach-ink', title: name(byOpenings.role_id), stat: `${num(byOpenings.total_openings)} openings`, to: `/market/${byOpenings.role_id}` })
-  if (byPay) tiles.push({ kicker: 'Highest pay', icon: 'up', tone: 'bg-sage text-sage-ink', title: name(byPay.role_id), stat: `${lakhs(byPay.salary!.p50)} a year (middle)`, to: `/market/${byPay.role_id}` })
+  if (byPay) tiles.push({ kicker: 'Highest pay', icon: 'up', tone: 'bg-peach text-peach-ink', title: name(byPay.role_id), stat: `${lakhs(byPay.salary!.p50)} a year (middle)`, to: `/market/${byPay.role_id}` })
   if (byFresher) tiles.push({ kicker: 'Most fresher-friendly', icon: 'target', tone: 'bg-sky text-sky-ink', title: name(byFresher.role_id), stat: `${Math.round(byFresher.fresher_share! * 100)}% of ads welcome freshers`, to: `/market/${byFresher.role_id}` })
   if (skill) tiles.push({ kicker: 'Most-asked skill', icon: 'flame', tone: 'bg-lavender text-lavender-ink', title: skill.skill, stat: `Asked for in ${skill.roles.length} of ${roles.length} roles`, to: `/market/${skill.roles[0].id}` })
 
@@ -46,7 +46,6 @@ export function ChartToppers({ roles, name }: Named) {
       {tiles.map((t, i) => (
         <li key={t.kicker} className="motion-reduce-static" style={{ animation: `pop-in 500ms ${i * 80}ms both` }}>
           <Link to={t.to} className={`group relative h-full overflow-hidden rounded-2xl p-4 flex flex-col gap-1 transition-all ${t.tone}`}>
-            <span aria-hidden="true" className="absolute right-3 top-3 font-bold text-xl leading-none opacity-40 select-none">#1</span>
             <span className="flex items-center gap-1.5 pr-10 text-xs font-semibold"><Icon name={t.icon} size={14} /> {t.kicker}</span>
             <span className="font-semibold text-ink text-base sm:text-lg leading-snug mt-1">{t.title}</span>
             <span className="text-xs sm:text-sm mt-auto pt-1">{t.stat}</span>

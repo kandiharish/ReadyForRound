@@ -100,12 +100,12 @@
   --accent-bright: #0b63e5;
   --on-accent-bright: #ffffff;
 
-  /* Supporting tints, all from the logo family plus one neutral and one green */
-  --sky: #eaf2fe;       --sky-ink: #0a52bd;    /* azure */
-  --lavender: #efecfe;  --lavender-ink: #4527c9; /* indigo */
-  --peach: #e6f6fb;     --peach-ink: #0b6a8b;  /* cyan */
-  --blush: #f2f4f7;     --blush-ink: #344054;  /* neutral */
-  --sage: #e7f6ee;      --sage-ink: #067647;   /* green */
+  /* Supporting tints are neutral on purpose: colour is kept for actions (azure) and meaning (green, amber, red) */
+  --sky: #f2f4f7;       --sky-ink: #344054;
+  --lavender: #f2f4f7;  --lavender-ink: #344054;
+  --peach: #f2f4f7;     --peach-ink: #344054;
+  --blush: #f2f4f7;     --blush-ink: #344054;
+  --sage: #e7f6ee;      --sage-ink: #067647;   /* green: good */
 
   --stage: #f2f4f7;
   --stage-card: #ffffff;
@@ -149,9 +149,9 @@
   --accent-bright: #4d9bff;
   --on-accent-bright: #06101f;
 
-  --sky: #10233f;       --sky-ink: #8fc1ff;
-  --lavender: #1d1938;  --lavender-ink: #b7a9ff;
-  --peach: #0d2730;     --peach-ink: #7fd8ef;
+  --sky: #1a1f28;       --sky-ink: #c6ccd6;
+  --lavender: #1a1f28;  --lavender-ink: #c6ccd6;
+  --peach: #1a1f28;     --peach-ink: #c6ccd6;
   --blush: #1a1f28;     --blush-ink: #c6ccd6;
   --sage: #0e2a1d;      --sage-ink: #7fd6a6;
 

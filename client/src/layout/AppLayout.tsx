@@ -105,6 +105,10 @@ function Sidebar() {
         <NavGroup title="Placements Hub" items={CAREER} />
       </div>
 
+      <button type="button" onClick={openFeedback} className="flex items-center gap-3 min-h-9 px-2.5 rounded-lg text-sm text-soft hover:text-ink hover:bg-raised">
+        <Icon name="chat" size={17} className="text-muted" /> Send feedback
+      </button>
+
       <UsageCard />
 
       <div className="flex items-center gap-1 px-0.5">

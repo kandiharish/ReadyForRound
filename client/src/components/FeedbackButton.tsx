@@ -15,10 +15,8 @@ const KINDS: { id: Kind; label: string; icon: IconName; tint: string; placeholde
 const OPEN_EVENT = 'rfr-open-feedback'
 export const openFeedback = () => window.dispatchEvent(new Event(OPEN_EVENT))
 
-// Hidden on screens where a floating button would get in the way.
-const HIDE_ON = [/^\/interview\/[^/]+$/, /^\/onboarding$/]
-
-// A small floating "Feedback" button on every page. Messages are saved and emailed to the team's inbox.
+// The feedback form. It has no button of its own: links across the app open it with openFeedback().
+// Messages are saved and emailed to the team's inbox.
 export function FeedbackButton() {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
@@ -28,24 +26,8 @@ export function FeedbackButton() {
     window.addEventListener(OPEN_EVENT, onOpen)
     return () => window.removeEventListener(OPEN_EVENT, onOpen)
   }, [])
-  if (HIDE_ON.some((r) => r.test(pathname))) return null
-  const inShell = !['/', '/login', '/signup', '/privacy', '/terms', '/status'].includes(pathname)
-  // Phones: inside the app the top bar has a feedback icon, and on login/sign-up the button would cover the form.
-  const phoneHidden = inShell || ['/login', '/signup'].includes(pathname)
-
   return (
     <>
-      {/* A black floating button in the bottom-right corner. Inside the app it is a small round icon that
-          slides open on hover, so it covers as little of the page as possible. On phones inside the app,
-          the top bar has a feedback icon instead. */}
-      <button type="button" onClick={() => setOpen(true)} aria-label="Send feedback"
-        className={`${phoneHidden ? 'max-lg:hidden' : ''} group fixed right-5 z-30 inline-flex items-center rounded-full bg-ink text-paper h-11 text-sm font-semibold shadow-lg transition-all ${
-          inShell ? 'bottom-5 w-11 justify-center hover:w-auto hover:pl-3.5 hover:pr-4 hover:gap-2 focus-visible:w-auto focus-visible:pl-3.5 focus-visible:pr-4 focus-visible:gap-2' : 'bottom-5 gap-2 pl-3.5 pr-4'}`}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
-          <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
-        </svg>
-        <span className={inShell ? 'hidden group-hover:inline group-focus-visible:inline whitespace-nowrap' : 'max-sm:sr-only'}>Feedback</span>
-      </button>
       {open && <FeedbackDialog page={pathname} onClose={() => setOpen(false)} />}
     </>
   )
