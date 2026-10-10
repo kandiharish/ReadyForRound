@@ -96,7 +96,7 @@ export function CountUpInView({ to, prefix = '', suffix = '' }: { to: number; pr
 
 // One word in the headline that rolls to the next every few seconds (placement → campus → first job → next job).
 // The words stack in one slot: the current one sits in place, the old one rolls up and out, the new one rolls in
-// from below. The slot's width eases to fit each word, so the rest of the line glides instead of jumping.
+// from below. The slot is as wide as the widest word, so the headline's layout never changes while words roll.
 export function RotatingWord({ words, className = '', every = 2600 }: { words: string[]; className?: string; every?: number }) {
   const [i, setI] = useState(0)
   const [width, setWidth] = useState<number | null>(null)
@@ -107,14 +107,14 @@ export function RotatingWord({ words, className = '', every = 2600 }: { words: s
     return () => clearInterval(t)
   }, [words.length, every])
   useLayoutEffect(() => {
-    const measure = () => setWidth(sizers.current[i]?.offsetWidth ?? null)
+    const measure = () => setWidth(Math.max(0, ...sizers.current.map((el) => el?.offsetWidth ?? 0)) || null)
     measure()
     window.addEventListener('resize', measure)
     document.fonts?.ready.then(measure).catch(() => {})
     return () => window.removeEventListener('resize', measure)
-  }, [i])
+  }, [])
   return (
-    <span className="relative inline-block align-bottom overflow-hidden transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] h-[1.12em] -mb-[0.04em]"
+    <span className="relative inline-block align-bottom overflow-hidden h-[1.12em] -mb-[0.04em]"
       style={{ width: width ?? undefined }} aria-live="polite">
       {/* Invisible copies used only to measure each word's width */}
       <span aria-hidden="true" className="absolute invisible whitespace-nowrap">
@@ -123,7 +123,7 @@ export function RotatingWord({ words, className = '', every = 2600 }: { words: s
       {words.map((w, k) => {
         const offset = k === i ? 0 : k === (i - 1 + words.length) % words.length ? -1 : 1
         return (
-          <span key={w} aria-hidden={k !== i} className={`absolute left-0 top-0 whitespace-nowrap transition-[transform,opacity] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] ${className}`}
+          <span key={w} aria-hidden={k !== i} className={`absolute left-0 top-0 whitespace-nowrap transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.65,0,0.35,1)] ${className}`}
             style={{ transform: `translateY(${offset * 105}%)`, opacity: offset === 0 ? 1 : 0, transitionDuration: offset === 1 ? '0ms' : undefined }}>{w}</span>
         )
       })}
