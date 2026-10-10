@@ -115,7 +115,8 @@ export function recoverFailedGeneration(body: string): string | null {
 }
 
 // House style for everything the AI writes: plain punctuation that reads like a person wrote it.
-const STYLE_RULE = 'Punctuation: never use em dashes (—) or spaced en dashes. Use a comma, a full stop, a colon or "and" instead.'
+// Only about dashes: wording that mentions full stops made the interviewer drop question marks.
+const STYLE_RULE = 'Never use em dashes (—) or spaced en dashes in your reply; where you would use one, use a comma instead.'
 
 // Safety net for the same rule: models don't always follow it. Swaps a dash used as a pause for a comma,
 // and a dash starting a line for a hyphen bullet. En dashes inside ranges (₹5L–₹8L) are left alone.

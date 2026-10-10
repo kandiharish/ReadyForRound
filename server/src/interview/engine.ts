@@ -22,6 +22,16 @@ const db = () => {
   return supabase
 }
 
+// Interviewers ask with a question mark ("Why did you...?") or as an instruction ("Explain the box model.").
+// Both are fine; statements like "You scored 6/10." are not.
+const PROMPT_VERBS = /^(explain|describe|walk me through|tell me|talk me through|take me through|compare|design|write|outline|share|give me|list|discuss|show me|imagine|suppose|say)\b/i
+export function isAQuestion(text: string) {
+  const t = text.trim()
+  if (t.includes('?')) return true
+  // The instruction is often the last sentence, after a short lead-in ("Nice. Explain how...")
+  return t.split(/(?<=[.!])\s+/).some((sentence) => PROMPT_VERBS.test(sentence.trim()))
+}
+
 // Ask the AI for the next step, and check its reply is usable. One retry if it isn't.
 async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step: NextStep, progress?: { next: number; total: number }): Promise<AiReply> {
   let nudge = ''
@@ -37,7 +47,7 @@ async function askAi(ctx: InterviewContext, round: RoundId, turns: Turn[], step:
         throw new Error('"done" not allowed here')
       }
       // Every interviewer turn must actually be a question (this also catches replies like "You scored 6/10.").
-      if (parsed.type !== 'done' && (!parsed.question.includes('?') || parsed.question.length > 600)) {
+      if (parsed.type !== 'done' && (!isAQuestion(parsed.question) || parsed.question.length > 600)) {
         throw new Error(`unusable question: ${reply.text.slice(0, 100)}`)
       }
       // Keep each round to its own kind of question (no technical questions in Behavioural or HR, and vice versa).
