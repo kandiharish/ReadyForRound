@@ -124,7 +124,7 @@ export function RotatingWord({ words, className = '', every = 2600 }: { words: s
         const offset = k === i ? 0 : k === (i - 1 + words.length) % words.length ? -1 : 1
         return (
           <span key={w} aria-hidden={k !== i} className={`absolute left-0 top-0 whitespace-nowrap transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.65,0,0.35,1)] ${className}`}
-            style={{ transform: `translateY(${offset * 105}%)`, opacity: offset === 0 ? 1 : 0, transitionDuration: offset === 1 ? '0ms' : undefined }}>{w}</span>
+            style={{ transform: `translateY(${offset * 130}%)`, opacity: offset === 0 ? 1 : 0, transitionDuration: offset === 1 ? '0ms' : undefined }}>{w}</span>
         )
       })}
     </span>

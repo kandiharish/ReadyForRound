@@ -89,7 +89,7 @@ function TopNav() {
   }, [])
   return (
     <header className={`relative sticky top-0 z-40 transition-all duration-300 border-b ${scrolled ? 'bg-paper/80 backdrop-blur-md border-line shadow-sm' : 'bg-transparent border-transparent'}`}>
-      <div className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4">
+      <div className="max-w-7xl 2xl:max-w-[88rem] mx-auto h-16 px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-4">
         <Link to="/" aria-label="ReadyForRound home"><Brand /></Link>
         <nav aria-label="Sections" className="hidden md:flex items-center gap-7 text-sm text-soft">
           {[['#video', 'Watch'], ['#tour', 'Features'], ['#faq', 'FAQ']].map(([href, label]) => (
@@ -110,10 +110,16 @@ function TopNav() {
 
 function Hero() {
   return (
-    <section className="relative px-4 sm:px-6 lg:px-10 pt-10 sm:pt-14 pb-20">
-      <div className="relative max-w-6xl mx-auto grid gap-12 lg:gap-16 lg:grid-cols-[1fr_1fr] items-center">
+    <section className="relative px-4 sm:px-6 lg:px-10 pt-10 sm:pt-14 pb-20 overflow-hidden">
+      {/* Edge-to-edge backdrop: a faint dot grid that fades out, and soft brand light at the far left and right */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0">
+        <div className="absolute inset-0 [background-image:radial-gradient(color-mix(in_srgb,var(--ink)_9%,transparent)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_70%_at_50%_35%,black_30%,transparent_80%)]" />
+        <div className="absolute -left-40 top-10 w-[34rem] h-[34rem] rounded-full bg-[radial-gradient(closest-side,rgba(0,184,245,0.16),transparent)]" />
+        <div className="absolute -right-40 top-40 w-[38rem] h-[38rem] rounded-full bg-[radial-gradient(closest-side,rgba(80,40,248,0.12),transparent)]" />
+      </div>
+      <div className="relative max-w-7xl 2xl:max-w-[88rem] mx-auto grid gap-12 lg:gap-16 xl:gap-20 lg:grid-cols-[1fr_1.05fr] items-center">
         <div>
-          <h1 className="font-display font-semibold text-[2.5rem] sm:text-[3.25rem] lg:text-[3.4rem] xl:text-[3.75rem] leading-[1.05] tracking-tight">
+          <h1 className="font-display font-semibold text-[2.5rem] sm:text-[3.25rem] lg:text-[3.4rem] xl:text-[3.9rem] 2xl:text-[4.25rem] leading-[1.05] tracking-tight">
             <WordReveal delay={120} lines={[
               ['Walk', 'into', 'your'],
               [<RotatingWord words={['placement', 'campus', 'first job', 'next job']} className={GRADIENT_TEXT} />, 'interview', 'like'],
@@ -224,7 +230,7 @@ function Footer() {
   const contact = import.meta.env.VITE_CONTACT_EMAIL as string | undefined
   return (
     <footer className="border-t border-line px-4 sm:px-6 pt-10 pb-24">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="max-w-7xl 2xl:max-w-[88rem] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="max-w-md text-center sm:text-left">
           <Brand size="sm" />
           <p className="text-xs text-muted mt-3 leading-relaxed">

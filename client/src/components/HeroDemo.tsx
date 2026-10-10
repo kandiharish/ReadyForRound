@@ -176,7 +176,7 @@ export function HeroDemo() {
   const showExample = !touched && typed >= q.question.length
 
   return (
-    <div className="relative mx-auto w-full max-w-lg xl:max-w-xl" aria-label="Try one interview question">
+    <div className="relative mx-auto w-full max-w-lg xl:max-w-xl 2xl:max-w-2xl" aria-label="Try one interview question">
       {/* Pick your role: the question changes to match */}
       <div role="radiogroup" aria-label="Your role" className="flex flex-wrap justify-center gap-1.5 mb-4">
         {DEMO_QUESTIONS.map((x) => (
