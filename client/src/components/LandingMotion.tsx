@@ -106,10 +106,10 @@ export function StatsStrip() {
     <section aria-label="ReadyForRound in numbers" className="px-4 sm:px-6 lg:px-10 py-12 border-b border-line bg-card">
       <dl className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
         {STATS.map((s) => (
-          <div key={s.label} className="text-center md:text-left md:border-l md:border-line md:pl-6 first:md:border-l-0 first:md:pl-0">
-            <dt className="sr-only">{s.label}</dt>
+          <div key={s.label} className="flex flex-col-reverse text-center md:text-left md:border-l md:border-line md:pl-6 first:md:border-l-0 first:md:pl-0">
+            {/* The label is the term and the number its value; shown number-first */}
+            <dt className="text-sm text-muted mt-2">{s.label}</dt>
             <dd className="font-display font-semibold text-4xl sm:text-5xl text-ink"><CountUpInView to={s.value} prefix={s.prefix} suffix={s.suffix} /></dd>
-            <dd className="text-sm text-muted mt-2">{s.label}</dd>
           </div>
         ))}
       </dl>
