@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthProvider'
 import { Avatar, type AvatarState } from '../components/Avatar'
 import { Brand } from '../components/Brand'
 import { Reveal } from '../components/Reveal'
-import { ProductVideo, ScrollProgress, StatsStrip, Tour, WordReveal } from '../components/LandingMotion'
+import { LiveChecks, ProductVideo, RotatingWord, ScrollProgress, StatsStrip, Tour, WordReveal } from '../components/LandingMotion'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { openFeedback } from '../components/FeedbackButton'
 import { Icon } from '../components/ui'
@@ -90,26 +90,23 @@ function Hero() {
           <h1 className="font-display font-semibold text-[2.6rem] sm:text-6xl lg:text-[3.6rem] xl:text-[4.3rem] 2xl:text-[5rem] leading-[1.05]">
             <WordReveal delay={120} lines={[
               ['Walk', 'into', 'your'],
-              [<span className={GRADIENT_TEXT}>placement</span>, 'interview', 'like'],
+              [<RotatingWord words={['placement', 'campus', 'first job', 'next job']} className={GRADIENT_TEXT} />, 'interview', 'like'],
               ["you've", 'already', 'done', 'it.'],
             ]} />
           </h1>
           <Reveal delay={650}>
             <p className="text-lg sm:text-xl text-soft mt-6 max-w-lg">
-              The AI mock interview platform: practise by voice, get honest feedback, and know exactly what to study next.
+              For students, freshers and working professionals. Practise out loud with an AI interviewer, get honest feedback, and know exactly what to study next.
             </p>
           </Reveal>
           <Reveal delay={800} className="mt-8"><CtaButtons /></Reveal>
-          <Reveal delay={950}>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-              {['Free for every student', 'No credit card', 'Camera optional'].map((t) => (
-                <li key={t} className="flex items-center gap-1.5"><Icon name="check" size={15} className="text-muted" />{t}</li>
-              ))}
-            </ul>
-          </Reveal>
+          <div className="mt-8"><LiveChecks delay={1050} items={['Free to use', 'No credit card', 'Camera optional']} /></div>
         </div>
 
-        <Reveal from="right" delay={500}><HeroDemo /></Reveal>
+        <div className="relative">
+          <div aria-hidden="true" className="pointer-events-none absolute -inset-10 sm:-inset-16 rounded-full bg-[radial-gradient(closest-side,rgba(0,184,245,0.22),rgba(11,99,229,0.14)_55%,transparent)] blur-2xl motion-safe:animate-[glow-breathe_9s_ease-in-out_infinite]" />
+          <Reveal from="right" delay={500} className="relative"><HeroDemo /></Reveal>
+        </div>
       </div>
     </section>
   )
@@ -146,7 +143,7 @@ function HeroDemo() {
   const avatar: AvatarState = phase === 'asking' ? 'speaking' : phase === 'answering' ? 'listening' : 'idle'
 
   return (
-    <div className="relative mx-auto w-full max-w-lg xl:max-w-xl 2xl:max-w-2xl mb-20 sm:mb-12" aria-label="A short animated example of an interview on ReadyForRound">
+    <div className="relative mx-auto w-full max-w-lg xl:max-w-xl 2xl:max-w-2xl mb-36" aria-label="A short animated example of an interview on ReadyForRound">
       <div className="rounded-3xl bg-stage-card border border-stage-line shadow-lg shadow-black/5 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-stage-line text-xs text-stage-muted">
           <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-bad animate-pulse" /> {item.round}</span>
@@ -180,7 +177,7 @@ function HeroDemo() {
       </div>
 
       {phase === 'feedback' && (
-        <div key={n} className="absolute -right-2 sm:-right-12 -bottom-20 w-60 rounded-2xl bg-card border border-line shadow-lg p-4">
+        <div key={n} className="absolute right-3 sm:right-5 -bottom-36 w-60 rounded-xl bg-card border border-line shadow-xl p-4 motion-safe:animate-[toast-in_0.45s_cubic-bezier(0.22,1,0.36,1)]">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted">Your feedback</span>
             <span className="text-xs text-muted">Example</span>
@@ -278,6 +275,8 @@ function FinalCta() {
     <section className="px-4 sm:px-6 lg:px-10 pb-20">
       <Reveal>
         <div className="relative max-w-6xl mx-auto overflow-hidden rounded-2xl bg-[#0b1220] px-6 py-10 sm:px-12 sm:py-12">
+          <div aria-hidden="true" className="pointer-events-none absolute -top-24 right-10 w-[28rem] h-[28rem] rounded-full bg-[radial-gradient(closest-side,rgba(11,99,229,0.45),transparent)]" />
+          <img aria-hidden="true" src="/logo-mark.png" alt="" className="pointer-events-none absolute -right-6 -bottom-10 w-52 h-52 opacity-20 rotate-12 hidden sm:block" />
           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-8">
             <div className="text-white">
               <h2 className="font-display font-semibold text-3xl sm:text-4xl leading-tight">Your next interview is<br className="hidden sm:block" /> a practice round away.</h2>

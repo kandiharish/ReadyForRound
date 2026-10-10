@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { useInView } from './Reveal'
 import { Icon, type IconName } from './ui'
 
@@ -94,12 +94,79 @@ export function CountUpInView({ to, prefix = '', suffix = '' }: { to: number; pr
   return <span ref={ref} className="tabular-nums">{prefix}{v}{suffix}</span>
 }
 
+// One word in the headline that rolls to the next every few seconds (placement → campus → first job → next job).
+// The words stack in one slot: the current one sits in place, the old one rolls up and out, the new one rolls in
+// from below. The slot's width eases to fit each word, so the rest of the line glides instead of jumping.
+export function RotatingWord({ words, className = '', every = 2600 }: { words: string[]; className?: string; every?: number }) {
+  const [i, setI] = useState(0)
+  const [width, setWidth] = useState<number | null>(null)
+  const sizers = useRef<(HTMLSpanElement | null)[]>([])
+  useEffect(() => {
+    if (reduced()) return
+    const t = setInterval(() => setI((n) => (n + 1) % words.length), every)
+    return () => clearInterval(t)
+  }, [words.length, every])
+  useLayoutEffect(() => {
+    const measure = () => setWidth(sizers.current[i]?.offsetWidth ?? null)
+    measure()
+    window.addEventListener('resize', measure)
+    document.fonts?.ready.then(measure).catch(() => {})
+    return () => window.removeEventListener('resize', measure)
+  }, [i])
+  return (
+    <span className="relative inline-block align-bottom overflow-hidden transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] h-[1.12em] -mb-[0.04em]"
+      style={{ width: width ?? undefined }} aria-live="polite">
+      {/* Invisible copies used only to measure each word's width */}
+      <span aria-hidden="true" className="absolute invisible whitespace-nowrap">
+        {words.map((w, k) => <span key={w} ref={(el) => { sizers.current[k] = el }} className={`inline-block ${className}`}>{w}</span>)}
+      </span>
+      {words.map((w, k) => {
+        const offset = k === i ? 0 : k === (i - 1 + words.length) % words.length ? -1 : 1
+        return (
+          <span key={w} aria-hidden={k !== i} className={`absolute left-0 top-0 whitespace-nowrap transition-[transform,opacity] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] ${className}`}
+            style={{ transform: `translateY(${offset * 105}%)`, opacity: offset === 0 ? 1 : 0, transitionDuration: offset === 1 ? '0ms' : undefined }}>{w}</span>
+        )
+      })}
+    </span>
+  )
+}
+
+// Green ticks that draw themselves one after another, each with a soft pulse as it lands.
+export function LiveChecks({ items, delay = 0 }: { items: string[]; delay?: number }) {
+  return (
+    <ul className="flex flex-wrap gap-x-6 gap-y-2.5 text-sm text-soft">
+      {items.map((t, i) => {
+        const d = delay + i * 220
+        return (
+          <li key={t} className="flex items-center gap-2">
+            <span className="relative grid place-items-center w-5 h-5 rounded-full bg-good-soft text-good motion-safe:animate-[check-pop_0.5s_cubic-bezier(0.22,1,0.36,1)_both]" style={{ animationDelay: `${d}ms` }}>
+              <span aria-hidden="true" className="absolute inset-0 rounded-full bg-good/30 motion-safe:animate-[check-ring_1.1s_ease-out_both] motion-reduce:hidden" style={{ animationDelay: `${d + 250}ms` }} />
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" strokeDasharray="24" className="motion-safe:animate-[check-draw_0.45s_ease-out_both]" style={{ animationDelay: `${d + 150}ms` }} />
+              </svg>
+            </span>
+            {t}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 const STATS: { value: number; prefix?: string; suffix?: string; label: string }[] = [
   { value: 19, label: 'job roles, from software to VLSI' },
   { value: 19, label: 'company interview styles' },
   { value: 5, label: 'interview round types' },
   { value: 0, prefix: '₹', label: 'cost, for every student' },
 ]
+
+function StatBar() {
+  const { ref, inView } = useInView<HTMLSpanElement>(0.6)
+  return (
+    <span ref={ref} aria-hidden="true" className="block h-1 mb-4 mx-auto md:mx-0 w-10 rounded-full bg-linear-to-r from-[#00b8f5] to-[#0b63e5] origin-left transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+      style={{ transform: inView ? 'scaleX(1)' : 'scaleX(0)' }} />
+  )
+}
 
 export function StatsStrip() {
   return (
@@ -109,7 +176,10 @@ export function StatsStrip() {
           <div key={s.label} className="flex flex-col-reverse text-center md:text-left md:border-l md:border-line md:pl-6 first:md:border-l-0 first:md:pl-0">
             {/* The label is the term and the number its value; shown number-first */}
             <dt className="text-sm text-muted mt-2">{s.label}</dt>
-            <dd className="font-display font-semibold text-4xl sm:text-5xl text-ink"><CountUpInView to={s.value} prefix={s.prefix} suffix={s.suffix} /></dd>
+            <dd className="font-display font-semibold text-4xl sm:text-5xl text-ink">
+              <StatBar />
+              <CountUpInView to={s.value} prefix={s.prefix} suffix={s.suffix} />
+            </dd>
           </div>
         ))}
       </dl>
@@ -169,6 +239,21 @@ const TOUR: { icon: IconName; kicker: string; title: string; text: string; img: 
 // and changes to match the step you're reading. Phones get simple stacked cards.
 export function Tour() {
   const [active, setActive] = useState(0)
+  const list = useRef<HTMLOListElement>(null)
+  const [fill, setFill] = useState(0)
+  useEffect(() => {
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const r = list.current?.getBoundingClientRect()
+      if (!r) return
+      setFill(Math.min(1, Math.max(0, (window.innerHeight / 2 - r.top) / r.height)))
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
+  }, [])
   const steps = useRef<(HTMLLIElement | null)[]>([])
   useEffect(() => {
     const io = new IntersectionObserver((entries) => {
@@ -185,11 +270,17 @@ export function Tour() {
         <h2 className="font-display font-semibold text-3xl sm:text-5xl mt-3 max-w-2xl">Everything you need between now and your round.</h2>
 
         <div className="mt-14 lg:grid lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <ol className="space-y-6 lg:space-y-0">
+          <ol ref={list} className="relative space-y-6 lg:space-y-0 lg:pl-8">
+            <span aria-hidden="true" className="hidden lg:block absolute left-0 top-0 bottom-0 w-0.5 rounded-full bg-line">
+              <span className="absolute left-0 top-0 w-full rounded-full bg-linear-to-b from-[#00b8f5] to-[#0b63e5]" style={{ height: `${fill * 100}%` }} />
+            </span>
             {TOUR.map((s, i) => (
               <li key={s.kicker} ref={(el) => { steps.current[i] = el }} data-i={i} className="lg:min-h-[70vh] lg:flex lg:items-center">
                 <div className={`transition-opacity duration-500 ${active === i ? 'lg:opacity-100' : 'lg:opacity-35'}`}>
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent-deep"><Icon name={s.icon} size={16} /> {s.kicker}</span>
+                  <span className={`inline-flex items-center gap-2 text-sm font-semibold transition-colors duration-500 ${active === i ? 'text-accent-deep' : 'text-muted'}`}>
+                    <span className={`w-7 h-7 rounded-lg grid place-items-center transition-colors duration-500 ${active === i ? 'bg-accent text-on-accent' : 'bg-raised text-muted'}`}><Icon name={s.icon} size={15} /></span>
+                    {s.kicker}
+                  </span>
                   <h3 className="font-display font-semibold text-2xl sm:text-3xl mt-3 leading-tight">{s.title}</h3>
                   <p className="text-soft mt-3 text-[1.05rem] leading-relaxed max-w-md">{s.text}</p>
                   {/* Phones: the screen sits under its own text */}
