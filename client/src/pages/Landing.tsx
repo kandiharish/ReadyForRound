@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
 import { HeroDemo } from '../components/HeroDemo'
+import { Globe } from '../components/Globe'
 import { apiFetch } from '../lib/api'
 import { Brand } from '../components/Brand'
 import { Reveal } from '../components/Reveal'
@@ -114,8 +115,6 @@ function Hero() {
       {/* Edge-to-edge backdrop: a faint dot grid that fades out, and soft brand light at the far left and right */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0">
         <div className="absolute inset-0 [background-image:radial-gradient(color-mix(in_srgb,var(--ink)_9%,transparent)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_70%_at_50%_35%,black_30%,transparent_80%)]" />
-        <div className="absolute -left-40 top-10 w-[34rem] h-[34rem] rounded-full bg-[radial-gradient(closest-side,rgba(0,184,245,0.16),transparent)]" />
-        <div className="absolute -right-40 top-40 w-[38rem] h-[38rem] rounded-full bg-[radial-gradient(closest-side,rgba(80,40,248,0.12),transparent)]" />
       </div>
       <div className="relative max-w-7xl 2xl:max-w-[88rem] mx-auto grid gap-12 lg:gap-16 xl:gap-20 lg:grid-cols-[1fr_1.05fr] items-center">
         <div>
@@ -137,8 +136,11 @@ function Hero() {
         </div>
 
         <div className="relative">
-          <div aria-hidden="true" className="pointer-events-none absolute -inset-10 sm:-inset-16 rounded-full bg-[radial-gradient(closest-side,rgba(0,184,245,0.22),rgba(11,99,229,0.14)_55%,transparent)] blur-2xl motion-safe:animate-[glow-breathe_9s_ease-in-out_infinite]" />
-          <Reveal from="right" delay={500} className="relative"><HeroDemo /></Reveal>
+          {/* A slowly turning globe behind the laptop: India highlighted, arcs flying out to cities worldwide */}
+          <div aria-hidden="true" className="pointer-events-none absolute -right-[22%] -top-[30%] w-[min(105%,40rem)] aspect-square">
+            <Globe />
+          </div>
+          <Reveal from="right" delay={300} className="relative"><HeroDemo /></Reveal>
         </div>
       </div>
     </section>

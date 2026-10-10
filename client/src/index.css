@@ -299,6 +299,20 @@ a, button { -webkit-tap-highlight-color: transparent; }
   50% { transform: scale(1.08); opacity: 1; }
 }
 
+/* Landing: the hero laptop opens its lid, then floats */
+@keyframes lid-open {
+  from { transform: rotateX(-88deg); opacity: 0.4; }
+  to { transform: rotateX(0deg); opacity: 1; }
+}
+@keyframes laptop-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+.laptop-deck { background: linear-gradient(#e3e7ed, #b4bac4); }
+.laptop-notch { background: #c4c9d2; }
+:root[data-theme="dark"] .laptop-deck { background: linear-gradient(#4b515c, #2a2e36); }
+:root[data-theme="dark"] .laptop-notch { background: #3a3f48; }
+
 /* Phones: sheets slide up from the bottom */
 @keyframes sheet-up {
   from { transform: translateY(100%); }
