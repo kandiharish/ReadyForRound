@@ -98,7 +98,7 @@ export default function Jobs() {
                 <li key={j.id}>
                   <Link to={`/jobs/${j.id}`} className="h-full rounded-2xl bg-card border border-line p-4 flex items-center gap-4 hover:border-accent/40 transition-all">
                     <span className={`w-14 h-14 shrink-0 rounded-2xl grid place-items-center font-bold text-lg tabular-nums ${score === null ? 'bg-raised text-muted' : score >= 70 ? 'bg-good-soft text-good' : score >= 40 ? 'bg-warn-soft text-warn' : 'bg-blush text-blush-ink'}`}>
-                      {score === null ? '—' : `${score}%`}
+                      {score === null ? '-' : `${score}%`}
                     </span>
                     <span className="min-w-0">
                       <span className="block font-semibold truncate">{j.title}</span>

@@ -80,7 +80,7 @@ export function SpeakingCoach({ turns }: { turns: InterviewTurn[] }) {
       </div>
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-        <Stat label="Speaking speed" value={s.wpm === null ? '—' : `${s.wpm}`} note={paceNote} tone={paceNote === 'Clear and steady' ? 'good' : 'warn'}>
+        <Stat label="Speaking speed" value={s.wpm === null ? '-' : `${s.wpm}`} note={paceNote} tone={paceNote === 'Clear and steady' ? 'good' : 'warn'}>
           {marker !== null && (
             <div className="mt-2" aria-hidden="true">
               <div className="relative h-2 rounded-full bg-hover">

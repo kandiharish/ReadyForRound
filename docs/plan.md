@@ -1,5 +1,5 @@
 
-# ReadyForRound— PROJECT MASTER DOCUMENT
+# ReadyForRound: PROJECT MASTER DOCUMENT
 
 > From Classroom Learning to Career Readiness
 
@@ -658,7 +658,7 @@ HireMate may process resumes, voice recordings, transcripts, and recruitment dec
 - Monitor for systematic scoring disparities where lawful and appropriate.
 - Provide a human review and correction process.
 
-AI assessments should support—not autonomously determine—employment decisions. Applicable privacy, accessibility, employment, and AI regulations must be reviewed for each deployment jurisdiction.
+AI assessments should support, not autonomously determine, employment decisions. Applicable privacy, accessibility, employment, and AI regulations must be reviewed for each deployment jurisdiction.
 
 ## 19. Business and Sustainability Model
 
@@ -717,7 +717,7 @@ Defer advanced talking avatars, complex ATS integrations, extensive college dash
 
 ## 21. Development Phases
 
-### Phase 1 — Discovery and design
+### Phase 1: Discovery and design
 
 - Interview students and recruiters.
 - Validate primary problems.
@@ -725,7 +725,7 @@ Defer advanced talking avatars, complex ATS integrations, extensive college dash
 - Design student and recruiter journeys.
 - Create wireframes and data models.
 
-### Phase 2 — Student interview engine
+### Phase 2: Student interview engine
 
 - Build authentication and profiles.
 - Implement interview setup.
@@ -734,7 +734,7 @@ Defer advanced talking avatars, complex ATS integrations, extensive college dash
 - Generate reports.
 - Add history and learning recommendations.
 
-### Phase 3 — Recruiter workflow
+### Phase 3: Recruiter workflow
 
 - Add organisation tenancy and permissions.
 - Implement job creation.
@@ -743,7 +743,7 @@ Defer advanced talking avatars, complex ATS integrations, extensive college dash
 - Generate recruiter-facing evidence reports.
 - Add human review and audit logging.
 
-### Phase 4 — Quality and pilot
+### Phase 4: Quality and pilot
 
 - Test speech and transcription failures.
 - Evaluate scoring reliability.
@@ -751,7 +751,7 @@ Defer advanced talking avatars, complex ATS integrations, extensive college dash
 - Pilot with a small student group and a few recruiters.
 - Gather feedback and correct failure modes.
 
-### Phase 5 — Expansion
+### Phase 5: Expansion
 
 - Add institution dashboards.
 - Add integrations.
@@ -852,7 +852,7 @@ HireMate is an AI-powered career readiness and recruitment platform that enables
 
 Its central value is the connection between preparation and evaluation: students receive a clear path to improvement, while recruiters receive a structured process for assessing role-relevant skills.
 
-HireMate aims to make career preparation more accessible and hiring workflows more consistent, transparent, and evidence-based—without promising employment outcomes or treating AI scores as the final measure of a candidate's potential.
+HireMate aims to make career preparation more accessible and hiring workflows more consistent, transparent, and evidence-based, without promising employment outcomes or treating AI scores as the final measure of a candidate's potential.
 
 ## 26. One-Line Pitch
 

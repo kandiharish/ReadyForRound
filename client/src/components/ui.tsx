@@ -140,7 +140,7 @@ export function ScoreRing({ value, size = 140, label = 'ready', suffix = '%', co
         )}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display font-semibold leading-none text-ink" style={{ fontSize: size * 0.3 }}>{value === null ? '—' : `${Math.round(shown)}${suffix}`}</span>
+        <span className="font-display font-semibold leading-none text-ink" style={{ fontSize: size * 0.3 }}>{value === null ? '-' : `${Math.round(shown)}${suffix}`}</span>
         {label && <span className="text-xs text-muted">{label}</span>}
       </div>
     </div>

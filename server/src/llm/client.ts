@@ -96,16 +96,40 @@ export function recoverFailedGeneration(body: string): string | null {
   }
 }
 
+// House style for everything the AI writes: plain punctuation that reads like a person wrote it.
+const STYLE_RULE = 'Punctuation: never use em dashes (—) or spaced en dashes. Use a comma, a full stop, a colon or "and" instead.'
+
+// Safety net for the same rule: models don't always follow it. Swaps a dash used as a pause for a comma,
+// and a dash starting a line for a hyphen bullet. En dashes inside ranges (₹5L–₹8L) are left alone.
+export function plainPunctuation(text: string) {
+  return text
+    .replace(/(^|\n)[ \t]*[—–][ \t]*/g, '$1- ')
+    .replace(/\s*—\s*([.,;:!?])/g, '$1') // "fine —." becomes "fine."
+    .replace(/\s*—\s*/g, ', ')
+    .replace(/ – /g, ', ')
+}
+
+function withStyle(messages: ChatMessage[]): ChatMessage[] {
+  const i = messages.findIndex((m) => m.role === 'system')
+  if (i === -1) return [{ role: 'system', content: STYLE_RULE }, ...messages]
+  return messages.map((m, k) => (k === i ? { ...m, content: `${m.content}
+
+${STYLE_RULE}` } : m))
+}
+
 // Ask the main provider; if it fails and a fallback is set, ask the fallback.
 export async function chat(messages: ChatMessage[], options: ChatOptions = {}) {
   const main = options.task === 'report' ? config.REPORT_LLM_PROVIDER ?? config.LLM_PROVIDER : config.LLM_PROVIDER
+  const styled = withStyle(messages)
+  let result
   try {
-    return await callProvider(main, messages, options)
+    result = await callProvider(main, styled, options)
   } catch (err) {
     if (config.LLM_FALLBACK_PROVIDER === 'none' || config.LLM_FALLBACK_PROVIDER === main) throw err
     console.warn(`Main AI provider failed, using fallback: ${(err as Error).message}`)
-    return await callProvider(config.LLM_FALLBACK_PROVIDER, messages, options)
+    result = await callProvider(config.LLM_FALLBACK_PROVIDER, styled, options)
   }
+  return { ...result, text: plainPunctuation(result.text ?? '') }
 }
 
 // Quick check used by /api/health: can we reach the main provider at all?

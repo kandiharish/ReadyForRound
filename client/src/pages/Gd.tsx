@@ -177,7 +177,7 @@ export default function GdHome() {
               <li key={g.id}>
                 <Link to={`/gd/${g.id}`} className="h-full rounded-2xl bg-card border border-line p-4 flex items-center gap-4 transition-all">
                   <span className={`w-12 h-12 shrink-0 rounded-xl grid place-items-center font-bold tabular-nums ${g.score === null ? 'bg-raised text-muted' : g.score >= 70 ? 'bg-good-soft text-good' : g.score >= 40 ? 'bg-warn-soft text-warn' : 'bg-blush text-blush-ink'}`}>
-                    {g.score ?? (g.status === 'in_progress' ? '…' : '—')}
+                    {g.score ?? (g.status === 'in_progress' ? '…' : '-')}
                   </span>
                   <span className="min-w-0">
                     <span className="block font-semibold truncate">{g.topic}</span>

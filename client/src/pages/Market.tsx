@@ -172,8 +172,8 @@ export function MarketRolePage() {
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {[
           ['Openings · 30 days', num(r.total_openings), r.trend !== null ? `${r.trend >= 0 ? '↑' : '↓'} ${Math.abs(r.trend)}% vs last month` : 'Trend after a few weeks of data'],
-          ['Typical pay', r.salary ? `${lakhs(r.salary.p25)}–${lakhs(r.salary.p75)}` : '—', r.salary ? `Middle: ${lakhs(r.salary.p50)} a year · ${r.salary.count} ads` : 'Too few ads list a salary'],
-          ['Open to freshers', r.fresher_share !== null ? `${Math.round(r.fresher_share * 100)}%` : '—', 'Ads mentioning freshers, graduates or trainees'],
+          ['Typical pay', r.salary ? `${lakhs(r.salary.p25)}–${lakhs(r.salary.p75)}` : '-', r.salary ? `Middle: ${lakhs(r.salary.p50)} a year · ${r.salary.count} ads` : 'Too few ads list a salary'],
+          ['Open to freshers', r.fresher_share !== null ? `${Math.round(r.fresher_share * 100)}%` : '-', 'Ads mentioning freshers, graduates or trainees'],
           ['Your skill match', `${have}/${r.skills.length}`, 'Top skills employers ask for'],
         ].map(([k, v, sub]) => (
           <Card key={k}>
