@@ -48,7 +48,7 @@ export default function ResetPassword() {
   return (
     <AuthCard title="Choose a new password">
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input className={inputClass} type="password" placeholder="New password (min 8 characters)" aria-label="New password" autoComplete="new-password"
+        <input className={inputClass} type="password" placeholder="New password" aria-label="New password" autoComplete="new-password"
           value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
         <input className={inputClass} type="password" placeholder="Type it again" aria-label="Confirm new password" autoComplete="new-password"
           value={confirm} onChange={(e) => setConfirm(e.target.value)} minLength={8} required />

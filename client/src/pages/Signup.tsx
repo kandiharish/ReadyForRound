@@ -17,6 +17,7 @@ export default function Signup() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault() // stop the browser from reloading the page
     setError(null)
+    if (password.length < 8) return setError('Use at least 8 characters for your password.')
     setBusy(true)
 
     const { data, error } = await supabase.auth.signUp({
@@ -55,8 +56,8 @@ export default function Signup() {
           onChange={(e) => setFullName(e.target.value)} required />
         <input className={inputClass} type="email" placeholder="Email" aria-label="Email" autoComplete="email" value={email}
           onChange={(e) => setEmail(e.target.value)} required />
-        <input className={inputClass} type="password" placeholder="Password (min 8 characters)" aria-label="Password" autoComplete="new-password" value={password}
-          onChange={(e) => setPassword(e.target.value)} minLength={8} required />
+        <input className={inputClass} type="password" placeholder="Password" aria-label="Password" autoComplete="new-password" value={password}
+          onChange={(e) => setPassword(e.target.value)} required />
         {error && <p className="text-sm text-bad" role="alert">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Creating account…' : 'Sign up'}
