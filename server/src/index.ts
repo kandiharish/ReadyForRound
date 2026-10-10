@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import { rateLimit, ipKeyGenerator } from 'express-rate-limit'
 import { config } from './config.js'
 import { isLlmReachable } from './llm/client.js'
@@ -24,8 +25,11 @@ const app = express()
 app.set('trust proxy', 1)
 
 // Only our own website may call this server. CLIENT_URL can list several addresses, separated by commas.
+// Standard security headers. This server only returns JSON, so the strictest page policy fits.
+app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] } }, crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+app.disable('x-powered-by')
 app.use(cors({ origin: config.CLIENT_URL.split(',').map((u) => u.trim()) }))
-app.use(express.json()) // lets us read JSON sent by the frontend
+app.use(express.json({ limit: '100kb' })) // lets us read JSON sent by the frontend (answers and job ads fit easily)
 
 // Rate limits: stop scripts or bots from hammering the server. Counted per logged-in user
 // (their login token), or per network address for requests without one.
@@ -35,6 +39,10 @@ const tooMany = { error: 'Too many requests. Please slow down and try again in a
 app.use('/api', rateLimit({ windowMs: 60_000, limit: 300, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
 // Answers call the AI, so they get a tighter limit.
 app.use(/^\/api\/interviews\/[^/]+\/answer/, rateLimit({ windowMs: 60_000, limit: 20, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false }))
+// Everything else that asks the AI for work (starting sessions, group discussion turns, retries, plans,
+// question banks): generous for real use, but stops a script from burning through the free AI quota.
+const AI_ROUTES = /^\/api\/(interviews|gd)(\/[^/]+\/(turn|turn-audio|report\/retry))?\/?$|^\/api\/roadmap\/generate|^\/api\/compass\/[^/]+\/fit|^\/api\/companies\/[^/]+\/questions/
+app.use(AI_ROUTES, rateLimit({ windowMs: 60 * 60_000, limit: 120, keyGenerator: perUser, message: tooMany, standardHeaders: 'draft-8', legacyHeaders: false, skip: (req) => req.method === 'GET' && !/questions/.test(req.originalUrl) }))
 
 // "Are you alive?" check used by the frontend.
 // Tiny "are you awake?" check: the website calls it on first load, and a scheduled job calls it
@@ -58,7 +66,8 @@ app.use('/api', profileRouter)
 // Interview routes: /api/interviews/...
 app.use('/api/interviews', interviewsRouter)
 // Errors from students' browsers (a page crashed, a script failed). Logged in or not.
-app.post('/api/client-errors', async (req, res) => {
+const clientErrorLimit = rateLimit({ windowMs: 10 * 60_000, limit: 20, keyGenerator: perUser, standardHeaders: 'draft-8', legacyHeaders: false, handler: (_req, res) => { res.status(204).end() } })
+app.post('/api/client-errors', clientErrorLimit, async (req, res) => {
   const body = req.body ?? {}
   let userId: string | undefined
   const token = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null

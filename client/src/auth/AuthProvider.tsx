@@ -22,8 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     // 2. Afterwards: update whenever the user logs in or out.
-    const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession)
+      // A password-reset email link signs the student in. Wherever it landed, take them to choose a new password.
+      if (event === 'PASSWORD_RECOVERY' && window.location.pathname !== '/reset-password') window.location.replace('/reset-password')
     })
     return () => data.subscription.unsubscribe()
   }, [])

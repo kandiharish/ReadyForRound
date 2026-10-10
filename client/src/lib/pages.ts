@@ -41,6 +41,8 @@ export function preloadAppPages() {
 export const Landing = page(() => import('../pages/Landing'), false)
 export const Login = page(() => import('../pages/Login'), false)
 export const Signup = page(() => import('../pages/Signup'), false)
+export const ForgotPassword = page(() => import('../pages/ForgotPassword'), false)
+export const ResetPassword = page(() => import('../pages/ResetPassword'), false)
 export const Status = page(() => import('../pages/Status'), false)
 export const PrivacyPage = named(() => import('../pages/Legal'), (m) => m.PrivacyPage, false)
 export const TermsPage = named(() => import('../pages/Legal'), (m) => m.TermsPage, false)

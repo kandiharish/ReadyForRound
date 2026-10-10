@@ -32,11 +32,14 @@ export default function Login() {
       <GoogleButton />
       <Divider />
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input className={inputClass} type="email" placeholder="Email" value={email}
+        <input className={inputClass} type="email" placeholder="Email" aria-label="Email" autoComplete="email" value={email}
           onChange={(e) => setEmail(e.target.value)} required />
-        <input className={inputClass} type="password" placeholder="Password" value={password}
+        <input className={inputClass} type="password" placeholder="Password" aria-label="Password" autoComplete="current-password" value={password}
           onChange={(e) => setPassword(e.target.value)} required />
-        {error && <p className="text-sm text-bad">{error}</p>}
+        <div className="text-right -mt-1">
+          <Link to="/forgot-password" className="text-sm text-accent-deep font-medium">Forgot password?</Link>
+        </div>
+        {error && <p className="text-sm text-bad" role="alert">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Logging in…' : 'Log in'}
         </button>

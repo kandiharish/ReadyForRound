@@ -51,13 +51,13 @@ export default function Signup() {
       <GoogleButton />
       <Divider />
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input className={inputClass} placeholder="Full name" value={fullName}
+        <input className={inputClass} placeholder="Full name" aria-label="Full name" autoComplete="name" maxLength={80} value={fullName}
           onChange={(e) => setFullName(e.target.value)} required />
-        <input className={inputClass} type="email" placeholder="Email" value={email}
+        <input className={inputClass} type="email" placeholder="Email" aria-label="Email" autoComplete="email" value={email}
           onChange={(e) => setEmail(e.target.value)} required />
-        <input className={inputClass} type="password" placeholder="Password (min 8 characters)" value={password}
+        <input className={inputClass} type="password" placeholder="Password (min 8 characters)" aria-label="Password" autoComplete="new-password" value={password}
           onChange={(e) => setPassword(e.target.value)} minLength={8} required />
-        {error && <p className="text-sm text-bad">{error}</p>}
+        {error && <p className="text-sm text-bad" role="alert">{error}</p>}
         <button className={primaryButtonClass} disabled={busy}>
           {busy ? 'Creating account…' : 'Sign up'}
         </button>

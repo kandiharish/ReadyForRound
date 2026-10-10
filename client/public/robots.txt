@@ -11,5 +11,13 @@ Disallow: /profile
 Disallow: /settings
 Disallow: /onboarding
 Disallow: /interview/
+Disallow: /companies
+Disallow: /compass
+Disallow: /market
+Disallow: /jobs
+Disallow: /gd
+Disallow: /resume
+Disallow: /reset-password
+Disallow: /forgot-password
 
 Sitemap: https://ready-for-round.vercel.app/sitemap.xml

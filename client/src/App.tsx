@@ -7,7 +7,7 @@ import { AuthProvider } from './auth/AuthProvider'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import AppLayout from './layout/AppLayout'
 import {
-  Companies, CompanyPage, Compass, GdHome, GdRoom, Goals, Home, InterviewRoom, JobPage, Jobs, Landing, Login, Market, MarketRolePage,
+  Companies, CompanyPage, Compass, ForgotPassword, ResetPassword, GdHome, GdRoom, Goals, Home, InterviewRoom, JobPage, Jobs, Landing, Login, Market, MarketRolePage,
   Onboarding, Practice, PrivacyPage, ProfilePage, ReportPage, Reports, ResumeStudio, Roadmap, Settings, Signup, Status, TermsPage,
 } from './lib/pages'
 
@@ -25,6 +25,8 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/status" element={<Status />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />

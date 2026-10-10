@@ -48,17 +48,8 @@
         ]
       }
     </script>
-    <script>
-      // Apply the saved light/dark theme before the page draws, so there's no flash of the wrong colours.
-      (function () {
-        var theme = null
-        try { theme = localStorage.getItem('rfr-theme') } catch (e) {}
-        if (theme !== 'light' && theme !== 'dark') {
-          theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        }
-        document.documentElement.dataset.theme = theme
-      })()
-    </script>
+    <!-- Applies the saved light/dark theme before the page draws (a file, so the security policy can allow only our own scripts) -->
+    <script src="/theme-init.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet" />
